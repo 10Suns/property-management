@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>物业承接查验表单册 — GVIP嘉平二工业区</title>
+<style>
+  @page {
+    size: A4;
+    margin: 12mm 15mm 12mm 15mm;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+    font-size: 11px;
+    color: #222;
+    line-height: 1.5;
+    max-width: 210mm;
+    margin: 0 auto;
+    background: #e8e8e8;
+  }
+  .form {
+    background: #fff;
+    padding: 10mm 12mm;
+    margin-bottom: 4mm;
+    page-break-after: always;
+    min-height: 277mm;
+    border-bottom: 1px dashed #999;
+  }
+  .form:last-child { page-break-after: auto; }
+
+  h1 {
+    text-align: center;
+    font-size: 16px;
+    letter-spacing: 2px;
+    margin-bottom: 2mm;
+    padding-bottom: 2mm;
+    border-bottom: 2px solid #222;
+  }
+  .form-no {
+    text-align: right;
+    font-size: 9px;
+    color: #666;
+    margin-bottom: 1mm;
+  }
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2mm 6mm;
+    margin-bottom: 4mm;
+    padding: 3mm;
+    background: #f7f7f7;
+    border: 1px solid #ccc;
+  }
+  .info-item { display: flex; }
+  .info-label { white-space: nowrap; font-weight: bold; min-width: 55px; }
+  .info-value {
+    border-bottom: 1px solid #999;
+    flex: 1;
+    min-width: 60px;
+    padding: 0 2px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 4mm;
+    font-size: 10px;
+  }
+  th {
+    background: #333;
+    color: #fff;
+    padding: 4px 3px;
+    text-align: center;
+    font-weight: normal;
+    border: 1px solid #333;
+  }
+  td {
+    border: 1px solid #999;
+    padding: 3px;
+    vertical-align: top;
+  }
+  td.center { text-align: center; }
+  .col-no { width: 5%; }
+  .col-item { width: 18%; }
+  .col-standard { width: 38%; }
+  .col-qty { width: 6%; }
+  .col-result { width: 14%; }
+
+  .result-cell { text-align: center; font-size: 9px; }
+  .result-cell span { margin: 0 2px; }
+
+  .section-title {
+    background: #ddd;
+    font-weight: bold;
+    padding: 3px 6px;
+    font-size: 11px;
+    margin: 4mm 0 2mm 0;
+    border-left: 4px solid #333;
+  }
+  .signature-block {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 3mm;
+    margin-top: 6mm;
+    padding-top: 3mm;
+    border-top: 1px solid #999;
+  }
+  .sig-item { font-size: 10px; }
+  .sig-item .sig-label { font-weight: bold; margin-bottom: 8mm; }
+  .sig-item .sig-line { border-bottom: 1px solid #999; margin-bottom: 1mm; }
+  .remarks-box {
+    border: 1px solid #999;
+    padding: 3mm;
+    min-height: 45mm;
+    margin: 3mm 0;
+    font-size: 10px;
+  }
+  .remarks-box .label { font-weight: bold; margin-bottom: 2mm; }
+
+  .photo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2mm;
+    margin: 3mm 0;
+  }
+  .photo-cell {
+    border: 1px dashed #999;
+    height: 30mm;
+    text-align: center;
+    padding-top: 10mm;
+    font-size: 9px;
+    color: #999;
+  }
+  .photo-label { font-size: 9px; color: #666; margin-bottom: 1mm; }
+
+  .checklist-result { display: inline-block; width: 18px; height: 18px; border: 1px solid #333; margin: 0 2px; vertical-align: middle; }
+  .footer-note { font-size: 8px; color: #999; text-align: center; margin-top: 4mm; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm; }
+
+  @media print {
+    body { background: #fff; }
+    .form { margin-bottom: 0; border-bottom: none; page-break-after: always; }
+    .form:last-child { page-break-after: auto; }
+  }
+
+  /* 封面 */
+  .cover {
+    text-align: center;
+    padding-top: 50mm;
+  }
+  .cover h1 { font-size: 26px; border: none; letter-spacing: 4px; }
+  .cover .sub { font-size: 14px; margin: 8mm 0; color: #555; }
+  .cover .project-name { font-size: 20px; margin: 15mm 0 5mm; font-weight: bold; }
+  .cover .meta { font-size: 12px; margin: 3mm 0; color: #666; }
+  .cover .divider { width: 60%; margin: 10mm auto; border-top: 1px solid #999; }
+
+  /* 目录 */
+  .toc { font-size: 13px; }
+  .toc h2 { text-align: center; font-size: 18px; margin-bottom: 6mm; }
+  .toc .part { font-weight: bold; margin: 4mm 0 2mm; font-size: 13px; border-bottom: 1px solid #ccc; padding-bottom: 1mm; }
+  .toc .item { display: flex; justify-content: space-between; padding: 1.5mm 0; border-bottom: 1px dotted #ccc; }
+  .toc .item .num { min-width: 30px; font-weight: bold; }
+  .toc .item .title { flex: 1; }
+  .toc .item .page { min-width: 25px; text-align: right; color: #666; }
+</style>
+</head>
+<body>
+
+<!-- ====== 封面 ====== -->
+<div class="form cover">
+  <h1>物业承接查验表单册</h1>
+  <div class="sub">Property Handover & Acceptance Inspection Form Book</div>
+  <div class="divider"></div>
+  <div class="project-name">GVIP嘉平二工业区</div>
+  <div class="meta">项目地址：越南北宁省嘉平县嘉平二工业区</div>
+  <div class="meta">物业类型：工业厂房</div>
+  <div class="meta">物业公司：瑞界物业（越南）有限公司</div>
+  <div class="meta">业主方：GAI幸福 / GAI安平一人有限责任公司</div>
+  <div class="divider"></div>
+  <div class="meta">本册共 ____ 份表单，涵盖设备机房、公共区域、室内专有部分及资料移交</div>
+  <div class="meta" style="margin-top:5mm;">编制日期：2026年____月____日</div>
+  <div class="meta">版本：V1.0</div>
+</div>
+
+<!-- ====== 目录 ====== -->
+<div class="form toc">
+  <h2>目 录</h2>
+  <div class="part">第一部分　设备机房查验（5份）</div>
+  <div class="item"><span class="num">A1</span><span class="title">变配电室查验单</span><span class="page">1</span></div>
+  <div class="item"><span class="num">A2</span><span class="title">发电机房查验单</span><span class="page">3</span></div>
+  <div class="item"><span class="num">A3</span><span class="title">水泵房及水箱间查验单</span><span class="page">5</span></div>
+  <div class="item"><span class="num">A4</span><span class="title">消防控制室查验单</span><span class="page">7</span></div>
+  <div class="item"><span class="num">A5</span><span class="title">电梯机房查验单</span><span class="page">9</span></div>
+
+  <div class="part">第二部分　公共区域及设施查验（6份）</div>
+  <div class="item"><span class="num">B1</span><span class="title">监控室及安防系统查验单</span><span class="page">11</span></div>
+  <div class="item"><span class="num">B2</span><span class="title">园区道路及停车场查验单</span><span class="page">13</span></div>
+  <div class="item"><span class="num">B3</span><span class="title">绿化景观查验单</span><span class="page">15</span></div>
+  <div class="item"><span class="num">B4</span><span class="title">围墙及大门查验单</span><span class="page">17</span></div>
+  <div class="item"><span class="num">B5</span><span class="title">物业用房查验单</span><span class="page">19</span></div>
+  <div class="item"><span class="num">B6</span><span class="title">给排水外网及消防管网查验单</span><span class="page">21</span></div>
+
+  <div class="part">第三部分　室内专有部分查验（3份）</div>
+  <div class="item"><span class="num">C1</span><span class="title">室内土建部分查验单</span><span class="page">23</span></div>
+  <div class="item"><span class="num">C2</span><span class="title">室内给排水设施查验单</span><span class="page">25</span></div>
+  <div class="item"><span class="num">C3</span><span class="title">室内电气设施查验单</span><span class="page">27</span></div>
+  <div class="item"><span class="num">C4</span><span class="title">可租房源（厂房/办公）查验单</span><span class="page">29</span></div>
+
+  <div class="part">第四部分　资料与物品移交（4份）</div>
+  <div class="item"><span class="num">D1</span><span class="title">技术资料移交清单</span><span class="page">31</span></div>
+  <div class="item"><span class="num">D2</span><span class="title">钥匙及门禁移交清单</span><span class="page">33</span></div>
+  <div class="item"><span class="num">D3</span><span class="title">设施设备台账（汇总）</span><span class="page">35</span></div>
+  <div class="item"><span class="num">D4</span><span class="title">问题汇总及整改跟踪表</span><span class="page">37</span></div>
+
+  <div class="divider" style="margin-top:8mm;"></div>
+  <p style="text-align:center;color:#666;">共 19 份表单</p>
+</div>
+
+<!-- ============================================================ -->
+<!-- A1: 变配电室查验单 -->
+<!-- ============================================================ -->
+<div class="form">
+  <div class="form-no">A1 — 设备机房查验</div>
+  <h1>变配电室查验单</h1>
+
+  <div class="info-grid">
+    <div class="info-item"><span class="info-label">项目名称：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">查验日期：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">机房位置：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">建筑面积：</span><span class="info-value">㎡</span></div>
+    <div class="info-item"><span class="info-label">变压器数量：</span><span class="info-value">台，总容量________kVA</span></div>
+    <div class="info-item"><span class="info-label">高压柜/低压柜：</span><span class="info-value">高压____面 / 低压____面</span></div>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th class="col-no">序号</th><th class="col-item">检查项目</th><th class="col-standard">检查标准</th><th class="col-result">检查结果</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="center">1</td><td>变压器</td><td>运行正常，无异常声响及振动，温控仪指示正常，绕组温度在允许范围内，冷却风扇运转正常</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">2</td><td>高压开关柜</td><td>指示仪表正常，分合闸指示正确，联锁机构可靠，五防功能齐全，柜内清洁无杂物</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">3</td><td>低压配电柜</td><td>仪表指示正常，开关操作灵活，接线牢固，相序标识清晰，抽屉式开关推拉顺畅</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">4</td><td>电容补偿柜</td><td>功率因数≥0.9，电容器无鼓包、无渗漏、无异常发热，自动投切正常</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">5</td><td>直流屏/蓄电池</td><td>电压正常，电池无鼓包、无漏液，充电模块工作正常，绝缘监测正常</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">6</td><td>模拟屏/系统图</td><td>模拟屏与实际运行方式相符，供配电系统图上墙张贴，一次系统图清晰完整</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">7</td><td>电缆沟/桥架</td><td>电缆沟防水完好，无积水；电缆敷设在支架上，排列整齐；沟盖板完整，电缆挂牌标识清晰</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">8</td><td>接地系统</td><td>接地干线连接可靠，接地电阻符合设计要求（≤4Ω），等电位连接完好，接地标识清晰</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">9</td><td>绝缘安全工具</td><td>绝缘手套、绝缘靴、验电器、接地线、绝缘拉杆等配备齐全，在检定有效期内，存放规范</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">10</td><td>环境与照明</td><td>温度＜40℃，湿度＜80%，通风良好；应急照明完好率100%，切换正常；地面铺设防滑地砖</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">11</td><td>消防器材</td><td>二氧化碳或干粉灭火器配置到位，数量合规，在有效期内；灭火毯、消防沙箱齐全</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">12</td><td>防小动物设施</td><td>挡鼠板完好（高度≥40cm），纱窗完好无损，电缆进出孔封堵严密</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">13</td><td>标识及线路</td><td>所有线路、开关标识清楚，配电柜前后均有名称编号标识，操作通道畅通</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+    </tbody>
+  </table>
+
+  <div class="remarks-box"><div class="label">问题描述（不合格项汇总）：</div><div style="min-height:20mm;border-bottom:1px dashed #ccc;margin-bottom:3mm;"></div><div class="label">查验意见：</div></div>
+  <div class="photo-label">现场照片（□已拍照 ____ 张，编号：____________）</div>
+
+  <div class="signature-block">
+    <div class="sig-item"><div class="sig-label">移交方（甲方）签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+    <div class="sig-item"><div class="sig-label">接收方（乙方）签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+    <div class="sig-item"><div class="sig-label">查验人签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+  </div>
+  <div class="footer-note">GVIP嘉平二工业区 · 物业承接查验表单册 · A1 变配电室查验单</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- A2: 发电机房查验单 -->
+<!-- ============================================================ -->
+<div class="form">
+  <div class="form-no">A2 — 设备机房查验</div>
+  <h1>发电机房查验单</h1>
+
+  <div class="info-grid">
+    <div class="info-item"><span class="info-label">项目名称：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">查验日期：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">机房位置：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">建筑面积：</span><span class="info-value">㎡</span></div>
+    <div class="info-item"><span class="info-label">发电机组型号：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">额定功率/数量：</span><span class="info-value">________kW / ____台</span></div>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th class="col-no">序号</th><th class="col-item">检查项目</th><th class="col-standard">检查标准</th><th class="col-result">检查结果</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="center">1</td><td>发电机组</td><td>外观干净整洁，主机及配套设备油漆完好无残缺刮花，启动迅速（≤15秒），运行平稳无异常声响</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">2</td><td>蓄电池</td><td>蓄电池完好，电压正常，配备蓄电池充电器（浮充充电器），接线牢固无腐蚀</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">3</td><td>自动转换柜(ATS)</td><td>自动及手动转换功能正常，切换时间符合设计要求，配备备用蓄电池，指示灯指示正确</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">4</td><td>机油箱及燃油系统</td><td>油箱无渗漏，油位标识清晰可见；油箱房设防爆灯、通风良好；进油口位置合理；设≥2寸透气弯管通至地面</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">5</td><td>燃油储备</td><td>机油、润滑油配备充分，燃油储备量满足满负荷连续运转≥8小时（或合同约定时长）</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">6</td><td>排烟系统</td><td>排烟管保温完好，排烟过滤系统设自动补水装置且有水位标识，排烟不影响周边环境，取得环保合格证</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">7</td><td>通风降温</td><td>机房通风良好，进/排风口面积足够，风机运转正常，室温符合设备运行要求</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">8</td><td>降噪减震</td><td>机组减震垫安装到位，排烟管设消声器，机房墙体及门有隔音措施，噪声符合环保要求</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">9</td><td>接地与线缆</td><td>发电机组可靠接地，电缆敷设在支架上，排列整齐，挂牌标识清晰</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">10</td><td>应急照明</td><td>应急灯完好、切换正常，照度满足操作要求</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">11</td><td>消防器材</td><td>灭火器配置到位（二氧化碳或干粉），在有效期内；储油间防火措施到位</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">12</td><td>机房环境</td><td>地面铺设防滑地砖（或环氧地坪），墙面刷白，无积水无杂物，机房门锁通用</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+    </tbody>
+  </table>
+
+  <div class="remarks-box"><div class="label">问题描述（不合格项汇总）：</div><div style="min-height:20mm;border-bottom:1px dashed #ccc;margin-bottom:3mm;"></div><div class="label">查验意见：</div></div>
+  <div class="photo-label">现场照片（□已拍照 ____ 张，编号：____________）</div>
+
+  <div class="signature-block">
+    <div class="sig-item"><div class="sig-label">移交方（甲方）签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+    <div class="sig-item"><div class="sig-label">接收方（乙方）签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+    <div class="sig-item"><div class="sig-label">查验人签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+  </div>
+  <div class="footer-note">GVIP嘉平二工业区 · 物业承接查验表单册 · A2 发电机房查验单</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- A3: 水泵房及水箱间查验单 -->
+<!-- ============================================================ -->
+<div class="form">
+  <div class="form-no">A3 — 设备机房查验</div>
+  <h1>水泵房及水箱间查验单</h1>
+
+  <div class="info-grid">
+    <div class="info-item"><span class="info-label">项目名称：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">查验日期：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">机房位置：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">建筑面积：</span><span class="info-value">㎡</span></div>
+    <div class="info-item"><span class="info-label">生活水泵数量：</span><span class="info-value">____台　　消防主泵：____台　　稳压泵：____台</span></div>
+    <div class="info-item"><span class="info-label">生活水箱容积：</span><span class="info-value">____m³　　消防水池容积：____m³</span></div>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th class="col-no">序号</th><th class="col-item">检查项目</th><th class="col-standard">检查标准</th><th class="col-result">检查结果</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="center">1</td><td>生活水泵</td><td>运行平稳、无异常振动及噪音，泵体无渗漏，轴封密封良好，电机温升正常</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">2</td><td>生活水泵控制柜</td><td>变频器运行正常，压力设定值正确，自动恒压供水功能正常，手自动切换正常</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">3</td><td>消防主泵</td><td>运行正常，出水压力达标（满足最不利点压力），主泵/备泵自动切换正常</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">4</td><td>消防稳压泵</td><td>启停压力设定正确，无频繁启动现象（启停周期>6小时），气压罐压力正常</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">5</td><td>消防水泵控制柜</td><td>手自动切换正常，消防联动反馈信号正确，机械应急启泵功能有效</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">6</td><td>生活水箱</td><td>无渗漏，人孔盖密闭加锁，爬梯牢固，液位显示正常，溢流管口设防虫网</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">7</td><td>消防水池</td><td>水位正常（满水），补水正常（自动补水功能），无渗漏，液位报警装置正常，消防储备水量不得被动用</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">8</td><td>阀门</td><td>启闭灵活，无渗漏，阀杆密封完好，标识清晰挂牌正确（控制区域、常开/常闭状态）</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">9</td><td>压力表/真空表</td><td>指示正常，在检定有效期内，表盘清晰，安装方向便于观察</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">10</td><td>管道及支架</td><td>管道无锈蚀、无渗漏；支架牢固，间距符合规范；管道按规范刷防锈漆和表面漆；流向标识清晰</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">11</td><td>排水设施</td><td>排水沟畅通，集水井排水泵运行正常，液位自动控制正常，止回阀有效</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">12</td><td>检修吊钩</td><td>消防泵、生活泵上部安装足够承重的检修用吊钩（或行车），承重标识清晰</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">13</td><td>通风除湿</td><td>通风良好，无积水潮湿；地下泵房设机械通风，湿度符合设备运行要求</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">14</td><td>应急照明与消防</td><td>应急照明完好率100%；灭火器配置到位且在有效期内</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">15</td><td>二次供水合格证</td><td>二次供水系统具备清洗记录和二次供水合格证（如适用）</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+    </tbody>
+  </table>
+
+  <div class="remarks-box"><div class="label">问题描述（不合格项汇总）：</div><div style="min-height:20mm;border-bottom:1px dashed #ccc;margin-bottom:3mm;"></div><div class="label">查验意见：</div></div>
+  <div class="photo-label">现场照片（□已拍照 ____ 张，编号：____________）</div>
+
+  <div class="signature-block">
+    <div class="sig-item"><div class="sig-label">移交方（甲方）签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+    <div class="sig-item"><div class="sig-label">接收方（乙方）签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+    <div class="sig-item"><div class="sig-label">查验人签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+  </div>
+  <div class="footer-note">GVIP嘉平二工业区 · 物业承接查验表单册 · A3 水泵房及水箱间查验单</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- A4: 消防控制室查验单 -->
+<!-- ============================================================ -->
+<div class="form">
+  <div class="form-no">A4 — 设备机房查验</div>
+  <h1>消防控制室查验单</h1>
+
+  <div class="info-grid">
+    <div class="info-item"><span class="info-label">项目名称：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">查验日期：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">控制室位置：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">建筑面积：</span><span class="info-value">㎡</span></div>
+    <div class="info-item"><span class="info-label">消防主机型号：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">消防主机数量：</span><span class="info-value">____台　　监控主机数量：____台</span></div>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th class="col-no">序号</th><th class="col-item">检查项目</th><th class="col-standard">检查标准</th><th class="col-result">检查结果</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="center">1</td><td>消防报警主机</td><td>运行正常，无故障报警，自检功能正常，报警、故障、联动等信号指示清晰，打印机工作正常</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">2</td><td>消防联动控制盘</td><td>手动/自动切换正常，联动逻辑正确（确认火警→联动相应设备），多线控制盘操作有效</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">3</td><td>消防电话主机</td><td>通话清晰，与各分机（水泵房、风机房、电梯机房等）通话正常，总机可呼叫所有分机</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">4</td><td>消防广播系统</td><td>功放正常，话筒播音清晰，分区广播功能正常，消防应急广播与背景音乐切换正常</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">5</td><td>消防图形显示装置(CRT)</td><td>显示正确，点位信息完整，报警点位置准确标注，平面图与实际楼层一致</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">6</td><td>防火卷帘控制</td><td>手动/联动控制正常，卷帘升降平稳，下降至1.8m后延时下降功能正常，信号反馈正确</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">7</td><td>烟感/温感</td><td>按规范配置，安装位置合理，报警功能正常（抽检≥10%），无屏蔽点位</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">8</td><td>消防指示与疏散</td><td>消防指引牌数量及安装位置符合规范，疏散指示标志完好、亮度符合要求</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">9</td><td>CO₂/气体灭火系统</td><td>气瓶压力正常、在有效期内，控制系统完善可靠，报警信号传至消防主机（如有机房配置）</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">10</td><td>消防栓/灭火器</td><td>消防栓安装牢固、阀门不渗漏、锁扣完好；灭火器材按规范配置齐全、在有效期内</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">11</td><td>UPS不间断电源</td><td>切换正常，续航时间≥30分钟（含消防主机及联动设备），电池无老化</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">12</td><td>环境与照明</td><td>温度＜30℃，通风/空调正常；防静电地板完好，接地可靠；应急照明完好率100%</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">13</td><td>排烟/防烟控制</td><td>正压送风机、排烟风机远程启动正常，280℃防火阀信号反馈正常</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+    </tbody>
+  </table>
+
+  <div class="remarks-box"><div class="label">问题描述（不合格项汇总）：</div><div style="min-height:20mm;border-bottom:1px dashed #ccc;margin-bottom:3mm;"></div><div class="label">查验意见：</div></div>
+  <div class="photo-label">现场照片（□已拍照 ____ 张，编号：____________）</div>
+
+  <div class="signature-block">
+    <div class="sig-item"><div class="sig-label">移交方（甲方）签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+    <div class="sig-item"><div class="sig-label">接收方（乙方）签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+    <div class="sig-item"><div class="sig-label">查验人签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+  </div>
+  <div class="footer-note">GVIP嘉平二工业区 · 物业承接查验表单册 · A4 消防控制室查验单</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- A5: 电梯机房查验单 -->
+<!-- ============================================================ -->
+<div class="form">
+  <div class="form-no">A5 — 设备机房查验</div>
+  <h1>电梯机房查验单</h1>
+
+  <div class="info-grid">
+    <div class="info-item"><span class="info-label">项目名称：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">查验日期：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">机房位置：</span><span class="info-value">________栋/区 ________层</span></div>
+    <div class="info-item"><span class="info-label">电梯类型：</span><span class="info-value">□客梯 □货梯 □消防梯 共____台</span></div>
+    <div class="info-item"><span class="info-label">电梯编号/注册码：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">额定载重/速度：</span><span class="info-value">________kg / ________m/s</span></div>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th class="col-no">序号</th><th class="col-item">检查项目</th><th class="col-standard">检查标准</th><th class="col-result">检查结果</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="center">1</td><td>机房通道与门锁</td><td>机房通道畅通、无杂物堆堵；机房门锁通用（各机房钥匙可互通），门外设警示标识</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">2</td><td>曳引机</td><td>运行平稳、无异常振动及噪音，润滑油位正常（在油镜中线），减速箱无渗漏，制动器动作灵活可靠</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">3</td><td>控制屏柜</td><td>运行参数指示正常，变频器工作正常，接线整齐牢固，柜内清洁，柜门关闭良好</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">4</td><td>钢丝绳</td><td>钢丝绳标识清晰，无断丝、断股、严重磨损或锈蚀，张力均匀，绳头组合牢固</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">5</td><td>限速器</td><td>动作正常，封记完好，在检定有效期内，联动试验功能正常</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">6</td><td>层门联锁</td><td>各层层门电气联锁有效（任一楼层门打开时电梯不能运行），层门自闭功能正常</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">7</td><td>轿厢</td><td>轿厢无划伤，通风照明完好，紧急照明有效，对讲/报警装置与值班室通话清晰</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">8</td><td>超载装置</td><td>超载保护功能正常，超载时声光报警正确，电梯不能关门启动</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">9</td><td>底坑</td><td>底坑平整、整洁，无积水渗漏，排水系统有效（设集水井或排水泵），急停开关及照明有效</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">10</td><td>通风降温</td><td>机房通风降温设备正常（空调或风机），环境温度5~40℃，设百叶窗通风</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">11</td><td>应急照明及消防</td><td>应急灯完好；灭火器配置到位且在有效期内</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">12</td><td>文件与标识</td><td>电梯准用证/合格证在有效期内，救援标识张贴清晰，平层标识图齐全，机房内悬挂操作规程</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+    </tbody>
+  </table>
+
+  <div class="remarks-box"><div class="label">问题描述（不合格项汇总）：</div><div style="min-height:20mm;border-bottom:1px dashed #ccc;margin-bottom:3mm;"></div><div class="label">查验意见：</div></div>
+  <div class="photo-label">现场照片（□已拍照 ____ 张，编号：____________）</div>
+
+  <div class="signature-block">
+    <div class="sig-item"><div class="sig-label">移交方（甲方）签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+    <div class="sig-item"><div class="sig-label">接收方（乙方）签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+    <div class="sig-item"><div class="sig-label">查验人签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+  </div>
+  <div class="footer-note">GVIP嘉平二工业区 · 物业承接查验表单册 · A5 电梯机房查验单</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- B1: 监控室及安防系统查验单 -->
+<!-- ============================================================ -->
+<div class="form">
+  <div class="form-no">B1 — 公共区域及设施查验</div>
+  <h1>监控室及安防系统查验单</h1>
+
+  <div class="info-grid">
+    <div class="info-item"><span class="info-label">项目名称：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">查验日期：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">监控室位置：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">建筑面积：</span><span class="info-value">㎡</span></div>
+    <div class="info-item"><span class="info-label">监视器数量：</span><span class="info-value">____台　　摄像头总数：____个</span></div>
+    <div class="info-item"><span class="info-label">硬盘录像机型号：</span><span class="info-value"></span></div>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th class="col-no">序号</th><th class="col-item">检查项目</th><th class="col-standard">检查标准</th><th class="col-result">检查结果</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="center">1</td><td>监视器/显示器</td><td>图像清晰、色彩正常、无坏点，分割显示功能正常，轮巡切换正常</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">2</td><td>硬盘录像机(NVR/DVR)</td><td>录像存储容量满足所有摄像头连续录像≥30天，回放功能正常，时间同步准确</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">3</td><td>摄像头</td><td>全部摄像头图像清晰稳定（白天/夜间），覆盖范围无死角，安装牢固，防尘防水符合安装环境要求</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">4</td><td>UPS不间断电源</td><td>切换正常，续航时间≥30分钟，电池无老化，带载能力满足监控系统总功率</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">5</td><td>门禁系统</td><td>读卡器、电控锁工作正常，门禁控制器通讯正常，消防联动开门功能有效</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">6</td><td>周界报警系统</td><td>红外对射/电子围栏安装完好，报警信号传至监控中心，与监控联动功能正常</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">7</td><td>系统软件</td><td>系统软件设置进入密码，具备操作员权限等级功能；已备份安装软件一套</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">8</td><td>防静电地板</td><td>完好、接地可靠，无破损翘起</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">9</td><td>空调/通风</td><td>温度＜30℃，通风良好，空调运行正常</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">10</td><td>应急照明及消防</td><td>应急照明完好率100%；灭火器配置到位且在有效期内</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+    </tbody>
+  </table>
+
+  <div class="remarks-box"><div class="label">问题描述（不合格项汇总）：</div><div style="min-height:20mm;border-bottom:1px dashed #ccc;margin-bottom:3mm;"></div><div class="label">查验意见：</div></div>
+  <div class="photo-label">现场照片（□已拍照 ____ 张，编号：____________）</div>
+
+  <div class="signature-block">
+    <div class="sig-item"><div class="sig-label">移交方（甲方）签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+    <div class="sig-item"><div class="sig-label">接收方（乙方）签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+    <div class="sig-item"><div class="sig-label">查验人签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+  </div>
+  <div class="footer-note">GVIP嘉平二工业区 · 物业承接查验表单册 · B1 监控室及安防系统查验单</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- B2: 园区道路及停车场查验单 -->
+<!-- ============================================================ -->
+<div class="form">
+  <div class="form-no">B2 — 公共区域及设施查验</div>
+  <h1>园区道路及停车场查验单</h1>
+
+  <div class="info-grid">
+    <div class="info-item"><span class="info-label">项目名称：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">查验日期：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">查验区域：</span><span class="info-value">□一期 □二期 □全部</span></div>
+    <div class="info-item"><span class="info-label">主干道总长：</span><span class="info-value">约________m</span></div>
+    <div class="info-item"><span class="info-label">停车场面积/车位数：</span><span class="info-value">约________㎡ / ________个</span></div>
+    <div class="info-item"><span class="info-label">减速带数量：</span><span class="info-value">________处</span></div>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th class="col-no">序号</th><th class="col-item">检查项目</th><th class="col-standard">检查标准</th><th class="col-result">检查结果</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="center">1</td><td>主干道</td><td>路面平整、无坑洼、无大面积裂缝，混凝土路面无起砂脱皮，标线清晰完好</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">2</td><td>支路/人行道</td><td>铺装完好、无松动翘起，路面砖为防滑砖，平整无积水</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">3</td><td>减速坡</td><td>主要道路设置混凝土减速坡，大厦/厂房主要道路设塑胶减速坡，安装牢固、高度符合规范</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">4</td><td>停车场地面</td><td>平整、不反砂、无破损，划线清晰，车位编号标识清楚</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">5</td><td>停车设施</td><td>车位划线规范，导向标识清晰，挡车器完好，反光镜配置到位，监控镜头覆盖</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">6</td><td>排水系统</td><td>雨水井、排水沟畅通无堵塞，沟盖板完好无破损，重型车道沟渠井盖具有防震功能，标识与实际功能吻合</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">7</td><td>道路照明</td><td>路灯安装牢固、灯杆垂直，照明覆盖全面，开关控制正常，灯具完好率≥98%</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">8</td><td>道路与绿化隔离</td><td>道路与绿化带隔离完好，路缘石无破损</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+    </tbody>
+  </table>
+
+  <div class="remarks-box"><div class="label">问题描述（不合格项汇总）：</div><div style="min-height:20mm;border-bottom:1px dashed #ccc;margin-bottom:3mm;"></div><div class="label">查验意见：</div></div>
+  <div class="photo-label">现场照片（□已拍照 ____ 张，编号：____________）</div>
+
+  <div class="signature-block">
+    <div class="sig-item"><div class="sig-label">移交方（甲方）签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+    <div class="sig-item"><div class="sig-label">接收方（乙方）签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+    <div class="sig-item"><div class="sig-label">查验人签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+  </div>
+  <div class="footer-note">GVIP嘉平二工业区 · 物业承接查验表单册 · B2 园区道路及停车场查验单</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- B3: 绿化景观查验单 -->
+<!-- ============================================================ -->
+<div class="form">
+  <div class="form-no">B3 — 公共区域及设施查验</div>
+  <h1>绿化景观查验单</h1>
+
+  <div class="info-grid">
+    <div class="info-item"><span class="info-label">项目名称：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">查验日期：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">查验区域：</span><span class="info-value">□一期 □二期 □全部</span></div>
+    <div class="info-item"><span class="info-label">绿化总面积：</span><span class="info-value">约________㎡</span></div>
+    <div class="info-item"><span class="info-label">乔木/灌木数量：</span><span class="info-value">乔木约____棵，灌木约____株</span></div>
+    <div class="info-item"><span class="info-label">灌溉方式：</span><span class="info-value">□自动喷灌 □手动浇灌 □滴灌</span></div>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th class="col-no">序号</th><th class="col-item">检查项目</th><th class="col-standard">检查标准</th><th class="col-result">检查结果</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="center">1</td><td>乔木</td><td>成活率≥95%，无明显病虫害，支撑牢固，树形完整，无枯死枝干</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">2</td><td>灌木/绿篱</td><td>生长良好、无大面积枯黄，修剪整齐，无严重病虫害</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">3</td><td>草坪</td><td>覆盖良好、无明显斑秃，无大面积枯黄或杂草丛生</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">4</td><td>灌溉系统</td><td>喷头完好、角度正确，阀门启闭正常、无跑冒滴漏，定时控制器工作正常（如适用）</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">5</td><td>花池/花槽/花盆</td><td>排水畅通不积水，土壤无板结，花池结构完好无破损</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">6</td><td>景观小品</td><td>座椅、花坛、雕塑完好无破损，安装牢固，表面清洁</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">7</td><td>信息栏/标识牌</td><td>小区平面位置图设置合理，植物铭牌完整</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+    </tbody>
+  </table>
+
+  <div class="remarks-box"><div class="label">问题描述（不合格项汇总）：</div><div style="min-height:20mm;border-bottom:1px dashed #ccc;margin-bottom:3mm;"></div><div class="label">查验意见：</div></div>
+  <div class="photo-label">现场照片（□已拍照 ____ 张，编号：____________）</div>
+
+  <div class="signature-block">
+    <div class="sig-item"><div class="sig-label">移交方（甲方）签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+    <div class="sig-item"><div class="sig-label">接收方（乙方）签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+    <div class="sig-item"><div class="sig-label">查验人签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+  </div>
+  <div class="footer-note">GVIP嘉平二工业区 · 物业承接查验表单册 · B3 绿化景观查验单</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- B4: 围墙及大门查验单 -->
+<!-- ============================================================ -->
+<div class="form">
+  <div class="form-no">B4 — 公共区域及设施查验</div>
+  <h1>围墙及大门查验单</h1>
+
+  <div class="info-grid">
+    <div class="info-item"><span class="info-label">项目名称：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">查验日期：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">查验区域：</span><span class="info-value">□一期 □二期 □全部</span></div>
+    <div class="info-item"><span class="info-label">围墙总长：</span><span class="info-value">约________m</span></div>
+    <div class="info-item"><span class="info-label">主入口数量：</span><span class="info-value">________个　　侧门/消防门：________个</span></div>
+    <div class="info-item"><span class="info-label">围墙类型：</span><span class="info-value">□砖砌 □铁艺围栏 □实体墙 □组合</span></div>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th class="col-no">序号</th><th class="col-item">检查项目</th><th class="col-standard">检查标准</th><th class="col-result">检查结果</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="center">1</td><td>围墙结构</td><td>结构牢固、无倾斜、无裂缝，墙面完好无破损，粉饰平整、颜色一致、无流坠</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">2</td><td>围栏/护墙</td><td>安装牢固，焊点平滑，无脱漆、锈蚀、变形</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">3</td><td>主入口大门</td><td>启闭灵活、无卡阻，门体无变形锈蚀，门禁联动正常（道闸/车牌识别/遥控），油漆光滑无色差</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">4</td><td>侧门/消防通道门</td><td>完好无损坏，开启方向正确（向外疏散），无堵塞锁闭，紧急时可从内方便开启</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">5</td><td>门卫室/岗亭</td><td>面积满足需求，水电到位，通讯网络正常，视野开阔，空调/风扇正常</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">6</td><td>防爬/防盗设施</td><td>围墙顶部防爬刺/铁丝网完好，监控覆盖围墙周边</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+    </tbody>
+  </table>
+
+  <div class="remarks-box"><div class="label">问题描述（不合格项汇总）：</div><div style="min-height:20mm;border-bottom:1px dashed #ccc;margin-bottom:3mm;"></div><div class="label">查验意见：</div></div>
+  <div class="photo-label">现场照片（□已拍照 ____ 张，编号：____________）</div>
+
+  <div class="signature-block">
+    <div class="sig-item"><div class="sig-label">移交方（甲方）签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+    <div class="sig-item"><div class="sig-label">接收方（乙方）签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+    <div class="sig-item"><div class="sig-label">查验人签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+  </div>
+  <div class="footer-note">GVIP嘉平二工业区 · 物业承接查验表单册 · B4 围墙及大门查验单</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- B5: 物业用房查验单 -->
+<!-- ============================================================ -->
+<div class="form">
+  <div class="form-no">B5 — 公共区域及设施查验</div>
+  <h1>物业用房查验单</h1>
+
+  <div class="info-grid">
+    <div class="info-item"><span class="info-label">项目名称：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">查验日期：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">用房类型：</span><span class="info-value">□管理办公室 □保安值班室 □保洁工具间 □员工宿舍 □食堂 □仓库</span></div>
+    <div class="info-item"><span class="info-label">位置/编号：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">建筑面积：</span><span class="info-value">㎡</span></div>
+    <div class="info-item"><span class="info-label">楼层/朝向：</span><span class="info-value"></span></div>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th class="col-no">序号</th><th class="col-item">检查项目</th><th class="col-standard">检查标准</th><th class="col-result">检查结果</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="center">1</td><td>面积</td><td>符合合同约定面积，功能分区合理</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">2</td><td>墙面/地面/天花</td><td>墙面平整无裂缝渗水，地面平整不反砂，天花无渗漏痕迹，涂料均匀</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">3</td><td>门窗</td><td>门窗完好、启闭灵活、锁具正常，玻璃无破损，密封条完好</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">4</td><td>供水</td><td>自来水接通，水龙头完好，排水畅通</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">5</td><td>供电</td><td>电力接通，配电箱完好，开关插座通电正常，照明灯具正常</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">6</td><td>通风/空调</td><td>自然通风良好，空调预留孔/室外机平台合规；如为地下用房，有通风装置或直通地面透气窗</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">7</td><td>通讯/网络</td><td>电话线/网线接口到位，信号正常</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">8</td><td>消防</td><td>灭火器配置到位，疏散指示标志完好（如适用）</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">9</td><td>卫生设施</td><td>卫生间/洗手间设施完好，上下水通畅（如适用）</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">10</td><td>排烟/排水</td><td>如为食堂，有排烟设施和排水设施；如为保洁工具间，给排水到位、通风良好</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+    </tbody>
+  </table>
+
+  <div class="remarks-box"><div class="label">问题描述（不合格项汇总）：</div><div style="min-height:20mm;border-bottom:1px dashed #ccc;margin-bottom:3mm;"></div><div class="label">查验意见：</div></div>
+  <div class="photo-label">现场照片（□已拍照 ____ 张，编号：____________）</div>
+
+  <div class="signature-block">
+    <div class="sig-item"><div class="sig-label">移交方（甲方）签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+    <div class="sig-item"><div class="sig-label">接收方（乙方）签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+    <div class="sig-item"><div class="sig-label">查验人签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+  </div>
+  <div class="footer-note">GVIP嘉平二工业区 · 物业承接查验表单册 · B5 物业用房查验单</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- B6: 给排水外网及消防管网查验单 -->
+<!-- ============================================================ -->
+<div class="form">
+  <div class="form-no">B6 — 公共区域及设施查验</div>
+  <h1>给排水外网及消防管网查验单</h1>
+
+  <div class="info-grid">
+    <div class="info-item"><span class="info-label">项目名称：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">查验日期：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">查验区域：</span><span class="info-value">□一期 □二期 □全部</span></div>
+    <div class="info-item"><span class="info-label">供水方式：</span><span class="info-value">□市政直供 □变频供水 □高位水箱 □组合</span></div>
+    <div class="info-item"><span class="info-label">排水方式：</span><span class="info-value">□市政管网 □自建污水处理站 □组合</span></div>
+    <div class="info-item"><span class="info-label">化粪池/隔油池数量：</span><span class="info-value">化粪池____座，隔油池____座</span></div>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th class="col-no">序号</th><th class="col-item">检查项目</th><th class="col-standard">检查标准</th><th class="col-result">检查结果</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="center">1</td><td>供水管网</td><td>管道安装垂直，固定牢固；供水总阀开关正常、无渗漏；水表完好无损伤</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">2</td><td>排水管网</td><td>排水畅通无堵塞，检查井无淤积，井盖完好标识清晰，排水坡度正确</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">3</td><td>雨水系统</td><td>雨水口/雨水井无堵塞，雨水管完好，天面/路面排水顺畅不积水</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">4</td><td>污水系统</td><td>污水管道畅通，化粪池无渗漏、通气正常，污水处理设施运行正常</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">5</td><td>室外消火栓</td><td>安装牢固、阀门启闭灵活无渗漏，外观完好，标识清晰，水压水量满足消防要求</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">6</td><td>室内消火栓</td><td>安装牢固、阀门不渗漏、锁扣无损坏，水带水枪齐全，箱体完好，高层配置取水口</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">7</td><td>喷淋系统</td><td>喷头安装牢固、方向正确，末端试水装置正常，水力警铃正常（如适用）</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">8</td><td>管网标识</td><td>各类管网有功能标识及流向箭头，各阀门有控制范围标识挂牌</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">9</td><td>自动排气阀</td><td>消防栓系统在最高位置设置自动排气设备，功能正常</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">10</td><td>试验消火栓</td><td>天台设置试验消火栓，功能正常</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">11</td><td>管道防腐</td><td>明装管道按规范刷防锈漆和表面漆，支架无锈蚀；水管支架已做防锈处理</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+    </tbody>
+  </table>
+
+  <div class="remarks-box"><div class="label">问题描述（不合格项汇总）：</div><div style="min-height:20mm;border-bottom:1px dashed #ccc;margin-bottom:3mm;"></div><div class="label">查验意见：</div></div>
+  <div class="photo-label">现场照片（□已拍照 ____ 张，编号：____________）</div>
+
+  <div class="signature-block">
+    <div class="sig-item"><div class="sig-label">移交方（甲方）签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+    <div class="sig-item"><div class="sig-label">接收方（乙方）签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+    <div class="sig-item"><div class="sig-label">查验人签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+  </div>
+  <div class="footer-note">GVIP嘉平二工业区 · 物业承接查验表单册 · B6 给排水外网及消防管网查验单</div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- C1: 室内土建部分查验单 -->
+<!-- ============================================================ -->
+<div class="form">
+  <div class="form-no">C1 — 室内专有部分查验</div>
+  <h1>室内土建部分查验单</h1>
+
+  <div class="info-grid">
+    <div class="info-item"><span class="info-label">项目名称：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">查验日期：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">楼栋/单元：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">房号：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">建筑面积：</span><span class="info-value">㎡</span></div>
+    <div class="info-item"><span class="info-label">户型/用途：</span><span class="info-value">□厂房 □办公 □宿舍 □商铺</span></div>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th class="col-no">序号</th><th class="col-item">检查项目</th><th class="col-standard">检查标准</th><th class="col-result">检查结果</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="center">1</td><td>地面</td><td>水泥地面：表面平整、颜色均匀，无空鼓、裂缝、脱皮、麻面和起砂。瓷砖地面：铺贴平整、对缝整齐、无空鼓开裂掉角色差。地漏口低于周边地面0.5cm且收边圆滑</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">2</td><td>墙面</td><td>水泥砂浆墙面：表面平整，无空鼓裂缝脱皮麻面起砂。乳胶漆墙面：无裂缝污损返碱，光感均匀无色差。瓷片墙面：铺贴平整对缝整齐，无空鼓开裂，勾缝饱满均匀</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">3</td><td>天花/顶棚</td><td>毛坯天花：表面平整无空鼓裂缝。乳胶漆天花：无裂缝污损返碱，光感均匀。吊顶：安装牢固、表面平整、线脚顺直方正、无污染折裂锤伤。阴角线：线条清晰顺直、无接缝、无缺损</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">4</td><td>入户门</td><td>门扇开关平稳无噪音，与门框垂直平整密合，无变形。门锁灵活自如，门吸、门铰、猫眼等五金齐全无松脱。油漆润泽无色差、无刮花</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">5</td><td>窗户</td><td>玻璃完好无气泡波纹，打胶均匀美观、胶条无缺损；开启灵活，密封条完好；窗框无变形锈蚀；不渗漏。厨卫门框无浸水痕迹</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">6</td><td>预留孔</td><td>空调、抽油烟机、热水器预留孔无遗漏，位置靠近设备安装处，高度合理。孔口内高外低倾斜约10°，无阻隔，收边平整圆滑</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">7</td><td>预留接口</td><td>冷热水管、煤气管、空调冷凝水管预留接口位置正确、高度合理。与墙体接合处收口平整美观。冷凝水管顺水三通灌水检验不渗漏不堵塞</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">8</td><td>阳台护栏/拦板</td><td>连接牢固、焊点平滑，与墙面连接处平整美观。油漆均匀饱满、无色差龟裂脱皮、无缺损锈蚀</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">9</td><td>楼梯（如有）</td><td>踏步及扶手稳固，油漆均匀光滑无锈蚀。踏步高度宽度偏差≤15mm，防滑地砖无损坏。楼道灯、感应开关安装良好</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">10</td><td>室内清洁</td><td>室内卫生达到物业清房标准：无建筑垃圾残留，地面墙面清洁</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+    </tbody>
+  </table>
+
+  <div class="remarks-box"><div class="label">问题描述（不合格项汇总）：</div><div style="min-height:20mm;border-bottom:1px dashed #ccc;margin-bottom:3mm;"></div><div class="label">查验意见：</div></div>
+  <div class="photo-label">现场照片（□已拍照 ____ 张，编号：____________）</div>
+
+  <div class="signature-block">
+    <div class="sig-item"><div class="sig-label">移交方（甲方）签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+    <div class="sig-item"><div class="sig-label">接收方（乙方）签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+    <div class="sig-item"><div class="sig-label">查验人签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+  </div>
+  <div class="footer-note">GVIP嘉平二工业区 · 物业承接查验表单册 · C1 室内土建部分查验单</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- C2: 室内给排水设施查验单 -->
+<!-- ============================================================ -->
+<div class="form">
+  <div class="form-no">C2 — 室内专有部分查验</div>
+  <h1>室内给排水设施查验单</h1>
+
+  <div class="info-grid">
+    <div class="info-item"><span class="info-label">项目名称：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">查验日期：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">楼栋/单元：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">房号：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">给水方式：</span><span class="info-value">□市政直供 □二次供水</span></div>
+    <div class="info-item"><span class="info-label">排水方式：</span><span class="info-value">□重力排水 □压力排水</span></div>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th class="col-no">序号</th><th class="col-item">检查项目</th><th class="col-standard">检查标准</th><th class="col-result">检查结果</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="center">1</td><td>给水分户总阀</td><td>开关正常、操作灵活自如、无渗漏，位置设置合理便于操作</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">2</td><td>水表</td><td>外观无损伤，安装牢固，读数清晰，接头无渗漏</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">3</td><td>给水管道</td><td>管道安装牢固，无渗漏，管卡间距合理；明装管道有标识；水压应满足正常使用（热水器可正常点火）</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">4</td><td>排水管道</td><td>排水畅通无堵塞，管道接口无渗漏，存水弯完好，无反臭现象</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">5</td><td>地漏</td><td>地漏位置合理，排水顺畅，周边收边美观圆滑；厨卫和阳台地面有坡向地漏，排水畅通不积水</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">6</td><td>卫生洁具</td><td>洗手盆/座便器/小便器安装牢固，表面完好无破损脱瓷；存水弯无渗漏，排水畅通有吸力。角阀启闭灵活无渗漏</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">7</td><td>水龙头/花洒</td><td>安装牢固端正、开关自如，表面无损伤锈蚀；出水流速及水量正常，无滴漏现象；软管与角阀连接处无渗漏</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">8</td><td>台面/地柜</td><td>台面方正无破损污迹，周边打胶饱满均匀美观；台面与洗手盆结合处打胶无渗漏；地柜安装牢固端正</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">9</td><td>厨房设备（如有）</td><td>橱柜安装牢固端正配件齐全，台面平整光亮磨边圆滑；洗菜盆闭水器启闭灵活不渗漏，排水畅通</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">10</td><td>通风排气</td><td>排气风机逆风阀动作自如，排气管连接紧密无漏风</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">11</td><td>煤气/燃气（如有）</td><td>煤气管道安装平直牢固，穿墙处封堵完好；分户总阀开关正常，接口密封好无泄漏隐患；煤气表无损伤</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+    </tbody>
+  </table>
+
+  <div class="remarks-box"><div class="label">问题描述（不合格项汇总）：</div><div style="min-height:20mm;border-bottom:1px dashed #ccc;margin-bottom:3mm;"></div><div class="label">查验意见：</div></div>
+  <div class="photo-label">现场照片（□已拍照 ____ 张，编号：____________）</div>
+
+  <div class="signature-block">
+    <div class="sig-item"><div class="sig-label">移交方（甲方）签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+    <div class="sig-item"><div class="sig-label">接收方（乙方）签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+    <div class="sig-item"><div class="sig-label">查验人签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+  </div>
+  <div class="footer-note">GVIP嘉平二工业区 · 物业承接查验表单册 · C2 室内给排水设施查验单</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- C3: 室内电气设施查验单 -->
+<!-- ============================================================ -->
+<div class="form">
+  <div class="form-no">C3 — 室内专有部分查验</div>
+  <h1>室内电气设施查验单</h1>
+
+  <div class="info-grid">
+    <div class="info-item"><span class="info-label">项目名称：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">查验日期：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">楼栋/单元：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">房号：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">电表号：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">入户容量：</span><span class="info-value">________A / ________kW</span></div>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th class="col-no">序号</th><th class="col-item">检查项目</th><th class="col-standard">检查标准</th><th class="col-result">检查结果</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="center">1</td><td>配电箱</td><td>安装牢固、位置合理，箱体完好无锈蚀；箱内布线整齐、接线牢固；开关回路标识清楚与实际情况对应；漏电保护开关测试正常</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">2</td><td>照明灯具</td><td>灯具安装牢固无松动，表面整洁完好；开关控制正常，灯泡/灯管完好、规格型号正确；位置正确符合设计要求</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">3</td><td>开关</td><td>安装位置合理、牢固，面板完好无破损，操作顺畅，各开关对应灯具正确</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">4</td><td>插座</td><td>安装牢固、位置合理，面板完好；通电正常（建议用插座测试仪逐位检测），相线零线地线接线正确</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">5</td><td>空调插座</td><td>空调专用插座额定电流满足设备要求（≥15A），位置与空调预留孔、室外机平台对应</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">6</td><td>弱电接口</td><td>电视、电话、网络接口位置合理、安装牢固、信号正常（需运营商配合测试）</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">7</td><td>门铃/可视对讲</td><td>位置合理、安装牢固、完好无损，可视对讲图像清晰、通话正常（如适用）</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">8</td><td>居家报警系统</td><td>按设计要求完好无损，紧急按钮有效，报警信号传至监控中心（如适用）</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">9</td><td>等电位连接</td><td>卫生间等电位端子箱完好，连接可靠（如适用）</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">10</td><td>电表</td><td>每户独立电表，安装牢固，读数清晰，接线正确，铅封完好</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+    </tbody>
+  </table>
+
+  <div class="remarks-box"><div class="label">问题描述（不合格项汇总）：</div><div style="min-height:20mm;border-bottom:1px dashed #ccc;margin-bottom:3mm;"></div><div class="label">查验意见：</div></div>
+  <div class="photo-label">现场照片（□已拍照 ____ 张，编号：____________）</div>
+
+  <div class="signature-block">
+    <div class="sig-item"><div class="sig-label">移交方（甲方）签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+    <div class="sig-item"><div class="sig-label">接收方（乙方）签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+    <div class="sig-item"><div class="sig-label">查验人签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+  </div>
+  <div class="footer-note">GVIP嘉平二工业区 · 物业承接查验表单册 · C3 室内电气设施查验单</div>
+</div>
+
+<!-- ============================================================ -->
+
+<!-- ============================================================ -->
+<!-- C4: 可租房源（厂房/办公）查验单 -->
+<!-- ============================================================ -->
+<div class="form">
+  <div class="form-no">C4 — 室内专有部分查验</div>
+  <h1>可租房源（厂房/办公）查验单</h1>
+
+  <div class="info-grid">
+    <div class="info-item"><span class="info-label">项目名称：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">查验日期：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">楼栋/单元：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">房源编号：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">建筑面积：</span><span class="info-value">㎡</span></div>
+    <div class="info-item"><span class="info-label">用途：</span><span class="info-value">□厂房 □仓库 □办公 □商铺 □宿舍</span></div>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th class="col-no">序号</th><th class="col-item">检查项目</th><th class="col-standard">检查标准</th><th class="col-result">检查结果</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="center">1</td><td>卷帘门/工业门</td><td>门体无变形锈蚀，升降平稳无卡阻；手动/电动操作正常；限位器工作正常；门轨安装牢固垂直；密封条完好无缺损；安全气囊/红外线感应有效（如适用）</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">2</td><td>入户门/防火门</td><td>门扇无变形、开关平稳无噪音；门锁灵活、五金齐全无松脱；闭门器力度适中；防火门等级标识清晰、常闭功能正常</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">3</td><td>室内配电箱</td><td>安装牢固，箱体完好无锈蚀；总开关容量符合设计要求；布线整齐、接线牢固；漏电保护测试正常；回路标识清楚</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">4</td><td>室内照明</td><td>灯具安装牢固、表面整洁；开关控制正常；照度满足使用需求；工业厂房防爆灯具符合设计要求（如适用）</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">5</td><td>开关插座</td><td>安装牢固、位置合理；通电正常，接线正确（相线/零线/地线）；工业插座类型和防护等级符合设计要求</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">6</td><td>地面</td><td>水泥/环氧地坪：平整无空鼓裂缝、无起砂脱皮；按设计做耐磨/防静电/防腐处理（如适用）；排水坡度正确；地漏/排水沟畅通</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">7</td><td>墙面</td><td>平整无裂缝、无渗水痕迹；涂料均匀无返碱色差；防火墙/防火分区隔墙符合设计要求</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">8</td><td>屋顶/天花</td><td>无渗漏痕迹，天沟排水畅通；屋面板无变形损伤；采光板/通风器完好无破损（如适用）；保温层完好</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">9</td><td>窗户/通风窗</td><td>玻璃完好无破损；开启灵活；密封条完好；窗框无变形锈蚀；不渗漏</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">10</td><td>给水接口</td><td>给水管到位，阀门启闭灵活无渗漏；水表完好；供水压力满足使用需求</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">11</td><td>排水系统</td><td>排水管畅通、接口无渗漏；地漏位置合理、排水顺畅；厂房排水沟坡度正确、无堵塞；如有隔油池/沉淀池，功能正常</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">12</td><td>消防设施</td><td>喷淋头/消火栓按规范配置、安装正确；灭火器配置到位且在有效期内；烟感/温感探测器安装正确、无屏蔽点；疏散指示标志完好</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">13</td><td>通风/排烟</td><td>自然通风窗/通风器完好；如设机械通风，风机运转正常、风量达标；如设排烟系统，排烟口/排烟阀动作正常</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">14</td><td>卫生间/洗手间</td><td>洁具安装牢固、表面完好无破损；角阀启闭灵活无渗漏；排水畅通无反臭；通风良好</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">15</td><td>通讯/网络接口</td><td>弱电箱/信息箱安装到位；电话/网络接口位置合理；光纤/网线预留到位（需运营商确认信号）</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">16</td><td>空调预留</td><td>空调预留孔位置正确、高度合理；室外空调板/平台尺寸合规、承重满足要求；空调专用电源到位、满足额定电流要求</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">17</td><td>压缩空气/工艺管道（如有）</td><td>管道安装牢固、无渗漏；阀门启闭灵活；标识清晰；压力表在检定有效期内</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+      <tr><td class="center">18</td><td>结构安全</td><td>柱、梁、楼板无裂缝变形；钢结构无锈蚀、螺栓连接牢固；吊车梁/行车轨道安装符合设计要求（如适用）</td><td class="result-cell">□合格 □不合格 □甩项</td></tr>
+    </tbody>
+  </table>
+
+  <div class="remarks-box"><div class="label">问题描述（不合格项汇总）：</div><div style="min-height:20mm;border-bottom:1px dashed #ccc;margin-bottom:3mm;"></div><div class="label">查验意见：</div></div>
+  <div class="photo-label">现场照片（□已拍照 ____ 张，编号：____________）</div>
+
+  <div class="signature-block">
+    <div class="sig-item"><div class="sig-label">移交方（甲方）签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+    <div class="sig-item"><div class="sig-label">接收方（乙方）签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+    <div class="sig-item"><div class="sig-label">查验人签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+  </div>
+  <div class="footer-note">GVIP嘉平二工业区 · 物业承接查验表单册 · C4 可租房源（厂房/办公）查验单</div>
+</div>
+
+<!-- D1: 技术资料移交清单 -->
+<!-- ============================================================ -->
+<div class="form">
+  <div class="form-no">D1 — 资料与物品移交</div>
+  <h1>技术资料移交清单</h1>
+
+  <div class="info-grid">
+    <div class="info-item"><span class="info-label">项目名称：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">移交日期：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">移交方（甲方）：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">接收方（乙方）：</span><span class="info-value">瑞界物业（越南）有限公司</span></div>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th class="col-no">序号</th><th class="col-item">资料类别</th><th class="col-standard">资料名称</th><th class="col-result">移交状态</th><th class="col-remark">备注（份数/形式）</th></tr>
+    </thead>
+    <tbody>
+      <tr style="background:#eee;"><td colspan="5"><strong>一、规划及施工管理资料</strong></td></tr>
+      <tr><td class="center">1</td><td>规划许可</td><td>建设用地规划许可证 / 建设工程规划许可证</td><td class="result-cell">□已移交 □缺失</td><td></td></tr>
+      <tr><td class="center">2</td><td>施工许可</td><td>施工许可证 / 建筑执照</td><td class="result-cell">□已移交 □缺失</td><td></td></tr>
+      <tr><td class="center">3</td><td>用地/用电/用水</td><td>用水指标批文、用电指标批文及合同协议</td><td class="result-cell">□已移交 □缺失</td><td></td></tr>
+      <tr><td class="center">4</td><td>命名审批</td><td>建筑物命名、更名审批资料</td><td class="result-cell">□已移交 □缺失</td><td></td></tr>
+      <tr><td class="center">5</td><td>电表合格证</td><td>供电局提供的全部电表检验合格证</td><td class="result-cell">□已移交 □缺失</td><td></td></tr>
+
+      <tr style="background:#eee;"><td colspan="5"><strong>二、产权资料</strong></td></tr>
+      <tr><td class="center">6</td><td>产权证明</td><td>土地使用权出让证明 / 土地界桩放点报告</td><td class="result-cell">□已移交 □缺失</td><td></td></tr>
+      <tr><td class="center">7</td><td>产权清册</td><td>房屋产权清册 / 配套设施设备及管理用房产权证明</td><td class="result-cell">□已移交 □缺失</td><td></td></tr>
+
+      <tr style="background:#eee;"><td colspan="5"><strong>三、竣工图及技术资料</strong></td></tr>
+      <tr><td class="center">8</td><td>竣工总图</td><td>竣工总平面图 / 小区规划图</td><td class="result-cell">□已移交 □缺失</td><td></td></tr>
+      <tr><td class="center">9</td><td>建筑竣工图</td><td>单体建筑竣工图 / 单体结构竣工图</td><td class="result-cell">□已移交 □缺失</td><td></td></tr>
+      <tr><td class="center">10</td><td>设备竣工图</td><td>单体设备竣工图 / 给排水竣工图 / 电气竣工图</td><td class="result-cell">□已移交 □缺失</td><td></td></tr>
+      <tr><td class="center">11</td><td>室外管网图</td><td>室外管网竣工图 / 道路及停车场竣工图</td><td class="result-cell">□已移交 □缺失</td><td></td></tr>
+      <tr><td class="center">12</td><td>绿化竣工图</td><td>绿化竣工图</td><td class="result-cell">□已移交 □缺失</td><td></td></tr>
+      <tr><td class="center">13</td><td>地质勘察</td><td>地质勘察报告</td><td class="result-cell">□已移交 □缺失</td><td></td></tr>
+      <tr><td class="center">14</td><td>变更/核定</td><td>图纸会审记录 / 工程设计变更通知及技术核定单</td><td class="result-cell">□已移交 □缺失</td><td></td></tr>
+      <tr><td class="center">15</td><td>隐蔽工程</td><td>隐蔽工程签证及竣工验收合格证明</td><td class="result-cell">□已移交 □缺失</td><td></td></tr>
+      <tr><td class="center">16</td><td>沉降观测</td><td>沉降观察记录</td><td class="result-cell">□已移交 □缺失</td><td></td></tr>
+
+      <tr style="background:#eee;"><td colspan="5"><strong>四、政府验收合格证明</strong></td></tr>
+      <tr><td class="center">17</td><td>竣工验收</td><td>工程竣工验收备案证明 / 工程规划验收合格证明</td><td class="result-cell">□已移交 □缺失</td><td></td></tr>
+      <tr><td class="center">18</td><td>消防验收</td><td>消防验收合格证明</td><td class="result-cell">□已移交 □缺失</td><td></td></tr>
+      <tr><td class="center">19</td><td>环保验收</td><td>环保达标验收合格证明</td><td class="result-cell">□已移交 □缺失</td><td></td></tr>
+      <tr><td class="center">20</td><td>电梯准用</td><td>电梯（扶梯）合格证明和准用文件</td><td class="result-cell">□已移交 □缺失</td><td></td></tr>
+      <tr><td class="center">21</td><td>民防/燃气</td><td>民防工程竣工验收合格证明 / 燃气工程竣工验收合格证明</td><td class="result-cell">□已移交 □缺失</td><td></td></tr>
+
+      <tr style="background:#eee;"><td colspan="5"><strong>五、设备资料</strong></td></tr>
+      <tr><td class="center">22</td><td>设备合同</td><td>所有设备订货合同、合格证、随机使用说明书、检验报告、随机工具清单</td><td class="result-cell">□已移交 □缺失</td><td></td></tr>
+      <tr><td class="center">23</td><td>设备安装记录</td><td>所有设施设备安装、测试、验收记录</td><td class="result-cell">□已移交 □缺失</td><td></td></tr>
+      <tr><td class="center">24</td><td>供水供电合同</td><td>水电供应合同、协议或批准文件</td><td class="result-cell">□已移交 □缺失</td><td></td></tr>
+
+      <tr style="background:#eee;"><td colspan="5"><strong>六、质量保证及使用文件</strong></td></tr>
+      <tr><td class="center">25</td><td>材料质保</td><td>钢材、水泥等主要材料质量保证书 / 新材料及构配件鉴定合格证书</td><td class="result-cell">□已移交 □缺失</td><td></td></tr>
+      <tr><td class="center">26</td><td>试压报告</td><td>砂浆、混凝土试块试压报告</td><td class="result-cell">□已移交 □缺失</td><td></td></tr>
+      <tr><td class="center">27</td><td>质保书/说明书</td><td>住宅质量保证书 / 住宅使用说明书</td><td class="result-cell">□已移交 □缺失</td><td></td></tr>
+      <tr><td class="center">28</td><td>户型/水电图</td><td>各户型平面图、水电线路图</td><td class="result-cell">□已移交 □缺失</td><td></td></tr>
+      <tr><td class="center">29</td><td>售楼/规划</td><td>各期售楼资料及规划要点</td><td class="result-cell">□已移交 □缺失</td><td></td></tr>
+      <tr><td class="center">30</td><td>设备清单</td><td>建筑物、场地、设施设备清单（含规格型号、数量、安装位置）</td><td class="result-cell">□已移交 □缺失</td><td></td></tr>
+    </tbody>
+  </table>
+
+  <div class="remarks-box" style="min-height:50mm;"><div class="label">移交说明（资料存放地点、电子版/纸质版、缺项原因及补交时限）：</div></div>
+
+  <div class="signature-block">
+    <div class="sig-item"><div class="sig-label">移交方（甲方）签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+    <div class="sig-item"><div class="sig-label">接收方（乙方）签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+    <div class="sig-item"><div class="sig-label">监交人签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+  </div>
+  <div class="footer-note">GVIP嘉平二工业区 · 物业承接查验表单册 · D1 技术资料移交清单</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- D2: 钥匙及门禁移交清单 -->
+<!-- ============================================================ -->
+<div class="form">
+  <div class="form-no">D2 — 资料与物品移交</div>
+  <h1>钥匙及门禁移交清单</h1>
+
+  <div class="info-grid">
+    <div class="info-item"><span class="info-label">项目名称：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">移交日期：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">移交方（甲方）：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">接收方（乙方）：</span><span class="info-value">瑞界物业（越南）有限公司</span></div>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th>序号</th><th>钥匙/门禁编号</th><th>对应位置</th><th>类型</th><th>数量（把/张）</th><th>状态</th><th>备注</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="center">1</td><td></td><td></td><td>□门锁 □配电柜 □消防栓 □设备柜 □管道井 □电梯机房 □其他____</td><td></td><td>□完好 □有损</td><td></td></tr>
+      <tr><td class="center">2</td><td></td><td></td><td>□门锁 □配电柜 □消防栓 □设备柜 □管道井 □电梯机房 □其他____</td><td></td><td>□完好 □有损</td><td></td></tr>
+      <tr><td class="center">3</td><td></td><td></td><td>□门锁 □配电柜 □消防栓 □设备柜 □管道井 □电梯机房 □其他____</td><td></td><td>□完好 □有损</td><td></td></tr>
+      <tr><td class="center">4</td><td></td><td></td><td>□门锁 □配电柜 □消防栓 □设备柜 □管道井 □电梯机房 □其他____</td><td></td><td>□完好 □有损</td><td></td></tr>
+      <tr><td class="center">5</td><td></td><td></td><td>□门锁 □配电柜 □消防栓 □设备柜 □管道井 □电梯机房 □其他____</td><td></td><td>□完好 □有损</td><td></td></tr>
+      <tr><td class="center">6</td><td></td><td></td><td>□门锁 □配电柜 □消防栓 □设备柜 □管道井 □电梯机房 □其他____</td><td></td><td>□完好 □有损</td><td></td></tr>
+      <tr><td class="center">7</td><td></td><td></td><td>□门锁 □配电柜 □消防栓 □设备柜 □管道井 □电梯机房 □其他____</td><td></td><td>□完好 □有损</td><td></td></tr>
+      <tr><td class="center">8</td><td></td><td></td><td>□门锁 □配电柜 □消防栓 □设备柜 □管道井 □电梯机房 □其他____</td><td></td><td>□完好 □有损</td><td></td></tr>
+      <tr><td class="center">9</td><td></td><td></td><td>□门锁 □配电柜 □消防栓 □设备柜 □管道井 □电梯机房 □其他____</td><td></td><td>□完好 □有损</td><td></td></tr>
+      <tr><td class="center">10</td><td></td><td></td><td>□门锁 □配电柜 □消防栓 □设备柜 □管道井 □电梯机房 □其他____</td><td></td><td>□完好 □有损</td><td></td></tr>
+      <tr><td class="center">11</td><td></td><td></td><td>□门锁 □配电柜 □消防栓 □设备柜 □管道井 □电梯机房 □其他____</td><td></td><td>□完好 □有损</td><td></td></tr>
+      <tr><td class="center">12</td><td></td><td></td><td>□门锁 □配电柜 □消防栓 □设备柜 □管道井 □电梯机房 □其他____</td><td></td><td>□完好 □有损</td><td></td></tr>
+      <tr><td class="center">13</td><td></td><td></td><td>□门锁 □配电柜 □消防栓 □设备柜 □管道井 □电梯机房 □其他____</td><td></td><td>□完好 □有损</td><td></td></tr>
+      <tr><td class="center">14</td><td></td><td></td><td>□门锁 □配电柜 □消防栓 □设备柜 □管道井 □电梯机房 □其他____</td><td></td><td>□完好 □有损</td><td></td></tr>
+      <tr><td class="center">15</td><td></td><td></td><td>□门锁 □配电柜 □消防栓 □设备柜 □管道井 □电梯机房 □其他____</td><td></td><td>□完好 □有损</td><td></td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:9px;color:#666;margin:1mm 0;">（行数不够可续页，每页均需签字）</p>
+
+  <div class="remarks-box" style="min-height:35mm;"><div class="label">问题描述（不合格项汇总）：</div><div style="min-height:15mm;border-bottom:1px dashed #ccc;margin-bottom:3mm;"></div><div class="label">移交说明（缺项、损坏、特殊钥匙等）：</div></div>
+
+  <div class="signature-block">
+    <div class="sig-item"><div class="sig-label">移交方（甲方）签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+    <div class="sig-item"><div class="sig-label">接收方（乙方）签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+    <div class="sig-item"><div class="sig-label">监交人签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+  </div>
+  <div class="footer-note">GVIP嘉平二工业区 · 物业承接查验表单册 · D2 钥匙及门禁移交清单</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- D3: 设施设备台账（汇总） -->
+<!-- ============================================================ -->
+<div class="form">
+  <div class="form-no">D3 — 资料与物品移交</div>
+  <h1>设施设备台账（汇总）</h1>
+
+  <div class="info-grid">
+    <div class="info-item"><span class="info-label">项目名称：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">编制日期：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">编制人：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">版本号：</span><span class="info-value">V1.0</span></div>
+  </div>
+
+  <p style="margin:2mm 0;font-size:10px;">说明：本台账根据各设备机房查验单汇总而成，与各机房查验单配套使用，用于建立设备初始档案。</p>
+
+  <table>
+    <thead>
+      <tr><th>序号</th><th>设备名称</th><th>型号/规格</th><th>数量</th><th>安装位置</th><th>品牌/厂家</th><th>出厂编号</th><th>查验结果</th><th>对应表单</th></tr>
+    </thead>
+    <tbody>
+      <tr style="background:#eee;"><td colspan="9"><strong>一、变配电系统</strong></td></tr>
+      <tr><td class="center">1</td><td>变压器</td><td></td><td></td><td></td><td></td><td></td><td></td><td>A1</td></tr>
+      <tr><td class="center">2</td><td>高压开关柜</td><td></td><td></td><td></td><td></td><td></td><td></td><td>A1</td></tr>
+      <tr><td class="center">3</td><td>低压配电柜</td><td></td><td></td><td></td><td></td><td></td><td></td><td>A1</td></tr>
+      <tr><td class="center">4</td><td>电容补偿柜</td><td></td><td></td><td></td><td></td><td></td><td></td><td>A1</td></tr>
+      <tr><td class="center">5</td><td>直流屏</td><td></td><td></td><td></td><td></td><td></td><td></td><td>A1</td></tr>
+      <tr style="background:#eee;"><td colspan="9"><strong>二、应急发电系统</strong></td></tr>
+      <tr><td class="center">6</td><td>柴油发电机组</td><td></td><td></td><td></td><td></td><td></td><td></td><td>A2</td></tr>
+      <tr><td class="center">7</td><td>ATS自动转换柜</td><td></td><td></td><td></td><td></td><td></td><td></td><td>A2</td></tr>
+      <tr style="background:#eee;"><td colspan="9"><strong>三、给排水系统</strong></td></tr>
+      <tr><td class="center">8</td><td>生活水泵</td><td></td><td></td><td></td><td></td><td></td><td></td><td>A3</td></tr>
+      <tr><td class="center">9</td><td>消防主泵</td><td></td><td></td><td></td><td></td><td></td><td></td><td>A3</td></tr>
+      <tr><td class="center">10</td><td>消防稳压泵</td><td></td><td></td><td></td><td></td><td></td><td></td><td>A3</td></tr>
+      <tr><td class="center">11</td><td>生活水泵控制柜</td><td></td><td></td><td></td><td></td><td></td><td></td><td>A3</td></tr>
+      <tr><td class="center">12</td><td>消防水泵控制柜</td><td></td><td></td><td></td><td></td><td></td><td></td><td>A3</td></tr>
+      <tr><td class="center">13</td><td>生活水箱</td><td></td><td></td><td></td><td></td><td></td><td></td><td>A3</td></tr>
+      <tr><td class="center">14</td><td>消防水池</td><td></td><td></td><td></td><td></td><td></td><td></td><td>A3</td></tr>
+      <tr style="background:#eee;"><td colspan="9"><strong>四、消防系统</strong></td></tr>
+      <tr><td class="center">15</td><td>消防报警主机</td><td></td><td></td><td></td><td></td><td></td><td></td><td>A4</td></tr>
+      <tr><td class="center">16</td><td>消防联动控制盘</td><td></td><td></td><td></td><td></td><td></td><td></td><td>A4</td></tr>
+      <tr style="background:#eee;"><td colspan="9"><strong>五、电梯系统</strong></td></tr>
+      <tr><td class="center">17</td><td>电梯</td><td></td><td></td><td></td><td></td><td></td><td></td><td>A5</td></tr>
+      <tr style="background:#eee;"><td colspan="9"><strong>六、安防监控系统</strong></td></tr>
+      <tr><td class="center">18</td><td>硬盘录像机(NVR)</td><td></td><td></td><td></td><td></td><td></td><td></td><td>B1</td></tr>
+      <tr><td class="center">19</td><td>监控摄像头</td><td></td><td></td><td></td><td></td><td></td><td></td><td>B1</td></tr>
+      <tr><td class="center">20</td><td>门禁系统</td><td></td><td></td><td></td><td></td><td></td><td></td><td>B1</td></tr>
+      <tr><td class="center">21</td><td>周界报警系统</td><td></td><td></td><td></td><td></td><td></td><td></td><td>B1</td></tr>
+      <tr style="background:#eee;"><td colspan="9"><strong>七、其他设施</strong></td></tr>
+      <tr><td class="center">22</td><td>道路路灯</td><td></td><td></td><td></td><td></td><td></td><td></td><td>B2</td></tr>
+      <tr><td class="center">23</td><td>污水处理设施</td><td></td><td></td><td></td><td></td><td></td><td></td><td>B6</td></tr>
+      <tr><td class="center">24</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="center">25</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:9px;color:#666;">（行数不够可续页）</p>
+
+  <div class="signature-block">
+    <div class="sig-item"><div class="sig-label">编制人签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+    <div class="sig-item"><div class="sig-label">审核人签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+    <div class="sig-item"><div class="sig-label">甲方确认签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+  </div>
+  <div class="footer-note">GVIP嘉平二工业区 · 物业承接查验表单册 · D3 设施设备台账（汇总）</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- D4: 问题汇总及整改跟踪表 -->
+<!-- ============================================================ -->
+<div class="form">
+  <div class="form-no">D4 — 资料与物品移交</div>
+  <h1>问题汇总及整改跟踪表</h1>
+
+  <div class="info-grid">
+    <div class="info-item"><span class="info-label">项目名称：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">汇总日期：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">汇总人：</span><span class="info-value"></span></div>
+    <div class="info-item"><span class="info-label">问题总数：</span><span class="info-value">________项（不合格________项，资料缺失________项）</span></div>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th>序号</th><th>来源表单</th><th>设施/位置</th><th>问题类别</th><th>问题描述</th><th>严重程度</th><th>整改责任人</th><th>要求完成日期</th><th>复查结果</th><th>复查人/日期</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="center">1</td><td></td><td></td><td>□结构 □设备 □电气 □给排水 □消防 □资料 □其他</td><td></td><td>□高 □中 □低</td><td></td><td></td><td>□已整改 □未完成</td><td></td></tr>
+      <tr><td class="center">2</td><td></td><td></td><td>□结构 □设备 □电气 □给排水 □消防 □资料 □其他</td><td></td><td>□高 □中 □低</td><td></td><td></td><td>□已整改 □未完成</td><td></td></tr>
+      <tr><td class="center">3</td><td></td><td></td><td>□结构 □设备 □电气 □给排水 □消防 □资料 □其他</td><td></td><td>□高 □中 □低</td><td></td><td></td><td>□已整改 □未完成</td><td></td></tr>
+      <tr><td class="center">4</td><td></td><td></td><td>□结构 □设备 □电气 □给排水 □消防 □资料 □其他</td><td></td><td>□高 □中 □低</td><td></td><td></td><td>□已整改 □未完成</td><td></td></tr>
+      <tr><td class="center">5</td><td></td><td></td><td>□结构 □设备 □电气 □给排水 □消防 □资料 □其他</td><td></td><td>□高 □中 □低</td><td></td><td></td><td>□已整改 □未完成</td><td></td></tr>
+      <tr><td class="center">6</td><td></td><td></td><td>□结构 □设备 □电气 □给排水 □消防 □资料 □其他</td><td></td><td>□高 □中 □低</td><td></td><td></td><td>□已整改 □未完成</td><td></td></tr>
+      <tr><td class="center">7</td><td></td><td></td><td>□结构 □设备 □电气 □给排水 □消防 □资料 □其他</td><td></td><td>□高 □中 □低</td><td></td><td></td><td>□已整改 □未完成</td><td></td></tr>
+      <tr><td class="center">8</td><td></td><td></td><td>□结构 □设备 □电气 □给排水 □消防 □资料 □其他</td><td></td><td>□高 □中 □低</td><td></td><td></td><td>□已整改 □未完成</td><td></td></tr>
+      <tr><td class="center">9</td><td></td><td></td><td>□结构 □设备 □电气 □给排水 □消防 □资料 □其他</td><td></td><td>□高 □中 □低</td><td></td><td></td><td>□已整改 □未完成</td><td></td></tr>
+      <tr><td class="center">10</td><td></td><td></td><td>□结构 □设备 □电气 □给排水 □消防 □资料 □其他</td><td></td><td>□高 □中 □低</td><td></td><td></td><td>□已整改 □未完成</td><td></td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:9px;color:#666;">（行数不够可续页，每页均需签字）</p>
+
+  <div class="remarks-box" style="min-height:40mm;"><div class="label">整改总体说明：</div></div>
+
+  <div class="signature-block">
+    <div class="sig-item"><div class="sig-label">甲方负责人签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+    <div class="sig-item"><div class="sig-label">乙方负责人签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+    <div class="sig-item"><div class="sig-label">制表人签字：</div><div class="sig-line"></div><div>日期：________年____月____日</div></div>
+  </div>
+  <div class="footer-note">GVIP嘉平二工业区 · 物业承接查验表单册 · D4 问题汇总及整改跟踪表</div>
+</div>
+
+</body>
+</html>
