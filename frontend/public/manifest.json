@@ -1,0 +1,18 @@
+{
+  "name": "物业承接查验系统",
+  "short_name": "物业查验",
+  "description": "物业管理承接查验工具",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#1a73e8",
+  "background_color": "#f5f7fa",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "lang": "zh-CN"
+}

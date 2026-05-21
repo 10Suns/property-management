@@ -1,0 +1,72 @@
+import { Router } from 'express'
+import db from '../db.js'
+
+const router = Router()
+
+// List equipment
+router.get('/', (req, res) => {
+  const { project_id, building_id, category, status } = req.query
+  if (!project_id) return res.status(400).json({ error: '请指定项目' })
+
+  let sql = `
+    SELECT e.*, b.name as building_name, h.house_number,
+      u.display_name as creator_name
+    FROM equipment e
+    LEFT JOIN buildings b ON e.building_id=b.id
+    LEFT JOIN houses h ON e.house_id=h.id
+    LEFT JOIN users u ON e.created_by=u.id
+    WHERE e.project_id=?
+  `
+  const params = [project_id]
+  if (building_id) { sql += ' AND e.building_id=?'; params.push(building_id) }
+  if (category) { sql += ' AND e.category=?'; params.push(category) }
+  if (status) { sql += ' AND e.status=?'; params.push(status) }
+  sql += ' ORDER BY e.category, e.name'
+  res.json(db.prepare(sql).all(...params))
+})
+
+// Get single equipment
+router.get('/:id', (req, res) => {
+  const eq = db.prepare(`
+    SELECT e.*, b.name as building_name, h.house_number
+    FROM equipment e
+    LEFT JOIN buildings b ON e.building_id=b.id
+    LEFT JOIN houses h ON e.house_id=h.id
+    WHERE e.id=?
+  `).get(req.params.id)
+  if (!eq) return res.status(404).json({ error: '设备不存在' })
+  res.json(eq)
+})
+
+// Create equipment
+router.post('/', (req, res) => {
+  const { project_id, building_id, house_id, name, category, model, serial_number, install_date, location, notes } = req.body
+  if (!project_id || !name) return res.status(400).json({ error: '项目和设备名称不能为空' })
+
+  const r = db.prepare(`INSERT INTO equipment (project_id,building_id,house_id,name,category,model,serial_number,install_date,location,notes,created_by)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?)`)
+    .run(project_id, building_id||null, house_id||null, name, category||null, model||null, serial_number||null, install_date||null, location||null, notes||null, req.user.id)
+  res.json(db.prepare('SELECT * FROM equipment WHERE id=?').get(r.lastInsertRowid))
+})
+
+// Update equipment
+router.put('/:id', (req, res) => {
+  const eq = db.prepare('SELECT * FROM equipment WHERE id=?').get(req.params.id)
+  if (!eq) return res.status(404).json({ error: '设备不存在' })
+
+  const { name, building_id, house_id, category, model, serial_number, install_date, location, status, notes } = req.body
+  const update = (field, val) => val !== undefined ? val : field
+  db.prepare(`UPDATE equipment SET name=?,building_id=?,house_id=?,category=?,model=?,serial_number=?,install_date=?,location=?,status=?,notes=?,updated_at=datetime('now') WHERE id=?`)
+    .run(update(eq.name, name), update(eq.building_id, building_id), update(eq.house_id, house_id), update(eq.category, category), update(eq.model, model), update(eq.serial_number, serial_number), update(eq.install_date, install_date), update(eq.location, location), update(eq.status, status), update(eq.notes, notes), req.params.id)
+  res.json(db.prepare('SELECT * FROM equipment WHERE id=?').get(req.params.id))
+})
+
+// Delete equipment
+router.delete('/:id', (req, res) => {
+  const eq = db.prepare('SELECT * FROM equipment WHERE id=?').get(req.params.id)
+  if (!eq) return res.status(404).json({ error: '设备不存在' })
+  db.prepare('DELETE FROM equipment WHERE id=?').run(req.params.id)
+  res.json({ message: '已删除' })
+})
+
+export default router
