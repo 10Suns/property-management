@@ -16,7 +16,7 @@
             {{ savingForm ? '保存中...' : '保存为我的表单' }}
           </button>
           <template v-if="userForm && !record">
-            <button class="btn btn-sm" @click="createRecord">开始查验</button>
+            <button class="btn btn-sm" @click="createRecord">信息录入</button>
             <button class="btn btn-sm" @click="printBlank">打印空白表</button>
           </template>
           <button v-if="record" class="btn btn-sm" @click="saveRecordMeta" :disabled="saving">
@@ -90,11 +90,11 @@
             <thead>
               <tr>
                 <th style="width:30px">#</th>
-                <th style="width:28%">检查项目</th>
-                <th style="width:30%">检查标准</th>
-                <th style="width:22%">查验结果</th>
+                <th style="width:32%">检查项目</th>
+                <th style="width:28%">检查标准</th>
+                <th style="min-width:180px">查验结果</th>
                 <th style="width:60px">照片</th>
-                <th v-if="canEditItems" style="width:40px"></th>
+                <th v-if="canEditItems" style="width:80px"></th>
               </tr>
             </thead>
             <tbody>
@@ -133,13 +133,13 @@
                   </template>
                 </td>
                 <td class="text-center">
-                  <button v-if="record" class="btn btn-sm btn-outline" style="font-size:11px;padding:2px 6px" @click="openPhotos(item)">📷{{ item._photoCount || 0 }}</button>
+                  <button v-if="record" class="btn btn-sm btn-outline" style="font-size:11px;padding:2px 6px" @click="openPhotos(item)">{{ item._photoCount || 0 }}</button>
                 </td>
                 <td v-if="canEditItems">
                   <div class="flex gap-4">
-                    <button v-if="item._editing" class="btn btn-sm" style="font-size:11px;padding:2px 6px" @click="finishEditItem(item)">✓</button>
-                    <button v-if="item._editing" class="btn btn-sm btn-outline" style="font-size:11px;padding:2px 6px" @click="cancelEditItem(item)">✕</button>
-                    <button v-if="!item._editing" class="btn btn-sm btn-outline" style="font-size:11px;padding:2px 8px;color:#c5221f;border-color:#e0c0c0" @click="removeItem(item)">删除</button>
+                    <button v-if="item._editing" class="btn btn-xs" @click="finishEditItem(item)">确认</button>
+                    <button v-if="item._editing" class="btn btn-xs btn-danger-outline" @click="removeItem(item)">删除</button>
+                    <button v-if="!item._editing" class="btn btn-xs btn-danger-outline" @click="removeItem(item)">删除</button>
                   </div>
                 </td>
               </tr>
@@ -156,7 +156,7 @@
         </div>
         <div class="flex gap-8 items-center">
           <label class="form-label">状态：</label>
-          <select v-model="recordForm.status" class="select" style="width:auto" @change="saveRecordMeta">
+          <select v-model="recordForm.status" class="select" style="width:auto" @change="autoSaveComment">
             <option value="pending">待查验</option>
             <option value="in_progress">查验中</option>
             <option value="completed">已完成</option>
@@ -175,7 +175,7 @@
             <button class="photo-del" @click="deletePhoto(p)">✕</button>
           </div>
         </div>
-        <div v-if="(!photoItem._photos || photoItem._photos.length) < 6">
+        <div v-if="!photoItem._photos || photoItem._photos.length < 6">
           <input type="file" accept="image/*" capture="environment" multiple @change="uploadPhotos" class="input" />
         </div>
         <p class="text-sm text-secondary mt-8">最多6张，每张不超过10MB</p>
@@ -209,10 +209,12 @@
 <script setup>
 import { ref, reactive, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useAuthStore } from '../stores/auth'
 import api from '../api'
 
 const route = useRoute()
 const router = useRouter()
+const authStore = useAuthStore()
 const template = ref(null)
 const project = ref(null)
 const userForm = ref(null)
@@ -258,17 +260,16 @@ onMounted(async () => {
   ])
   project.value = p
   buildings.value = b
-  await loadHouses()
 
-  // Try to load template (skip if tid is 0 for blank forms)
-  if (tid && tid !== '0') {
-    try {
-      const { data: t } = await api.get('/templates/' + tid)
-      template.value = t
-    } catch (e) {
-      // Template might not exist for blank forms
-      template.value = { form_id: '', title: '', category: '', id: null }
-    }
+  const [, tData] = await Promise.all([
+    loadHouses(),
+    tid && tid !== '0'
+      ? api.get('/templates/' + tid).then(r => r.data).catch(() => null)
+      : Promise.resolve(null)
+  ])
+
+  if (tData) {
+    template.value = tData
   } else {
     template.value = { form_id: '', title: '', category: '', id: null }
   }
@@ -293,6 +294,12 @@ onMounted(async () => {
     loadPhotos()
   } else if (formId) {
     await loadUserForm(formId)
+    if (route.query.inspect === '1') {
+      await createRecord()
+      if (record.value) {
+        router.replace({ query: { record: record.value.id } })
+      }
+    }
   } else if (template.value?.items) {
     // Show template items as reference
     items.value = template.value.items.map(item => ({
@@ -340,11 +347,8 @@ async function loadUserForm(fid) {
   }))
 }
 
-// Save template edits as a new user form
 async function saveAsMyForm() {
-  // Collect current items state
-  const user = JSON.parse(localStorage.getItem('user') || '{}')
-  const formTitle = (template.value?.title || '自定义表单') + ' - ' + (user.display_name || '用户')
+  const formTitle = (template.value?.title || '自定义表单') + ' - ' + (authStore.user?.display_name || '用户')
 
   const itemList = items.value
     .filter(item => item._editName?.trim() || item.item_name?.trim())
@@ -363,7 +367,7 @@ async function saveAsMyForm() {
   try {
     const { data } = await api.post('/forms', {
       project_id: parseInt(route.params.id),
-      template_id: template.value?.id || 1,
+      template_id: template.value?.id || null,
       title: formTitle,
       items: itemList
     })
@@ -395,7 +399,6 @@ async function finishEditItem(item) {
     return
   }
   if (item._key.startsWith('f_')) {
-    // Save to user form item
     const { data } = await api.put('/forms/items/' + item.id, {
       item_name: item._editName.trim(),
       check_standard: item._editStd.trim()
@@ -403,11 +406,6 @@ async function finishEditItem(item) {
     item.item_name = data.item_name
     item.check_standard = data.check_standard
   } else if (item._key.startsWith('t_')) {
-    // Editing template item locally
-    item._editName_tmp = item._editName.trim()
-    item._editStd_tmp = item._editStd.trim()
-  }
-  if (item._key.startsWith('t_')) {
     item.item_name = item._editName.trim()
     item.check_standard = item._editStd.trim()
   }
@@ -532,7 +530,7 @@ function autoSaveResult(item) {
       problem_description: item.problem_description || null,
       custom_item_name: item.custom_item_name || item.item_name || null,
       custom_standard: item.custom_standard || item.check_standard || null
-    })
+    }).catch(() => {})
   }, 400)
 }
 

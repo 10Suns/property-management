@@ -24,10 +24,10 @@
               <td>{{ u.id }}</td>
               <td>{{ u.username }}</td>
               <td>{{ u.display_name }}</td>
-              <td><span class="badge" :class="u.role==='admin'?'badge-pass':'badge-skip'">{{ u.role === 'admin' ? '管理员' : '普通用户' }}</span></td>
+              <td><span class="badge" :class="u.role==='admin'?'badge-pass':u.role==='manager'?'badge-in_progress':'badge-skip'">{{ roleLabel(u.role) }}</span></td>
               <td class="text-sm">{{ u.created_at }}</td>
               <td>
-                <button v-if="u.id !== auth.user?.id" class="btn btn-sm btn-outline" style="color:var(--danger);border-color:var(--danger)" @click="deleteUser(u)">删除</button>
+                <button v-if="u.id !== auth.user?.id" class="btn btn-sm btn-danger-outline" @click="deleteUser(u)">删除</button>
               </td>
             </tr>
           </tbody>
@@ -54,7 +54,8 @@
         <div class="form-group">
           <label class="form-label">角色</label>
           <select v-model="form.role" class="select">
-            <option value="user">普通用户</option>
+            <option value="employee">基层员工</option>
+            <option value="manager">物业经理</option>
             <option value="admin">系统管理员</option>
           </select>
         </div>
@@ -75,8 +76,12 @@ import api from '../api'
 
 const auth = useAuthStore()
 const users = ref([])
+
+function roleLabel(r) {
+  return r === 'admin' ? '管理员' : r === 'manager' ? '经理' : '员工'
+}
 const showCreate = ref(false)
-const form = ref({ username: '', password: '', display_name: '', role: 'user' })
+const form = ref({ username: '', password: '', display_name: '', role: 'employee' })
 const error = ref('')
 const loading = ref(false)
 
@@ -100,7 +105,7 @@ async function doCreate() {
     const { data } = await api.post('/users', form.value)
     users.value.push(data)
     showCreate.value = false
-    form.value = { username: '', password: '', display_name: '', role: 'user' }
+    form.value = { username: '', password: '', display_name: '', role: 'employee' }
   } catch (e) {
     error.value = e.response?.data?.error || '创建失败'
   } finally {

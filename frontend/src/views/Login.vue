@@ -2,7 +2,7 @@
   <div class="login-page">
     <div class="login-card">
       <h1>物业承接查验系统</h1>
-      <p class="text-secondary mb-16">请登录以继续</p>
+      <p class="login-subtitle">请登录以继续</p>
       <div class="form-group">
         <label class="form-label">用户名</label>
         <input v-model="username" class="input" placeholder="请输入用户名" @keyup.enter="doLogin" />
@@ -12,7 +12,7 @@
         <input v-model="password" type="password" class="input" placeholder="请输入密码" @keyup.enter="doLogin" />
       </div>
       <p class="error-msg mb-12" v-if="error">{{ error }}</p>
-      <button class="btn btn-lg" style="width:100%" @click="doLogin" :disabled="loading">
+      <button class="btn btn-lg btn-block" @click="doLogin" :disabled="loading">
         {{ loading ? '登录中...' : '登录' }}
       </button>
     </div>
@@ -55,8 +55,10 @@ async function doLogin() {
   min-height: 100vh; padding: 24px;
 }
 .login-card {
-  background: var(--surface); border-radius: var(--radius);
-  box-shadow: var(--shadow-md); padding: 32px; width: 100%; max-width: 380px;
+  background: var(--surface); border-radius: 14px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.06);
+  padding: 36px; width: 100%; max-width: 420px;
 }
-.login-card h1 { font-size: 22px; text-align: center; margin-bottom: 4px; }
+.login-card h1 { font-size: 28px; font-weight: 700; text-align: center; margin-bottom: 4px; letter-spacing: -0.3px; }
+.login-subtitle { text-align: center; font-size: 14px; color: var(--text-light); margin-bottom: 20px; }
 </style>

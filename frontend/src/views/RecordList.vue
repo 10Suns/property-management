@@ -39,8 +39,8 @@
           · {{ r.updated_at }}
         </div>
       </div>
-      <span class="badge" :class="'badge-' + (r.status === 'completed' ? 'completed' : r.status === 'in_progress' ? 'in_progress' : 'pending')">{{ r.status === 'completed' ? '已完成' : r.status === 'in_progress' ? '查验中' : '待查验' }}</span>
-      <button v-if="canDelete(r)" class="btn btn-sm btn-outline" style="color:#c5221f;border-color:#e0c0c0;flex-shrink:0" @click.stop="deleteRecord(r)">删除</button>
+      <span class="badge" :class="statusBadge(r.status)">{{ statusLabel(r.status) }}</span>
+      <button v-if="canDelete(r)" class="btn btn-sm btn-danger-outline" style="flex-shrink:0" @click.stop="deleteRecord(r)">删除</button>
       <span class="list-item-arrow" @click="openRecord(r)">›</span>
     </div>
   </div>
@@ -49,10 +49,12 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useAuthStore } from '../stores/auth'
 import api from '../api'
 
 const route = useRoute()
 const router = useRouter()
+const auth = useAuthStore()
 const projectId = route.params.id
 const records = ref([])
 const templates = ref([])
@@ -83,10 +85,13 @@ async function loadRecords() {
   loading.value = false
 }
 
-const currentUser = JSON.parse(localStorage.getItem('user') || 'null')
+const statusBadgeMap = { completed: 'badge-completed', in_progress: 'badge-in_progress', pending: 'badge-pending' }
+const statusLabelMap = { completed: '已完成', in_progress: '查验中', pending: '待查验' }
+function statusBadge(s) { return statusBadgeMap[s] || 'badge-pending' }
+function statusLabel(s) { return statusLabelMap[s] || s }
 
 function canDelete(r) {
-  return currentUser?.role === 'admin' || r.created_by === currentUser?.id
+  return auth.isAdmin || r.created_by === auth.user?.id
 }
 
 function openRecord(r) {

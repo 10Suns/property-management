@@ -137,33 +137,6 @@ router.delete('/:pid/houses/:id', managerRequired, (req, res) => {
   res.json({ message: '已删除' })
 })
 
-// Template access management
-router.get('/:pid/template-access', (req, res) => {
-  const rows = db.prepare(`
-    SELECT uta.*, u.username, u.display_name, it.form_id, it.title as template_title
-    FROM user_template_access uta
-    JOIN users u ON uta.user_id=u.id
-    JOIN inspection_templates it ON uta.template_id=it.id
-    WHERE u.id IN (SELECT user_id FROM project_members WHERE project_id=?)
-    ORDER BY u.display_name, it.form_id
-  `).all(req.params.pid)
-  res.json(rows)
-})
-
-router.post('/:pid/template-access', managerRequired, (req, res) => {
-  const { user_id, template_id } = req.body
-  if (!user_id || !template_id) return res.status(400).json({ error: '请指定用户和模板' })
-  const ex = db.prepare('SELECT * FROM user_template_access WHERE user_id=? AND template_id=?').get(user_id, template_id)
-  if (ex) return res.status(400).json({ error: '该用户已有此模板权限' })
-  db.prepare('INSERT INTO user_template_access (user_id,template_id,granted_by) VALUES (?,?,?)').run(user_id, template_id, req.user.id)
-  res.json({ message: '已授权' })
-})
-
-router.delete('/:pid/template-access/:id', (req, res) => {
-  db.prepare('DELETE FROM user_template_access WHERE id=?').run(req.params.id)
-  res.json({ message: '已取消授权' })
-})
-
 // Dashboard stats for managers
 router.get('/:pid/stats', managerRequired, (req, res) => {
   const project = db.prepare('SELECT * FROM projects WHERE id=?').get(req.params.pid)
@@ -207,45 +180,8 @@ router.get('/:pid/stats', managerRequired, (req, res) => {
   res.json(stats)
 })
 
-// Equipment access management
-router.get('/:pid/equipment-access', managerRequired, (req, res) => {
-  const rows = db.prepare(`
-    SELECT ea.*, u.username, u.display_name
-    FROM equipment_access ea
-    JOIN users u ON ea.user_id=u.id
-    WHERE ea.project_id=?
-    ORDER BY u.display_name
-  `).all(req.params.pid)
-  res.json(rows)
-})
-
-router.post('/:pid/equipment-access', managerRequired, (req, res) => {
-  const { user_id } = req.body
-  if (!user_id) return res.status(400).json({ error: '请指定用户' })
-  const ex = db.prepare('SELECT * FROM equipment_access WHERE user_id=? AND project_id=?').get(user_id, req.params.pid)
-  if (ex) return res.status(400).json({ error: '该用户已有设备档案权限' })
-  db.prepare('INSERT INTO equipment_access (user_id,project_id,granted_by) VALUES (?,?,?)').run(user_id, req.params.pid, req.user.id)
-  res.json({ message: '已授权' })
-})
-
-router.delete('/:pid/equipment-access/:id', managerRequired, (req, res) => {
-  db.prepare('DELETE FROM equipment_access WHERE id=?').run(req.params.id)
-  res.json({ message: '已取消授权' })
-})
-
 router.get('/:pid/my-templates', (req, res) => {
-  const isAdmin = req.user.role === 'admin'
-  const isPA = !isAdmin && db.prepare('SELECT * FROM project_members WHERE project_id=? AND user_id=? AND role=?').get(req.params.pid, req.user.id, 'admin')
-  if (isAdmin || isPA) {
-    return res.json(db.prepare('SELECT * FROM inspection_templates ORDER BY form_id').all())
-  }
-  const access = db.prepare('SELECT template_id FROM user_template_access WHERE user_id=?').all(req.user.id)
-  if (access.length === 0) {
-    return res.json(db.prepare('SELECT * FROM inspection_templates ORDER BY form_id').all())
-  }
-  const ids = access.map(a => a.template_id)
-  const placeholders = ids.map(() => '?').join(',')
-  res.json(db.prepare(`SELECT * FROM inspection_templates WHERE id IN (${placeholders}) ORDER BY form_id`).all(...ids))
+  res.json(db.prepare('SELECT * FROM inspection_templates ORDER BY form_id').all())
 })
 
 export default router

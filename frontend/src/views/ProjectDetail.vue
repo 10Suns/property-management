@@ -67,9 +67,9 @@
             </div>
             <div class="flex gap-8">
               <button class="btn btn-sm" @click="printBlank(f)">打印空白表</button>
-              <button class="btn btn-sm" @click="startInspection(f)">开始查验</button>
+              <button class="btn btn-sm" @click="startInspection(f)">信息录入</button>
               <button class="btn btn-sm btn-outline" @click="editMyForm(f)">编辑</button>
-              <button class="btn btn-sm btn-outline" style="color:var(--danger);border-color:var(--danger)" @click="deleteForm(f)">删除</button>
+              <button class="btn btn-sm btn-danger-outline" @click="deleteForm(f)">删除</button>
             </div>
           </div>
           <div class="text-sm text-secondary">{{ f.item_count || 0 }} 个检查项</div>
@@ -99,7 +99,7 @@
             <div class="flex gap-8">
               <span class="badge" :class="statusClass(eq.status)">{{ statusLabel(eq.status) }}</span>
               <button v-if="auth.isManager" class="btn btn-sm btn-outline" @click="editEquipment(eq)">编辑</button>
-              <button v-if="auth.isManager" class="btn btn-sm btn-outline" style="color:var(--danger);border-color:var(--danger)" @click="deleteEquipment(eq)">删除</button>
+              <button v-if="auth.isManager" class="btn btn-sm btn-danger-outline" @click="deleteEquipment(eq)">删除</button>
             </div>
           </div>
           <div class="form-row text-sm">
@@ -188,7 +188,7 @@ const router = useRouter()
 const auth = useAuthStore()
 const project = ref(null)
 const loading = ref(true)
-const tab = ref('reference')
+const tab = ref('myForms')
 const refTemplates = ref([])
 const myForms = ref([])
 const showEdit = ref(false)
@@ -226,8 +226,10 @@ const refCategories = computed(() => {
   return Object.values(cats).filter(c => c.templates.length > 0)
 })
 
-function statusClass(s) { return s === 'normal' ? 'badge-pass' : s === 'maintenance' ? 'badge-in_progress' : s === 'repair' ? 'badge-fail' : 'badge-skip' }
-function statusLabel(s) { return s === 'normal' ? '正常' : s === 'maintenance' ? '保养中' : s === 'repair' ? '待修' : '已报废' }
+const statusClassMap = { normal: 'badge-pass', maintenance: 'badge-in_progress', repair: 'badge-fail', scrapped: 'badge-skip' }
+const statusLabelMap = { normal: '正常', maintenance: '保养中', repair: '待修', scrapped: '已报废' }
+function statusClass(s) { return statusClassMap[s] || 'badge-skip' }
+function statusLabel(s) { return statusLabelMap[s] || s }
 
 onMounted(async () => {
   const pid = route.params.id
@@ -237,6 +239,7 @@ onMounted(async () => {
   ])
   project.value = p
   refTemplates.value = t
+  await loadMyForms()
   loading.value = false
 })
 
@@ -255,7 +258,7 @@ function editMyForm(f) {
 }
 
 function startInspection(f) {
-  router.push('/projects/' + route.params.id + '/template/' + (f.template_id || 0) + '?form=' + f.id)
+  router.push('/projects/' + route.params.id + '/template/' + (f.template_id || 0) + '?form=' + f.id + '&inspect=1')
 }
 
 function printBlank(f) {
@@ -265,6 +268,7 @@ function printBlank(f) {
 }
 
 async function deleteForm(f) {
+  if (!confirm(`确定删除表单"${f.title}"吗？\n\n该表单关联的所有查验记录也将被永久删除，此操作不可撤销。`)) return
   try {
     await api.delete('/forms/' + f.id)
     myForms.value = myForms.value.filter(x => x.id !== f.id)

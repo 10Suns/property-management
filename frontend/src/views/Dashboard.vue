@@ -29,7 +29,7 @@
         </div>
       </div>
 
-      <div class="form-row mb-16">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px" class="mb-16">
         <!-- By template -->
         <div class="card">
           <div class="card-title mb-8">按模板统计</div>
@@ -77,7 +77,7 @@
               · {{ r.updated_at }}
             </div>
           </div>
-          <span class="badge" :class="'badge-' + (r.status === 'completed' ? 'completed' : r.status === 'in_progress' ? 'in_progress' : 'pending')">{{ r.status === 'completed' ? '已完成' : r.status === 'in_progress' ? '查验中' : '待查验' }}</span>
+          <span class="badge" :class="statusBadgeMap[r.status] || 'badge-pending'">{{ statusLabelMap[r.status] || r.status }}</span>
           <span class="list-item-arrow">›</span>
         </div>
       </div>
@@ -106,6 +106,9 @@ onMounted(async () => {
     loading.value = false
   }
 })
+
+const statusBadgeMap = { completed: 'badge-completed', in_progress: 'badge-in_progress', pending: 'badge-pending' }
+const statusLabelMap = { completed: '已完成', in_progress: '查验中', pending: '待查验' }
 
 function openRecord(r) {
   router.push('/projects/' + projectId + '/template/' + r.template_id + '?record=' + r.id)

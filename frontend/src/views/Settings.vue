@@ -11,8 +11,6 @@
       <div class="tab" :class="{ active: tab === 'buildings' }" @click="tab='buildings'">楼栋管理</div>
       <div class="tab" :class="{ active: tab === 'houses' }" @click="tab='houses'">房源管理</div>
       <div class="tab" :class="{ active: tab === 'members' }" @click="tab='members'; loadMembers()">成员管理</div>
-      <div class="tab" :class="{ active: tab === 'templateAuth' }" @click="tab='templateAuth'; loadAccess()">表单授权</div>
-      <div class="tab" :class="{ active: tab === 'equipAuth' }" @click="tab='equipAuth'; loadEquipAccess()">设备授权</div>
     </div>
 
     <!-- Buildings -->
@@ -66,52 +64,14 @@
               <tr v-for="m in members" :key="m.id">
                 <td>{{ m.username }}</td>
                 <td>{{ m.display_name }}</td>
-                <td><span class="badge" :class="m.role==='admin'?'badge-pass':m.role==='manager'?'badge-in_progress':'badge-skip'">{{ roleLabel(m.role) }}</span></td>
+                <td><span class="badge" :class="roleBadgeMap[m.role] || 'badge-skip'">{{ roleLabel(m.role) }}</span></td>
                 <td>
-                  <button v-if="m.id !== currentUserId" class="btn btn-sm btn-outline" style="color:var(--danger);border-color:var(--danger)" @click="removeMember(m)">移除</button>
+                  <button v-if="m.id !== currentUserId" class="btn btn-sm btn-danger-outline" @click="removeMember(m)">移除</button>
                   <button v-if="m.id !== currentUserId" class="btn btn-sm btn-outline" style="margin-left:8px" @click="resetMemberPwd(m)">重置密码</button>
                 </td>
               </tr>
             </tbody>
           </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- Template Access -->
-    <div v-if="tab === 'templateAuth'">
-      <div class="card">
-        <div class="card-header">
-          <span class="card-title">用户表单权限</span>
-          <button class="btn btn-sm" @click="showAuthAdd=true">+ 授权</button>
-        </div>
-        <p class="text-sm text-secondary mb-8">如不设置权限，则所有用户可访问全部模板。</p>
-        <div v-if="accessList.length === 0" class="empty text-sm">暂无授权记录</div>
-        <div v-for="a in accessList" :key="a.id" class="list-item">
-          <div class="list-item-body">
-            <div class="list-item-title">{{ a.display_name }} ({{ a.username }})</div>
-            <div class="list-item-sub">{{ a.form_id }} — {{ a.template_title }}</div>
-          </div>
-          <button class="btn btn-sm btn-outline" style="color:var(--danger);border-color:var(--danger)" @click="revokeAccess(a)">取消</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Equipment Access -->
-    <div v-if="tab === 'equipAuth'">
-      <div class="card">
-        <div class="card-header">
-          <span class="card-title">设备档案权限</span>
-          <button class="btn btn-sm" @click="showEquipAuthAdd=true">+ 授权</button>
-        </div>
-        <p class="text-sm text-secondary mb-8">仅授权用户可查看项目设备档案。</p>
-        <div v-if="equipAccessList.length === 0" class="empty text-sm">暂无授权记录</div>
-        <div v-for="a in equipAccessList" :key="a.id" class="list-item">
-          <div class="list-item-body">
-            <div class="list-item-title">{{ a.display_name }} ({{ a.username }})</div>
-            <div class="list-item-sub">设备档案查看权限</div>
-          </div>
-          <button class="btn btn-sm btn-outline" style="color:var(--danger);border-color:var(--danger)" @click="revokeEquipAccess(a)">取消</button>
         </div>
       </div>
     </div>
@@ -182,50 +142,6 @@
       </div>
     </div>
 
-    <!-- Template Auth Modal -->
-    <div class="modal" v-if="showAuthAdd" @click.self="showAuthAdd=false">
-      <div class="modal-card">
-        <h3>授权用户访问模板</h3>
-        <div class="form-group">
-          <label class="form-label">用户</label>
-          <select v-model="authForm.user_id" class="select">
-            <option :value="null">请选择</option>
-            <option v-for="m in members" :key="m.id" :value="m.id">{{ m.display_name }} ({{ m.username }})</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">模板</label>
-          <select v-model="authForm.template_id" class="select">
-            <option :value="null">请选择</option>
-            <option v-for="t in allTemplates" :key="t.id" :value="t.id">{{ t.form_id }} {{ t.title }}</option>
-          </select>
-        </div>
-        <p class="error-msg" v-if="authError">{{ authError }}</p>
-        <div class="modal-actions">
-          <button class="btn" @click="doAuth" :disabled="authLoading">授权</button>
-          <button class="btn btn-outline" @click="showAuthAdd=false">取消</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Equipment Auth Modal -->
-    <div class="modal" v-if="showEquipAuthAdd" @click.self="showEquipAuthAdd=false">
-      <div class="modal-card">
-        <h3>授权用户查看设备档案</h3>
-        <div class="form-group">
-          <label class="form-label">用户</label>
-          <select v-model="equipAuthForm.user_id" class="select">
-            <option :value="null">请选择</option>
-            <option v-for="m in members" :key="m.id" :value="m.id">{{ m.display_name }} ({{ m.username }})</option>
-          </select>
-        </div>
-        <p class="error-msg" v-if="equipAuthError">{{ equipAuthError }}</p>
-        <div class="modal-actions">
-          <button class="btn" @click="doEquipAuth" :disabled="equipAuthLoading">授权</button>
-          <button class="btn btn-outline" @click="showEquipAuthAdd=false">取消</button>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -260,20 +176,7 @@ const newPwd = ref('')
 const showCredentials = ref(false)
 const newMemberCreds = ref({ username: '', password: '' })
 
-// Template Auth
-const accessList = ref([])
-const allTemplates = ref([])
-const showAuthAdd = ref(false)
-const authForm = ref({ user_id: null, template_id: null })
-const authError = ref('')
-const authLoading = ref(false)
-
-// Equipment Auth
-const equipAccessList = ref([])
-const showEquipAuthAdd = ref(false)
-const equipAuthForm = ref({ user_id: null })
-const equipAuthError = ref('')
-const equipAuthLoading = ref(false)
+const roleBadgeMap = { admin: 'badge-pass', manager: 'badge-in_progress', employee: 'badge-skip' }
 
 function roleLabel(r) {
   return r === 'admin' ? '管理员' : r === 'manager' ? '经理' : '员工'
@@ -283,13 +186,10 @@ onMounted(async () => {
   const user = JSON.parse(localStorage.getItem('user') || 'null')
   currentUserId.value = user?.id
   await loadBuildings()
-  const { data: t } = await api.get('/templates')
-  allTemplates.value = t
 })
 
 // Generate SG-format username
 async function generateUsername() {
-  // Fetch all users and find the max SG number
   try {
     const { data } = await api.get('/users')
     const sgUsers = data.filter(u => /^SG\d{3}$/.test(u.username))
@@ -406,51 +306,5 @@ async function confirmResetPwd() {
     alert('请手动告知新密码：' + newPwd.value + '\n（需后端支持管理员重置密码接口）')
     showPwdReset.value = false
   }
-}
-
-// Template Auth
-async function loadAccess() {
-  const { data } = await api.get('/projects/' + projectId + '/template-access')
-  accessList.value = data
-}
-async function doAuth() {
-  authError.value = ''
-  if (!authForm.value.user_id || !authForm.value.template_id) { authError.value = '请选择用户和模板'; return }
-  authLoading.value = true
-  try {
-    await api.post('/projects/' + projectId + '/template-access', authForm.value)
-    showAuthAdd.value = false
-    authForm.value = { user_id: null, template_id: null }
-    loadAccess()
-  } catch (e) {
-    authError.value = e.response?.data?.error || '授权失败'
-  } finally { authLoading.value = false }
-}
-async function revokeAccess(a) {
-  await api.delete('/projects/' + projectId + '/template-access/' + a.id)
-  loadAccess()
-}
-
-// Equipment Auth
-async function loadEquipAccess() {
-  const { data } = await api.get('/projects/' + projectId + '/equipment-access')
-  equipAccessList.value = data
-}
-async function doEquipAuth() {
-  equipAuthError.value = ''
-  if (!equipAuthForm.value.user_id) { equipAuthError.value = '请选择用户'; return }
-  equipAuthLoading.value = true
-  try {
-    await api.post('/projects/' + projectId + '/equipment-access', { user_id: equipAuthForm.value.user_id })
-    showEquipAuthAdd.value = false
-    equipAuthForm.value = { user_id: null }
-    loadEquipAccess()
-  } catch (e) {
-    equipAuthError.value = e.response?.data?.error || '授权失败'
-  } finally { equipAuthLoading.value = false }
-}
-async function revokeEquipAccess(a) {
-  await api.delete('/projects/' + projectId + '/equipment-access/' + a.id)
-  loadEquipAccess()
 }
 </script>
