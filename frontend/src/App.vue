@@ -15,8 +15,9 @@
       <router-link v-if="auth.isAdmin" to="/admin/users" class="sidebar-link" @click="showMenu=false">用户管理</router-link>
       <div class="sidebar-section">当前项目</div>
       <router-link v-if="currentProjectId" :to="'/projects/' + currentProjectId" class="sidebar-link" @click="showMenu=false">项目详情</router-link>
+      <router-link v-if="auth.isManager && currentProjectId" :to="'/projects/' + currentProjectId + '/dashboard'" class="sidebar-link" @click="showMenu=false">项目仪表盘</router-link>
       <router-link v-if="currentProjectId" :to="'/projects/' + currentProjectId + '/records'" class="sidebar-link" @click="showMenu=false">查验记录</router-link>
-      <router-link v-if="currentProjectId" :to="'/projects/' + currentProjectId + '/settings'" class="sidebar-link" @click="showMenu=false">项目配置</router-link>
+      <router-link v-if="auth.isManager && currentProjectId" :to="'/projects/' + currentProjectId + '/settings'" class="sidebar-link" @click="showMenu=false">项目配置</router-link>
       <router-link v-if="currentProjectId" :to="'/projects/' + currentProjectId + '/print'" class="sidebar-link" @click="showMenu=false">打印表单</router-link>
       <div class="sidebar-footer">
         <button v-if="auth.isAdmin" class="btn btn-sm" @click="changePwd">修改密码</button>

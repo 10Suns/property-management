@@ -11,7 +11,8 @@
       <div class="tab" :class="{ active: tab === 'buildings' }" @click="tab='buildings'">楼栋管理</div>
       <div class="tab" :class="{ active: tab === 'houses' }" @click="tab='houses'">房源管理</div>
       <div class="tab" :class="{ active: tab === 'members' }" @click="tab='members'; loadMembers()">成员管理</div>
-      <div class="tab" :class="{ active: tab === 'auth' }" @click="tab='auth'; loadAccess()">表单授权</div>
+      <div class="tab" :class="{ active: tab === 'templateAuth' }" @click="tab='templateAuth'; loadAccess()">表单授权</div>
+      <div class="tab" :class="{ active: tab === 'equipAuth' }" @click="tab='equipAuth'; loadEquipAccess()">设备授权</div>
     </div>
 
     <!-- Buildings -->
@@ -65,10 +66,10 @@
               <tr v-for="m in members" :key="m.id">
                 <td>{{ m.username }}</td>
                 <td>{{ m.display_name }}</td>
-                <td><span class="badge" :class="m.role==='admin'?'badge-pass':'badge-skip'">{{ m.role==='admin'?'管理员':'成员' }}</span></td>
+                <td><span class="badge" :class="m.role==='admin'?'badge-pass':m.role==='manager'?'badge-in_progress':'badge-skip'">{{ roleLabel(m.role) }}</span></td>
                 <td>
                   <button v-if="m.id !== currentUserId" class="btn btn-sm btn-outline" style="color:var(--danger);border-color:var(--danger)" @click="removeMember(m)">移除</button>
-                  <button v-if="m.id !== currentUserId" class="btn btn-sm btn-outline ml-8" @click="resetMemberPwd(m)">重置密码</button>
+                  <button v-if="m.id !== currentUserId" class="btn btn-sm btn-outline" style="margin-left:8px" @click="resetMemberPwd(m)">重置密码</button>
                 </td>
               </tr>
             </tbody>
@@ -78,7 +79,7 @@
     </div>
 
     <!-- Template Access -->
-    <div v-if="tab === 'auth'">
+    <div v-if="tab === 'templateAuth'">
       <div class="card">
         <div class="card-header">
           <span class="card-title">用户表单权限</span>
@@ -96,11 +97,34 @@
       </div>
     </div>
 
+    <!-- Equipment Access -->
+    <div v-if="tab === 'equipAuth'">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">设备档案权限</span>
+          <button class="btn btn-sm" @click="showEquipAuthAdd=true">+ 授权</button>
+        </div>
+        <p class="text-sm text-secondary mb-8">仅授权用户可查看项目设备档案。</p>
+        <div v-if="equipAccessList.length === 0" class="empty text-sm">暂无授权记录</div>
+        <div v-for="a in equipAccessList" :key="a.id" class="list-item">
+          <div class="list-item-body">
+            <div class="list-item-title">{{ a.display_name }} ({{ a.username }})</div>
+            <div class="list-item-sub">设备档案查看权限</div>
+          </div>
+          <button class="btn btn-sm btn-outline" style="color:var(--danger);border-color:var(--danger)" @click="revokeEquipAccess(a)">取消</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Add Member Modal -->
     <div class="modal" v-if="showMemberAdd" @click.self="showMemberAdd=false">
       <div class="modal-card">
         <h3>添加成员</h3>
-        <p class="text-sm text-secondary mb-12">输入姓名即可，系统自动分配编号和初始密码。</p>
+        <div class="form-group">
+          <label class="form-label">员工编号</label>
+          <input v-model="memberForm.username" class="input" readonly style="font-size:20px;text-align:center;letter-spacing:2px;font-weight:600" />
+          <p class="text-sm text-secondary mt-4">系统自动分配编号（SG + 3位数字）</p>
+        </div>
         <div class="form-group">
           <label class="form-label">姓名 *</label>
           <input v-model="memberForm.display_name" class="input" placeholder="如：张三" @keyup.enter="doAddMember" />
@@ -108,14 +132,35 @@
         <div class="form-group">
           <label class="form-label">角色</label>
           <select v-model="memberForm.role" class="select">
-            <option value="member">成员</option>
-            <option value="admin">项目管理员</option>
+            <option value="employee">基层员工</option>
+            <option value="manager">物业经理</option>
+            <option value="admin">系统管理员</option>
           </select>
         </div>
         <p class="error-msg" v-if="memberError">{{ memberError }}</p>
         <div class="modal-actions">
           <button class="btn" @click="doAddMember" :disabled="memberLoading">添加</button>
           <button class="btn btn-outline" @click="showMemberAdd=false">取消</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Member Created Credentials Modal -->
+    <div class="modal" v-if="showCredentials" @click.self="showCredentials=false">
+      <div class="modal-card">
+        <h3>成员已创建</h3>
+        <p class="text-sm text-secondary mb-12">请告知成员以下登录信息，成员无法自行修改密码。</p>
+        <div class="form-group">
+          <label class="form-label">用户名</label>
+          <input :value="newMemberCreds.username" class="input" readonly style="font-size:20px;text-align:center;letter-spacing:2px;font-weight:600" @focus="$event.target.select()" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">密码</label>
+          <input :value="newMemberCreds.password" class="input" readonly style="font-size:24px;text-align:center;letter-spacing:4px;font-weight:600" @focus="$event.target.select()" />
+        </div>
+        <p class="text-sm" style="color:#c5221f">请立即复制保存此密码，关闭后无法找回！</p>
+        <div class="modal-actions">
+          <button class="btn" @click="showCredentials=false">已保存，关闭</button>
         </div>
       </div>
     </div>
@@ -127,7 +172,7 @@
         <p>为用户 <b>{{ pwdResetUser?.display_name }}</b> 重置密码：</p>
         <div class="form-group">
           <label class="form-label">新密码</label>
-          <input :value="newPwd" class="input" readonly style="font-size:24px;text-align:center;letter-spacing:4px" />
+          <input :value="newPwd" class="input" readonly style="font-size:24px;text-align:center;letter-spacing:4px" @focus="$event.target.select()" />
         </div>
         <p class="text-sm text-secondary">请将此密码告知用户，用户无法自行修改密码。</p>
         <div class="modal-actions">
@@ -137,7 +182,7 @@
       </div>
     </div>
 
-    <!-- Auth Modal -->
+    <!-- Template Auth Modal -->
     <div class="modal" v-if="showAuthAdd" @click.self="showAuthAdd=false">
       <div class="modal-card">
         <h3>授权用户访问模板</h3>
@@ -159,6 +204,25 @@
         <div class="modal-actions">
           <button class="btn" @click="doAuth" :disabled="authLoading">授权</button>
           <button class="btn btn-outline" @click="showAuthAdd=false">取消</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Equipment Auth Modal -->
+    <div class="modal" v-if="showEquipAuthAdd" @click.self="showEquipAuthAdd=false">
+      <div class="modal-card">
+        <h3>授权用户查看设备档案</h3>
+        <div class="form-group">
+          <label class="form-label">用户</label>
+          <select v-model="equipAuthForm.user_id" class="select">
+            <option :value="null">请选择</option>
+            <option v-for="m in members" :key="m.id" :value="m.id">{{ m.display_name }} ({{ m.username }})</option>
+          </select>
+        </div>
+        <p class="error-msg" v-if="equipAuthError">{{ equipAuthError }}</p>
+        <div class="modal-actions">
+          <button class="btn" @click="doEquipAuth" :disabled="equipAuthLoading">授权</button>
+          <button class="btn btn-outline" @click="showEquipAuthAdd=false">取消</button>
         </div>
       </div>
     </div>
@@ -187,14 +251,16 @@ const houseForm = ref({ building_id: null, house_number: '', area: '' })
 // Members
 const members = ref([])
 const showMemberAdd = ref(false)
-const memberForm = ref({ display_name: '', role: 'member' })
+const memberForm = ref({ username: '', display_name: '', role: 'employee' })
 const memberError = ref('')
 const memberLoading = ref(false)
 const showPwdReset = ref(false)
 const pwdResetUser = ref(null)
 const newPwd = ref('')
+const showCredentials = ref(false)
+const newMemberCreds = ref({ username: '', password: '' })
 
-// Auth
+// Template Auth
 const accessList = ref([])
 const allTemplates = ref([])
 const showAuthAdd = ref(false)
@@ -202,12 +268,49 @@ const authForm = ref({ user_id: null, template_id: null })
 const authError = ref('')
 const authLoading = ref(false)
 
+// Equipment Auth
+const equipAccessList = ref([])
+const showEquipAuthAdd = ref(false)
+const equipAuthForm = ref({ user_id: null })
+const equipAuthError = ref('')
+const equipAuthLoading = ref(false)
+
+function roleLabel(r) {
+  return r === 'admin' ? '管理员' : r === 'manager' ? '经理' : '员工'
+}
+
 onMounted(async () => {
   const user = JSON.parse(localStorage.getItem('user') || 'null')
   currentUserId.value = user?.id
   await loadBuildings()
   const { data: t } = await api.get('/templates')
   allTemplates.value = t
+})
+
+// Generate SG-format username
+async function generateUsername() {
+  // Fetch all users and find the max SG number
+  try {
+    const { data } = await api.get('/users')
+    const sgUsers = data.filter(u => /^SG\d{3}$/.test(u.username))
+    let maxNum = 0
+    for (const u of sgUsers) {
+      const num = parseInt(u.username.slice(2))
+      if (num > maxNum) maxNum = num
+    }
+    const nextNum = String(maxNum + 1).padStart(3, '0')
+    return 'SG' + nextNum
+  } catch (e) {
+    const ts = Date.now().toString(36).slice(-5).toUpperCase()
+    return 'SG' + ts
+  }
+}
+
+watch(showMemberAdd, async (v) => {
+  if (v) {
+    memberForm.value = { username: '', display_name: '', role: 'employee' }
+    memberForm.value.username = await generateUsername()
+  }
 })
 
 async function loadBuildings() {
@@ -257,26 +360,27 @@ async function doAddMember() {
   if (!memberForm.value.display_name.trim()) { memberError.value = '请输入姓名'; return }
   memberLoading.value = true
   try {
-    // Auto-generate username: M + 3-digit member count
-    const num = members.value.length + 1
-    const username = 'M' + String(num).padStart(3, '0')
     const password = generatePwd()
-    // Create user via /users
     const { data: user } = await api.post('/users', {
-      username,
+      username: memberForm.value.username,
       password,
       display_name: memberForm.value.display_name.trim(),
-      role: 'user'
-    })
-    // Add to project
-    await api.post('/projects/' + projectId + '/members', {
-      user_id: user.id,
       role: memberForm.value.role
     })
+    try {
+      await api.post('/projects/' + projectId + '/members', {
+        user_id: user.id,
+        role: memberForm.value.role === 'admin' ? 'admin' : 'member'
+      })
+    } catch (memberErr) {
+      memberError.value = '成员创建成功但添加到项目失败：' + (memberErr.response?.data?.error || '未知错误')
+      memberLoading.value = false
+      return
+    }
     showMemberAdd.value = false
-    memberForm.value = { display_name: '', role: 'member' }
     loadMembers()
-    alert('成员已创建\n编号：' + username + '\n密码：' + password + '\n请告知成员，成员不可自行修改密码。')
+    newMemberCreds.value = { username: memberForm.value.username, password }
+    showCredentials.value = true
   } catch (e) {
     memberError.value = e.response?.data?.error || '添加失败'
   } finally { memberLoading.value = false }
@@ -292,10 +396,6 @@ function resetMemberPwd(m) {
   showPwdReset.value = true
 }
 async function confirmResetPwd() {
-  // Admin resets via /users endpoint - need to update user password
-  // For simplicity, use the auth password endpoint isn't right
-  // We need a separate admin reset endpoint. For now, notify admin.
-  // Actually, let's create a backend endpoint for admin password reset
   try {
     await api.put('/users/' + pwdResetUser.value.id + '/reset-password', {
       password: newPwd.value
@@ -303,13 +403,12 @@ async function confirmResetPwd() {
     showPwdReset.value = false
     alert('密码已重置为：' + newPwd.value)
   } catch (e) {
-    // Fallback: show password to admin
     alert('请手动告知新密码：' + newPwd.value + '\n（需后端支持管理员重置密码接口）')
     showPwdReset.value = false
   }
 }
 
-// Auth
+// Template Auth
 async function loadAccess() {
   const { data } = await api.get('/projects/' + projectId + '/template-access')
   accessList.value = data
@@ -331,8 +430,27 @@ async function revokeAccess(a) {
   await api.delete('/projects/' + projectId + '/template-access/' + a.id)
   loadAccess()
 }
-</script>
 
-<style scoped>
-.ml-8 { margin-left: 8px; }
-</style>
+// Equipment Auth
+async function loadEquipAccess() {
+  const { data } = await api.get('/projects/' + projectId + '/equipment-access')
+  equipAccessList.value = data
+}
+async function doEquipAuth() {
+  equipAuthError.value = ''
+  if (!equipAuthForm.value.user_id) { equipAuthError.value = '请选择用户'; return }
+  equipAuthLoading.value = true
+  try {
+    await api.post('/projects/' + projectId + '/equipment-access', { user_id: equipAuthForm.value.user_id })
+    showEquipAuthAdd.value = false
+    equipAuthForm.value = { user_id: null }
+    loadEquipAccess()
+  } catch (e) {
+    equipAuthError.value = e.response?.data?.error || '授权失败'
+  } finally { equipAuthLoading.value = false }
+}
+async function revokeEquipAccess(a) {
+  await api.delete('/projects/' + projectId + '/equipment-access/' + a.id)
+  loadEquipAccess()
+}
+</script>

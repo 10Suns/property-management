@@ -9,14 +9,45 @@ const db = new Database(dbPath)
 db.pragma('journal_mode = WAL')
 db.pragma('foreign_keys = ON')
 
+function runMigrations() {
+  const tableInfo = db.prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name='users'").get()
+  if (tableInfo && tableInfo.sql && tableInfo.sql.includes("role IN ('admin','user')")) {
+    db.pragma('foreign_keys = OFF')
+    // Note: DROP TABLE users removes FK constraints from dependent tables.
+    // Data integrity is preserved (FK checks are OFF during migration),
+    // but FK enforcement on user_id columns will not be re-enabled.
+    // New databases created from initDB() have proper FK constraints.
+    db.exec(`
+      CREATE TABLE users_new (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE NOT NULL,
+        password_hash TEXT NOT NULL,
+        display_name TEXT NOT NULL,
+        role TEXT NOT NULL DEFAULT 'employee' CHECK(role IN ('admin','manager','employee')),
+        created_by INTEGER,
+        created_at TEXT DEFAULT (datetime('now'))
+      );
+      INSERT INTO users_new (id, username, password_hash, display_name, role, created_by, created_at)
+        SELECT id, username, password_hash, display_name, 'admin', created_by, created_at FROM users WHERE role='admin';
+      INSERT INTO users_new (id, username, password_hash, display_name, role, created_by, created_at)
+        SELECT id, username, password_hash, display_name, 'employee', created_by, created_at FROM users WHERE role='user';
+      DROP TABLE users;
+      ALTER TABLE users_new RENAME TO users;
+    `)
+    db.pragma('foreign_keys = ON')
+    console.log('Migrated users table: role constraint updated (admin/manager/employee)')
+  }
+}
+
 export function initDB() {
+  runMigrations()
   db.exec(`
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       username TEXT UNIQUE NOT NULL,
       password_hash TEXT NOT NULL,
       display_name TEXT NOT NULL,
-      role TEXT NOT NULL DEFAULT 'user' CHECK(role IN ('admin','user')),
+      role TEXT NOT NULL DEFAULT 'employee' CHECK(role IN ('admin','manager','employee')),
       created_by INTEGER,
       created_at TEXT DEFAULT (datetime('now'))
     );
@@ -131,6 +162,16 @@ export function initDB() {
       granted_by INTEGER REFERENCES users(id),
       created_at TEXT DEFAULT (datetime('now')),
       UNIQUE(user_id, template_id)
+    );
+
+    -- Equipment access control
+    CREATE TABLE IF NOT EXISTS equipment_access (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id INTEGER NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+      granted_by INTEGER REFERENCES users(id),
+      created_at TEXT DEFAULT (datetime('now')),
+      UNIQUE(user_id, project_id)
     );
 
     CREATE TABLE IF NOT EXISTS inspection_records (

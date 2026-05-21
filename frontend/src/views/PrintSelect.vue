@@ -5,30 +5,36 @@
         <router-link :to="'/projects/' + projectId" class="btn btn-sm btn-outline">← 返回</router-link>
         <h1 class="page-title">打印表单</h1>
       </div>
-      <button class="btn" @click="doPrint" :disabled="selected.length + selectedBlanks.length === 0">打印已选（{{ selected.length + selectedBlanks.length }}）</button>
+      <button class="btn" @click="doPrint" :disabled="selected.length + selectedForms.length === 0">打印已选（{{ selected.length + selectedForms.length }}）</button>
     </div>
 
-    <p class="text-sm text-secondary mb-12">勾选要打印的查验记录，或从下方「空白表单」区选择模板打印空表。</p>
+    <p class="text-sm text-secondary mb-12">选择要打印的查验记录，或从下方「我的表单」打印空白表。</p>
 
     <div v-if="loading" class="empty">加载中...</div>
     <template v-else>
-      <!-- User forms (blank templates) -->
-      <h3 class="mb-8" style="font-size:14px">空白表单（按模板打印）</h3>
-      <div v-for="cat in categories" :key="cat.name" class="mb-12">
-        <h4 class="text-sm text-secondary mb-8">{{ cat.name }}</h4>
-        <div v-for="t in cat.templates" :key="'t_'+t.id" class="card">
-          <label class="flex items-center gap-12" style="cursor:pointer">
-            <input type="checkbox" :value="'t_'+t.id" v-model="selectedBlanks" style="width:18px;height:18px" />
-            <div class="flex-1">
-              <div style="font-weight:500">{{ t.form_id }} — {{ t.title }}</div>
-              <div class="text-sm text-secondary">{{ t.item_count || 0 }} 个检查项 · 系统模板</div>
-            </div>
-          </label>
-        </div>
+      <!-- My forms for blank printing -->
+      <div class="flex items-center gap-8 mb-8">
+        <h3 style="font-size:14px">我的表单（空白表）</h3>
+        <button class="btn btn-sm btn-outline" @click="selectedForms = myForms.map(f => 'f_' + f.id)">全选</button>
+        <button class="btn btn-sm btn-outline" @click="selectedForms = []">取消全选</button>
+      </div>
+      <div v-if="myForms.length === 0" class="empty text-sm">暂无个人表单，请在项目详情页创建</div>
+      <div v-for="f in myForms" :key="'f_'+f.id" class="card">
+        <label class="flex items-center gap-12" style="cursor:pointer">
+          <input type="checkbox" :value="'f_'+f.id" v-model="selectedForms" style="width:18px;height:18px" />
+          <div class="flex-1">
+            <div style="font-weight:500">{{ f.title }}</div>
+            <div class="text-sm text-secondary">{{ f.template_form_id || '自定义' }} · {{ f.item_count || 0 }} 个检查项 · {{ f.creator_name }}</div>
+          </div>
+        </label>
       </div>
 
       <!-- Inspection records -->
-      <h3 class="mb-8 mt-16" style="font-size:14px">已填写的查验记录</h3>
+      <div class="flex items-center gap-8 mb-8 mt-16">
+        <h3 style="font-size:14px">已填写的查验记录</h3>
+        <button class="btn btn-sm btn-outline" @click="selected = records.map(r => r.id)">全选</button>
+        <button class="btn btn-sm btn-outline" @click="selected = []">取消全选</button>
+      </div>
       <div class="filter-bar">
         <select v-model="filterTemplate" class="select" @change="loadRecords">
           <option :value="null">全部模板</option>
@@ -59,7 +65,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import api from '../api'
 
@@ -67,27 +73,21 @@ const route = useRoute()
 const router = useRouter()
 const projectId = route.params.id
 const records = ref([])
+const myForms = ref([])
 const allTemplates = ref([])
 const selected = ref([])
-const selectedBlanks = ref([])
+const selectedForms = ref([])
 const loading = ref(true)
 const filterTemplate = ref(null)
 
-const categories = computed(() => {
-  const cats = { 'A': { name: 'A. 设备用房', templates: [] }, 'B': { name: 'B. 公共部位', templates: [] }, 'C': { name: 'C. 室内', templates: [] }, 'D': { name: 'D. 资料', templates: [] } }
-  for (const t of allTemplates.value) {
-    const prefix = t.form_id.charAt(0)
-    if (cats[prefix]) cats[prefix].templates.push(t)
-  }
-  return Object.values(cats).filter(c => c.templates.length > 0)
-})
-
 onMounted(async () => {
-  const [{ data: r }, { data: t }] = await Promise.all([
+  const [{ data: r }, { data: f }, { data: t }] = await Promise.all([
     api.get('/records?project_id=' + projectId),
+    api.get('/forms?project_id=' + projectId),
     api.get('/templates')
   ])
   records.value = r
+  myForms.value = f
   allTemplates.value = t
   loading.value = false
 })
@@ -103,9 +103,7 @@ async function loadRecords() {
 
 function doPrint() {
   localStorage.setItem('printRecords', JSON.stringify(selected.value))
-  localStorage.setItem('printBlankTemplates', JSON.stringify(selectedBlanks.value))
-  if (selected.value.length > 0 || selectedBlanks.value.length > 0) {
-    router.push('/print-preview')
-  }
+  localStorage.setItem('printBlankTemplates', JSON.stringify(selectedForms.value))
+  router.push('/print-preview')
 }
 </script>

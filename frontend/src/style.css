@@ -212,3 +212,26 @@ tr:hover td { background: #f8f9fa; }
 
 /* Toast */
 .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #323232; color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 14px; z-index: 400; }
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  #app { max-width: 100%; }
+  .main-content { padding: 10px; }
+  .page-title { font-size: 17px; }
+  .page-header { flex-direction: column; align-items: flex-start; }
+  .btn { padding: 6px 14px; font-size: 13px; }
+  .btn-sm { padding: 5px 10px; font-size: 12px; }
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table { font-size: 13px; }
+  th, td { padding: 8px 6px; }
+  .form-row { grid-template-columns: 1fr; }
+  .card { padding: 12px; }
+  .input, .select, .textarea { font-size: 16px; padding: 10px 12px; }
+  .modal-card { max-width: 95vw; padding: 16px; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .tab { white-space: nowrap; padding: 10px 14px; font-size: 13px; }
+  .filter-bar { flex-direction: column; }
+  .filter-bar .input, .filter-bar .select { width: 100%; }
+  .list-item { padding: 12px; flex-wrap: wrap; }
+}

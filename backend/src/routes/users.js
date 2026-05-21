@@ -5,7 +5,11 @@ import { adminRequired } from '../auth.js'
 
 const router = Router()
 
-router.get('/', adminRequired, (req, res) => {
+// List users (managers and admins can view)
+router.get('/', (req, res) => {
+  if (req.user.role !== 'admin' && req.user.role !== 'manager') {
+    return res.status(403).json({ error: '权限不足' })
+  }
   const users = db.prepare('SELECT id, username, display_name, role, created_at FROM users ORDER BY id').all()
   res.json(users)
 })
@@ -18,8 +22,8 @@ router.post('/', adminRequired, (req, res) => {
   if (existing) return res.status(400).json({ error: '用户名已存在' })
   const hash = bcrypt.hashSync(password, 10)
   const r = db.prepare('INSERT INTO users (username, password_hash, display_name, role, created_by) VALUES (?,?,?,?,?)')
-    .run(username, hash, display_name, role || 'user', req.user.id)
-  res.json({ id: r.lastInsertRowid, username, display_name, role: role || 'user' })
+    .run(username, hash, display_name, role || 'employee', req.user.id)
+  res.json({ id: r.lastInsertRowid, username, display_name, role: role || 'employee' })
 })
 
 // Admin reset user password

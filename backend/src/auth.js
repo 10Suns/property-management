@@ -27,7 +27,14 @@ export function authMiddleware(req, res, next) {
 
 export function adminRequired(req, res, next) {
   if (req.user.role !== 'admin') {
-    return res.status(403).json({ error: '仅管理员可执行此操作' })
+    return res.status(403).json({ error: '仅系统管理员可执行此操作' })
+  }
+  next()
+}
+
+export function managerRequired(req, res, next) {
+  if (req.user.role !== 'admin' && req.user.role !== 'manager') {
+    return res.status(403).json({ error: '仅管理员和物业经理可执行此操作' })
   }
   next()
 }

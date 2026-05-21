@@ -31,8 +31,8 @@
       <p class="text-sm mt-8">请在项目详情页选择一个模板开始查验</p>
     </div>
 
-    <div v-for="r in records" :key="r.id" class="list-item" @click="openRecord(r)">
-      <div class="list-item-body">
+    <div v-for="r in records" :key="r.id" class="list-item">
+      <div class="list-item-body" @click="openRecord(r)">
         <div class="list-item-title">{{ r.template_title }}</div>
         <div class="list-item-sub">
           {{ r.creator_name }} · {{ r.building_name || r.house_number || r.location_info || '未指定位置' }}
@@ -40,7 +40,8 @@
         </div>
       </div>
       <span class="badge" :class="'badge-' + (r.status === 'completed' ? 'completed' : r.status === 'in_progress' ? 'in_progress' : 'pending')">{{ r.status === 'completed' ? '已完成' : r.status === 'in_progress' ? '查验中' : '待查验' }}</span>
-      <span class="list-item-arrow">›</span>
+      <button v-if="canDelete(r)" class="btn btn-sm btn-outline" style="color:#c5221f;border-color:#e0c0c0;flex-shrink:0" @click.stop="deleteRecord(r)">删除</button>
+      <span class="list-item-arrow" @click="openRecord(r)">›</span>
     </div>
   </div>
 </template>
@@ -82,7 +83,26 @@ async function loadRecords() {
   loading.value = false
 }
 
+const currentUser = JSON.parse(localStorage.getItem('user') || 'null')
+
+function canDelete(r) {
+  return currentUser?.role === 'admin' || r.created_by === currentUser?.id
+}
+
 function openRecord(r) {
   router.push('/projects/' + projectId + '/template/' + r.template_id + '?record=' + r.id)
+}
+
+async function deleteRecord(r) {
+  if (!confirm('确定删除此查验记录 "' + r.template_title + '"？\n此操作不可恢复，照片等数据将一并删除。')) return
+  loading.value = true
+  try {
+    await api.delete('/records/' + r.id)
+    records.value = records.value.filter(x => x.id !== r.id)
+  } catch (e) {
+    alert('删除失败：' + (e.response?.data?.error || '未知错误'))
+  } finally {
+    loading.value = false
+  }
 }
 </script>

@@ -15,7 +15,7 @@
       <div class="print-form">
         <table class="print-table">
           <thead>
-            <tr><th colspan="4" class="print-title">物业承接查验记录表 <span style="font-weight:400;font-size:13px">{{ tpl.form_id }} {{ tpl.title }}</span></th></tr>
+            <tr><th colspan="4" class="print-title">瑞界物业 · 物业承接查验记录表 <span style="font-weight:400;font-size:13px">{{ tpl.form_id }} {{ tpl.title }}</span></th></tr>
             <tr>
               <th style="width:15%">项目名称</th><td style="width:35%">{{ projectName }}</td>
               <th style="width:15%">查验日期</th><td style="width:35%">____年____月____日</td>
@@ -25,16 +25,16 @@
               <th>查验人</th><td>____________</td>
             </tr>
             <tr>
-              <th style="width:8%">序号</th>
-              <th style="width:18%">检查项目</th>
+              <th style="width:4%">序号</th>
+              <th style="width:9%">检查项目</th>
               <th style="width:40%">检查标准</th>
-              <th style="width:34%">查验结果</th>
+              <th style="width:47%">查验结果</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="(item, ii) in tpl.items" :key="ii">
               <td class="text-center">{{ ii+1 }}</td>
-              <td class="cell-top">{{ item.item_name }}</td>
+              <td class="cell-top text-sm">{{ item.item_name }}</td>
               <td class="cell-top text-sm">{{ item.check_standard }}</td>
               <td class="cell-top"></td>
             </tr>
@@ -58,7 +58,7 @@
       <div class="print-form">
         <table class="print-table">
           <thead>
-            <tr><th colspan="4" class="print-title">物业承接查验记录表 <span style="font-weight:400;font-size:13px">{{ record.template_form_id }} {{ record.template_title }}</span></th></tr>
+            <tr><th colspan="4" class="print-title">瑞界物业 · 物业承接查验记录表 <span style="font-weight:400;font-size:13px">{{ record.template_form_id }} {{ record.template_title }}</span></th></tr>
             <tr>
               <th style="width:15%">项目名称</th><td style="width:35%">{{ projectName }}</td>
               <th style="width:15%">查验日期</th><td style="width:35%">{{ record.updated_at?.slice(0,10) }}</td>
@@ -68,10 +68,10 @@
               <th>查验人</th><td>{{ record.creator_name }}</td>
             </tr>
             <tr>
-              <th style="width:8%">序号</th>
-              <th style="width:18%">检查项目</th>
+              <th style="width:4%">序号</th>
+              <th style="width:9%">检查项目</th>
               <th style="width:40%">检查标准</th>
-              <th style="width:34%">查验结果</th>
+              <th style="width:47%">查验结果</th>
             </tr>
           </thead>
           <tbody>

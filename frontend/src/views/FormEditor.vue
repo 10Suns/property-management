@@ -4,21 +4,29 @@
     <template v-else-if="template">
       <div class="page-header">
         <div>
-          <h1 class="page-title">{{ template.form_id }} {{ template.title }}</h1>
+          <div class="flex items-center gap-8 mb-4">
+            <span class="text-sm text-secondary" style="font-weight:600">{{ template.form_id }}</span>
+            <span class="text-sm text-secondary">{{ template.category || '' }}</span>
+          </div>
+          <h1 class="page-title">{{ displayTitle }}</h1>
           <div class="text-sm text-secondary">{{ project?.name }}</div>
         </div>
         <div class="flex gap-8">
-          <button v-if="!userForm" class="btn" @click="createUserForm">创建我的表单</button>
-          <template v-else>
-            <button class="btn btn-sm" @click="createRecord" v-if="!record">开始查验</button>
-            <button class="btn btn-sm" @click="saveRecord" :disabled="saving" v-if="record">{{ saving ? '保存中...' : '保存记录' }}</button>
-            <button class="btn btn-sm" @click="printBlank" v-if="userForm && !record">打印空白表</button>
+          <button v-if="!userForm && !record" class="btn" @click="saveAsMyForm" :disabled="savingForm">
+            {{ savingForm ? '保存中...' : '保存为我的表单' }}
+          </button>
+          <template v-if="userForm && !record">
+            <button class="btn btn-sm" @click="createRecord">开始查验</button>
+            <button class="btn btn-sm" @click="printBlank">打印空白表</button>
           </template>
+          <button v-if="record" class="btn btn-sm" @click="saveRecordMeta" :disabled="saving">
+            {{ saving ? '保存中...' : '保存记录' }}
+          </button>
           <button class="btn btn-sm btn-outline" @click="router.back()">返回</button>
         </div>
       </div>
 
-      <!-- Location info (when creating record) -->
+      <!-- Location info -->
       <div class="card mb-16" v-if="userForm && !record">
         <div class="card-title mb-8">查验位置</div>
         <div class="form-row">
@@ -39,11 +47,11 @@
         </div>
         <div class="form-group">
           <label class="form-label">位置信息</label>
-          <input v-model="recordForm.location_info" class="input" placeholder="具体位置描述，如：1栋2层配电间" />
+          <input v-model="recordForm.location_info" class="input" placeholder="具体位置描述" />
         </div>
       </div>
 
-      <!-- Location display (when record exists) -->
+      <!-- Location when record exists -->
       <div class="card mb-16" v-if="record">
         <div class="form-row">
           <div class="form-group">
@@ -72,8 +80,8 @@
         <div class="card-header">
           <span class="card-title">检查项目（{{ items.length }}项）</span>
           <div class="flex gap-8">
-            <button v-if="canEditItems()" class="btn btn-sm" @click="showAddItem=true">+ 添加条目</button>
-            <button v-if="canEditItems()" class="btn btn-sm btn-outline" @click="editAllItems">批量编辑</button>
+            <button v-if="canEditItems" class="btn btn-sm" @click="showAddItem=true">+ 添加条目</button>
+            <button v-if="canEditItems" class="btn btn-sm btn-outline" @click="editAllItems">批量编辑</button>
           </div>
         </div>
 
@@ -86,7 +94,7 @@
                 <th style="width:30%">检查标准</th>
                 <th style="width:22%">查验结果</th>
                 <th style="width:60px">照片</th>
-                <th v-if="canEditItems()" style="width:40px"></th>
+                <th v-if="canEditItems" style="width:40px"></th>
               </tr>
             </thead>
             <tbody>
@@ -97,7 +105,7 @@
                     <input v-model="item._editName" class="input input-sm" style="font-size:13px;padding:4px 6px" />
                   </template>
                   <template v-else>
-                    <span @dblclick="editItem(item)" style="cursor:pointer">{{ item.item_name || item.custom_item_name || item.template_item_name }}</span>
+                    <span @dblclick="startEditItem(item)" style="cursor:pointer">{{ item.item_name || item.custom_item_name || '-' }}</span>
                   </template>
                 </td>
                 <td class="text-sm">
@@ -105,7 +113,7 @@
                     <input v-model="item._editStd" class="input input-sm" style="font-size:13px;padding:4px 6px" />
                   </template>
                   <template v-else>
-                    <span @dblclick="editItem(item)" style="cursor:pointer">{{ item.check_standard || item.custom_standard || item.template_standard }}</span>
+                    <span @dblclick="startEditItem(item)" style="cursor:pointer">{{ item.check_standard || item.custom_standard || '-' }}</span>
                   </template>
                 </td>
                 <td>
@@ -127,11 +135,11 @@
                 <td class="text-center">
                   <button v-if="record" class="btn btn-sm btn-outline" style="font-size:11px;padding:2px 6px" @click="openPhotos(item)">📷{{ item._photoCount || 0 }}</button>
                 </td>
-                <td v-if="canEditItems()">
+                <td v-if="canEditItems">
                   <div class="flex gap-4">
-                    <button v-if="item._editing" class="btn btn-sm" style="font-size:11px;padding:2px 6px" @click="saveEditItem(item)">✓</button>
+                    <button v-if="item._editing" class="btn btn-sm" style="font-size:11px;padding:2px 6px" @click="finishEditItem(item)">✓</button>
                     <button v-if="item._editing" class="btn btn-sm btn-outline" style="font-size:11px;padding:2px 6px" @click="cancelEditItem(item)">✕</button>
-                    <button v-if="!item._editing" class="btn btn-sm btn-outline" style="font-size:11px;padding:2px 6px;color:var(--danger);border-color:var(--danger)" @click="deleteItem(item)">✕</button>
+                    <button v-if="!item._editing" class="btn btn-sm btn-outline" style="font-size:11px;padding:2px 8px;color:#c5221f;border-color:#e0c0c0" @click="removeItem(item)">删除</button>
                   </div>
                 </td>
               </tr>
@@ -140,7 +148,7 @@
         </div>
       </div>
 
-      <!-- Inspector comment (when record exists) -->
+      <!-- Inspector comment -->
       <div class="card mt-16" v-if="record">
         <div class="form-group">
           <label class="form-label">查验意见</label>
@@ -148,7 +156,7 @@
         </div>
         <div class="flex gap-8 items-center">
           <label class="form-label">状态：</label>
-          <select v-model="recordForm.status" class="select" style="width:auto" @change="saveRecord">
+          <select v-model="recordForm.status" class="select" style="width:auto" @change="saveRecordMeta">
             <option value="pending">待查验</option>
             <option value="in_progress">查验中</option>
             <option value="completed">已完成</option>
@@ -168,7 +176,7 @@
           </div>
         </div>
         <div v-if="(!photoItem._photos || photoItem._photos.length) < 6">
-          <input type="file" accept="image/*" multiple @change="uploadPhotos" class="input" />
+          <input type="file" accept="image/*" capture="environment" multiple @change="uploadPhotos" class="input" />
         </div>
         <p class="text-sm text-secondary mt-8">最多6张，每张不超过10MB</p>
         <div class="modal-actions">
@@ -183,11 +191,11 @@
         <h3>添加检查项</h3>
         <div class="form-group">
           <label class="form-label">检查项目 *</label>
-          <input v-model="newItem.name" class="input" placeholder="检查项名称" />
+          <input v-model="newItem.name" class="input" placeholder="检查项名称" @keyup.enter="doAddItem" />
         </div>
         <div class="form-group">
           <label class="form-label">检查标准</label>
-          <input v-model="newItem.standard" class="input" placeholder="检查标准" />
+          <input v-model="newItem.standard" class="input" placeholder="检查标准" @keyup.enter="doAddItem" />
         </div>
         <div class="modal-actions">
           <button class="btn" @click="doAddItem">添加</button>
@@ -199,7 +207,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import api from '../api'
 
@@ -214,6 +222,7 @@ const buildings = ref([])
 const houses = ref([])
 const loading = ref(true)
 const saving = ref(false)
+const savingForm = ref(false)
 const photoItem = ref(null)
 const showAddItem = ref(false)
 const newItem = ref({ name: '', standard: '' })
@@ -228,24 +237,43 @@ const recordForm = reactive({
   status: 'in_progress'
 })
 
+const displayTitle = computed(() => {
+  if (userForm.value) return userForm.value.title
+  return template.value?.title || ''
+})
+
+const canEditItems = computed(() => {
+  return !record.value
+})
+
 onMounted(async () => {
   const pid = route.params.id
   const tid = route.params.tid
   const existingRecordId = route.query.record
   const formId = route.query.form
 
-  const [{ data: t }, { data: p }, { data: b }] = await Promise.all([
-    api.get('/templates/' + tid),
+  const [{ data: p }, { data: b }] = await Promise.all([
     api.get('/projects/' + pid),
     api.get('/projects/' + pid + '/buildings')
   ])
-  template.value = t
   project.value = p
   buildings.value = b
   await loadHouses()
 
+  // Try to load template (skip if tid is 0 for blank forms)
+  if (tid && tid !== '0') {
+    try {
+      const { data: t } = await api.get('/templates/' + tid)
+      template.value = t
+    } catch (e) {
+      // Template might not exist for blank forms
+      template.value = { form_id: '', title: '', category: '', id: null }
+    }
+  } else {
+    template.value = { form_id: '', title: '', category: '', id: null }
+  }
+
   if (existingRecordId) {
-    // Load existing record
     const { data: r } = await api.get('/records/' + existingRecordId)
     record.value = r
     recordForm.status = r.status
@@ -264,18 +292,17 @@ onMounted(async () => {
     }))
     loadPhotos()
   } else if (formId) {
-    // Load existing user form
     await loadUserForm(formId)
-  } else {
+  } else if (template.value?.items) {
     // Show template items as reference
-    items.value = (t.items || []).map(item => ({
+    items.value = template.value.items.map(item => ({
       ...item,
       _key: 't_' + item.id,
-      item_name: item.item_name,
-      check_standard: item.check_standard,
       _photos: [],
       _photoCount: 0,
-      _editing: false
+      _editing: false,
+      _editName: item.item_name,
+      _editStd: item.check_standard
     }))
   }
   loading.value = false
@@ -292,17 +319,16 @@ function onBuildingChange() {
   loadHouses(recordForm.building_id)
 }
 
-async function createUserForm() {
-  const { data } = await api.post('/forms', {
-    project_id: parseInt(route.params.id),
-    template_id: template.value.id
-  })
-  await loadUserForm(data.id)
-}
-
+// Load user form with its items
 async function loadUserForm(fid) {
   const { data } = await api.get('/forms/' + fid)
   userForm.value = data
+  if (data.template_id) {
+    try {
+      const { data: t } = await api.get('/templates/' + data.template_id)
+      template.value = t
+    } catch (e) { /* ignore */ }
+  }
   items.value = (data.items || []).map(item => ({
     ...item,
     _key: 'f_' + item.id,
@@ -314,6 +340,142 @@ async function loadUserForm(fid) {
   }))
 }
 
+// Save template edits as a new user form
+async function saveAsMyForm() {
+  // Collect current items state
+  const user = JSON.parse(localStorage.getItem('user') || '{}')
+  const formTitle = (template.value?.title || '自定义表单') + ' - ' + (user.display_name || '用户')
+
+  const itemList = items.value
+    .filter(item => item._editName?.trim() || item.item_name?.trim())
+    .map(item => ({
+      item_name: (item._editName || item.item_name || '').trim(),
+      check_standard: (item._editStd || item.check_standard || '').trim(),
+      source_item_id: item.id || null
+    }))
+
+  if (itemList.length === 0) {
+    alert('请至少保留一个检查项目')
+    return
+  }
+
+  savingForm.value = true
+  try {
+    const { data } = await api.post('/forms', {
+      project_id: parseInt(route.params.id),
+      template_id: template.value?.id || 1,
+      title: formTitle,
+      items: itemList
+    })
+    await loadUserForm(data.id)
+  } catch (e) {
+    alert('保存失败：' + (e.response?.data?.error || '未知错误'))
+  } finally {
+    savingForm.value = false
+  }
+}
+
+// Item editing (for user forms and templates before saving)
+function startEditItem(item) {
+  if (!canEditItems.value) return
+  item._editing = true
+  item._editName = item.item_name || item.custom_item_name || item._editName || ''
+  item._editStd = item.check_standard || item.custom_standard || item._editStd || ''
+}
+
+function cancelEditItem(item) {
+  item._editing = false
+  item._editName = item.item_name || ''
+  item._editStd = item.check_standard || ''
+}
+
+async function finishEditItem(item) {
+  if (!item._editName?.trim()) {
+    item._editing = false
+    return
+  }
+  if (item._key.startsWith('f_')) {
+    // Save to user form item
+    const { data } = await api.put('/forms/items/' + item.id, {
+      item_name: item._editName.trim(),
+      check_standard: item._editStd.trim()
+    })
+    item.item_name = data.item_name
+    item.check_standard = data.check_standard
+  } else if (item._key.startsWith('t_')) {
+    // Editing template item locally
+    item._editName_tmp = item._editName.trim()
+    item._editStd_tmp = item._editStd.trim()
+  }
+  if (item._key.startsWith('t_')) {
+    item.item_name = item._editName.trim()
+    item.check_standard = item._editStd.trim()
+  }
+  item._editing = false
+}
+
+async function removeItem(item) {
+  if (item._key.startsWith('f_')) {
+    await api.delete('/forms/items/' + item.id)
+  } else if (item._key.startsWith('r_')) {
+    await api.delete('/records/results/' + item.id)
+  }
+  items.value = items.value.filter(x => x._key !== item._key)
+}
+
+function editAllItems() {
+  for (const item of items.value) {
+    item._editing = true
+    item._editName = item.item_name || item.custom_item_name || item._editName || ''
+    item._editStd = item.check_standard || item.custom_standard || item._editStd || ''
+  }
+}
+
+async function doAddItem() {
+  if (!newItem.value.name.trim()) return
+  const name = newItem.value.name.trim()
+  const std = newItem.value.standard.trim()
+
+  if (userForm.value && !record.value) {
+    const { data } = await api.post('/forms/' + userForm.value.id + '/items', {
+      item_name: name,
+      check_standard: std
+    })
+    items.value.push({
+      ...data,
+      _key: 'f_' + data.id,
+      _photos: [], _photoCount: 0, _editing: false,
+      _editName: data.item_name, _editStd: data.check_standard
+    })
+  } else if (record.value) {
+    const { data } = await api.post('/records/' + record.value.id + '/results', {
+      custom_item_name: name,
+      custom_standard: std
+    })
+    items.value.push({
+      ...data,
+      _key: 'r_' + data.id,
+      _photos: [], _photoCount: 0, _editing: false,
+      _editName: data.item_name || data.custom_item_name || '',
+      _editStd: data.check_standard || data.custom_standard || ''
+    })
+  } else {
+    // Adding locally before saving as user form
+    items.value.push({
+      _key: 't_new_' + Date.now(),
+      id: null,
+      item_name: name,
+      check_standard: std,
+      _photos: [], _photoCount: 0, _editing: false,
+      _editName: name,
+      _editStd: std
+    })
+  }
+  showAddItem.value = false
+  newItem.value = { name: '', standard: '' }
+}
+
+// Record operations
 async function createRecord() {
   if (!userForm.value) return
   saving.value = true
@@ -345,113 +507,10 @@ async function createRecord() {
   }
 }
 
-function canEditItems() {
-  return !!(userForm.value || (record.value && record.value.created_by))
-}
-
-function editItem(item) {
-  if (!canEditItems()) return
-  item._editing = true
-  item._editName = item.item_name || item.custom_item_name || item._editName
-  item._editStd = item.check_standard || item.custom_standard || item._editStd
-}
-
-function cancelEditItem(item) {
-  item._editing = false
-  item._editName = item.item_name
-  item._editStd = item.check_standard
-}
-
-async function saveEditItem(item) {
-  if (!item._editName.trim()) return
-  if (item._key.startsWith('f_')) {
-    // Edit user_form_item
-    const { data } = await api.put('/forms/items/' + item.id, {
-      item_name: item._editName.trim(),
-      check_standard: item._editStd.trim()
-    })
-    item.item_name = data.item_name
-    item.check_standard = data.check_standard
-  } else if (item._key.startsWith('r_')) {
-    // Edit inspection_result custom fields
-    await api.put('/records/results/' + item.id, {
-      custom_item_name: item._editName.trim(),
-      custom_standard: item._editStd.trim()
-    })
-    item.custom_item_name = item._editName.trim()
-    item.custom_standard = item._editStd.trim()
-    item.item_name = item._editName.trim()
-    item.check_standard = item._editStd.trim()
-  }
-  item._editing = false
-}
-
-async function deleteItem(item) {
-  if (!confirm('确定删除此检查条目？')) return
-  if (item._key.startsWith('f_')) {
-    await api.delete('/forms/items/' + item.id)
-  } else if (item._key.startsWith('r_')) {
-    await api.delete('/records/results/' + item.id)
-  }
-  items.value = items.value.filter(x => x._key !== item._key)
-}
-
-function editAllItems() {
-  if (!canEditItems()) return
-  for (const item of items.value) {
-    item._editing = true
-    item._editName = item.item_name || item.custom_item_name || item._editName || ''
-    item._editStd = item.check_standard || item.custom_standard || item._editStd || ''
-  }
-}
-
-function showAddItemFn() {
-  showAddItem.value = true
-}
-
-async function doAddItem() {
-  if (!newItem.value.name.trim()) return
-  if (userForm.value && !record.value) {
-    // Adding to user form (before record creation)
-    const { data } = await api.post('/forms/' + userForm.value.id + '/items', {
-      item_name: newItem.value.name.trim(),
-      check_standard: newItem.value.standard.trim()
-    })
-    items.value.push({
-      ...data,
-      _key: 'f_' + data.id,
-      _photos: [], _photoCount: 0, _editing: false,
-      _editName: data.item_name, _editStd: data.check_standard
-    })
-  } else if (record.value) {
-    // Adding to existing record
-    const { data } = await api.post('/records/' + record.value.id + '/results', {
-      custom_item_name: newItem.value.name.trim(),
-      custom_standard: newItem.value.standard.trim()
-    })
-    items.value.push({
-      ...data,
-      _key: 'r_' + data.id,
-      _photos: [], _photoCount: 0, _editing: false,
-      _editName: data.item_name || data.custom_item_name || '',
-      _editStd: data.check_standard || data.custom_standard || ''
-    })
-  }
-  showAddItem.value = false
-  newItem.value = { name: '', standard: '' }
-}
-
-async function saveRecord() {
+async function saveRecordMeta() {
   if (!record.value) return
   saving.value = true
   try {
-    // First save all pending item edits
-    for (const item of items.value) {
-      if (item._editing && item._editName.trim()) {
-        await saveEditItem(item)
-      }
-    }
-    // Then save record metadata
     await api.put('/records/' + record.value.id, {
       inspector_comment: recordForm.inspector_comment,
       status: recordForm.status,
@@ -459,8 +518,6 @@ async function saveRecord() {
       building_id: recordForm.building_id,
       house_id: recordForm.house_id
     })
-  } catch (e) {
-    console.error('Save failed', e)
   } finally {
     saving.value = false
   }
@@ -481,7 +538,7 @@ function autoSaveResult(item) {
 
 function autoSaveComment() {
   clearTimeout(commentSaveTimer)
-  commentSaveTimer = setTimeout(() => saveRecord(), 600)
+  commentSaveTimer = setTimeout(() => saveRecordMeta(), 600)
 }
 
 onUnmounted(() => {
@@ -489,6 +546,7 @@ onUnmounted(() => {
   clearTimeout(commentSaveTimer)
 })
 
+// Photos
 function openPhotos(item) {
   photoItem.value = item
   if (!item._photos) item._photos = []

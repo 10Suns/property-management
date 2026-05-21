@@ -9,9 +9,10 @@
       <div class="page-header">
         <h1 class="page-title">{{ project.name }}</h1>
         <div class="flex gap-8">
-          <button class="btn btn-sm" @click="router.push('/projects/' + project.id + '/settings')">配置</button>
+          <button v-if="auth.isManager" class="btn btn-sm" @click="router.push('/projects/' + project.id + '/dashboard')">仪表盘</button>
+          <button v-if="auth.isManager" class="btn btn-sm" @click="router.push('/projects/' + project.id + '/settings')">配置</button>
           <button class="btn btn-sm" @click="router.push('/projects/' + project.id + '/print')">打印</button>
-          <button class="btn btn-sm" @click="showEdit=true">编辑</button>
+          <button v-if="auth.isAdmin" class="btn btn-sm" @click="showEdit=true">编辑</button>
         </div>
       </div>
 
@@ -28,15 +29,18 @@
       </div>
 
       <div class="tabs">
-        <div class="tab" :class="{ active: tab === 'templates' }" @click="tab='templates'">查验模板</div>
+        <div class="tab" :class="{ active: tab === 'reference' }" @click="tab='reference'">参考表单</div>
+        <div class="tab" :class="{ active: tab === 'myForms' }" @click="tab='myForms'; loadMyForms()">我的表单</div>
         <div class="tab" :class="{ active: tab === 'equipment' }" @click="tab='equipment'; loadEquipment()">设备档案</div>
       </div>
 
-      <!-- Templates -->
-      <div v-if="tab === 'templates'">
-        <div v-for="cat in categories" :key="cat.name" class="mb-16">
+      <!-- 参考表单 -->
+      <div v-if="tab === 'reference'">
+        <p class="text-sm text-secondary mb-8">选择系统模板查看和创建个人表单，可自定义检查项后保存。</p>
+        <div v-if="refTemplates.length === 0" class="empty">暂无可用模板</div>
+        <div v-for="cat in refCategories" :key="cat.name" class="mb-16">
           <h3 class="text-sm text-secondary mb-8">{{ cat.name }}</h3>
-          <div v-for="t in cat.templates" :key="t.id" class="list-item" @click="startInspection(t)">
+          <div v-for="t in cat.templates" :key="t.id" class="list-item" @click="openTemplate(t)">
             <div class="list-item-body">
               <div class="list-item-title">{{ t.form_id }} — {{ t.title }}</div>
               <div class="list-item-sub">{{ t.item_count || 0 }} 个检查项</div>
@@ -46,10 +50,36 @@
         </div>
       </div>
 
-      <!-- Equipment -->
+      <!-- 我的表单 -->
+      <div v-if="tab === 'myForms'">
+        <div class="flex gap-8 mb-12">
+          <button class="btn btn-sm" @click="showCreateBlank=true">+ 创建空白表单</button>
+        </div>
+        <div v-if="myForms.length === 0" class="empty">
+          <p>暂无个人表单</p>
+          <p class="text-sm mt-8">在「参考表单」中选择模板创建，或点击上方创建空白表单</p>
+        </div>
+        <div v-for="f in myForms" :key="f.id" class="card">
+          <div class="card-header">
+            <div>
+              <span class="card-title">{{ f.title }}</span>
+              <span class="text-sm text-secondary ml-8">{{ f.template_form_id || '' }} · {{ f.creator_name }}</span>
+            </div>
+            <div class="flex gap-8">
+              <button class="btn btn-sm" @click="printBlank(f)">打印空白表</button>
+              <button class="btn btn-sm" @click="startInspection(f)">开始查验</button>
+              <button class="btn btn-sm btn-outline" @click="editMyForm(f)">编辑</button>
+              <button class="btn btn-sm btn-outline" style="color:var(--danger);border-color:var(--danger)" @click="deleteForm(f)">删除</button>
+            </div>
+          </div>
+          <div class="text-sm text-secondary">{{ f.item_count || 0 }} 个检查项</div>
+        </div>
+      </div>
+
+      <!-- 设备档案 -->
       <div v-if="tab === 'equipment'">
         <div class="flex gap-8 mb-12 flex-wrap">
-          <button class="btn btn-sm" @click="showEquipAdd=true">+ 添加设备</button>
+          <button v-if="auth.isManager" class="btn btn-sm" @click="showEquipAdd=true">+ 添加设备</button>
           <select v-model="equipFilter.category" class="select" style="width:auto" @change="loadEquipment">
             <option value="">全部分类</option>
             <option value="配电">配电</option><option value="消防">消防</option><option value="电梯">电梯</option>
@@ -61,14 +91,15 @@
             <option value="repair">待修</option><option value="scrapped">已报废</option>
           </select>
         </div>
-        <div v-if="equipment.length === 0" class="empty">暂无设备档案</div>
+        <div v-if="equipError" class="empty">{{ equipError }}</div>
+        <div v-else-if="equipment.length === 0" class="empty">暂无设备档案</div>
         <div v-for="eq in equipment" :key="eq.id" class="card">
           <div class="card-header">
             <span class="card-title">{{ eq.name }}</span>
             <div class="flex gap-8">
               <span class="badge" :class="statusClass(eq.status)">{{ statusLabel(eq.status) }}</span>
-              <button class="btn btn-sm btn-outline" @click="editEquipment(eq)">编辑</button>
-              <button class="btn btn-sm btn-outline" style="color:var(--danger);border-color:var(--danger)" @click="deleteEquipment(eq)">删除</button>
+              <button v-if="auth.isManager" class="btn btn-sm btn-outline" @click="editEquipment(eq)">编辑</button>
+              <button v-if="auth.isManager" class="btn btn-sm btn-outline" style="color:var(--danger);border-color:var(--danger)" @click="deleteEquipment(eq)">删除</button>
             </div>
           </div>
           <div class="form-row text-sm">
@@ -128,19 +159,38 @@
       </div>
     </div>
   </div>
+
+  <!-- Create blank form modal -->
+  <div class="modal" v-if="showCreateBlank" @click.self="showCreateBlank=false">
+    <div class="modal-card">
+      <h3>创建空白表单</h3>
+      <div class="form-group">
+        <label class="form-label">表单标题 *</label>
+        <input v-model="blankForm.title" class="input" placeholder="如：自建检查表" @keyup.enter="doCreateBlank" />
+      </div>
+      <p class="error-msg" v-if="blankError">{{ blankError }}</p>
+      <div class="modal-actions">
+        <button class="btn" @click="doCreateBlank" :disabled="blankLoading">创建</button>
+        <button class="btn btn-outline" @click="showCreateBlank=false">取消</button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useAuthStore } from '../stores/auth'
 import api from '../api'
 
 const route = useRoute()
 const router = useRouter()
+const auth = useAuthStore()
 const project = ref(null)
 const loading = ref(true)
-const tab = ref('templates')
-const templates = ref([])
+const tab = ref('reference')
+const refTemplates = ref([])
+const myForms = ref([])
 const showEdit = ref(false)
 const editError = ref('')
 const editLoading = ref(false)
@@ -148,6 +198,7 @@ const editForm = ref({})
 
 // Equipment
 const equipment = ref([])
+const equipError = ref('')
 const equipFilter = ref({ category: '', status: '' })
 const showEquipAdd = ref(false)
 const showEquipModal = ref(false)
@@ -155,34 +206,94 @@ const equipForm = ref({})
 const equipEditingId = ref(null)
 const equipSaving = ref(false)
 
+// Create blank form
+const showCreateBlank = ref(false)
+const blankForm = ref({ title: '' })
+const blankError = ref('')
+const blankLoading = ref(false)
+
 const typeLabel = computed(() => {
   const m = { industrial: '工业', commercial: '商业', residential: '住宅', other: '其他' }
   return m[project.value?.type] || project.value?.type
 })
-const categories = computed(() => {
+
+const refCategories = computed(() => {
   const cats = { 'A': { name: 'A. 设备用房', templates: [] }, 'B': { name: 'B. 公共部位', templates: [] }, 'C': { name: 'C. 室内', templates: [] }, 'D': { name: 'D. 资料', templates: [] } }
-  for (const t of templates.value) {
+  for (const t of refTemplates.value) {
     const prefix = t.form_id.charAt(0)
     if (cats[prefix]) cats[prefix].templates.push(t)
   }
   return Object.values(cats).filter(c => c.templates.length > 0)
 })
+
 function statusClass(s) { return s === 'normal' ? 'badge-pass' : s === 'maintenance' ? 'badge-in_progress' : s === 'repair' ? 'badge-fail' : 'badge-skip' }
 function statusLabel(s) { return s === 'normal' ? '正常' : s === 'maintenance' ? '保养中' : s === 'repair' ? '待修' : '已报废' }
 
 onMounted(async () => {
-  const [{ data: p }, { data: tl }] = await Promise.all([
-    api.get('/projects/' + route.params.id),
-    api.get('/templates')
+  const pid = route.params.id
+  const [{ data: p }, { data: t }] = await Promise.all([
+    api.get('/projects/' + pid),
+    api.get('/projects/' + pid + '/my-templates')
   ])
   project.value = p
-  templates.value = tl
+  refTemplates.value = t
   loading.value = false
 })
 
-function startInspection(t) {
+function openTemplate(t) {
   router.push('/projects/' + route.params.id + '/template/' + t.id)
 }
+
+// My forms
+async function loadMyForms() {
+  const { data } = await api.get('/forms?project_id=' + route.params.id)
+  myForms.value = data
+}
+
+function editMyForm(f) {
+  router.push('/projects/' + route.params.id + '/template/' + (f.template_id || 0) + '?form=' + f.id)
+}
+
+function startInspection(f) {
+  router.push('/projects/' + route.params.id + '/template/' + (f.template_id || 0) + '?form=' + f.id)
+}
+
+function printBlank(f) {
+  localStorage.setItem('printBlankTemplates', JSON.stringify(['f_' + f.id]))
+  localStorage.setItem('printRecords', JSON.stringify([]))
+  router.push('/print-preview')
+}
+
+async function deleteForm(f) {
+  try {
+    await api.delete('/forms/' + f.id)
+    myForms.value = myForms.value.filter(x => x.id !== f.id)
+  } catch (e) {
+    alert('删除失败：' + (e.response?.data?.error || '未知错误'))
+  }
+}
+
+async function doCreateBlank() {
+  blankError.value = ''
+  if (!blankForm.value.title.trim()) { blankError.value = '请输入标题'; return }
+  blankLoading.value = true
+  try {
+    const { data } = await api.post('/forms', {
+      project_id: parseInt(route.params.id),
+      template_id: null,
+      title: blankForm.value.title.trim(),
+      items: []
+    })
+    showCreateBlank.value = false
+    blankForm.value = { title: '' }
+    await loadMyForms()
+    tab.value = 'myForms'
+    router.push('/projects/' + route.params.id + '/template/0?form=' + data.id)
+  } catch (e) {
+    blankError.value = e.response?.data?.error || '创建失败'
+  } finally { blankLoading.value = false }
+}
+
 async function doEdit() {
   editError.value = ''
   editLoading.value = true
@@ -196,11 +307,17 @@ watch(showEdit, (v) => { if (v) editForm.value = { ...project.value } })
 
 // Equipment
 async function loadEquipment() {
+  equipError.value = ''
   let url = '/equipment?project_id=' + route.params.id
   if (equipFilter.value.category) url += '&category=' + equipFilter.value.category
   if (equipFilter.value.status) url += '&status=' + equipFilter.value.status
-  const { data } = await api.get(url)
-  equipment.value = data
+  try {
+    const { data } = await api.get(url)
+    equipment.value = data
+  } catch (e) {
+    equipment.value = []
+    equipError.value = e.response?.data?.error || '加载失败'
+  }
 }
 function editEquipment(eq) { equipEditingId.value = eq.id; equipForm.value = { ...eq }; showEquipModal.value = true }
 watch(showEquipAdd, (v) => {
@@ -222,3 +339,7 @@ async function deleteEquipment(eq) {
   loadEquipment()
 }
 </script>
+
+<style scoped>
+.ml-8 { margin-left: 8px; }
+</style>

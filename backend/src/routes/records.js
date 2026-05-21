@@ -57,6 +57,11 @@ router.get('/', (req, res) => {
   if (building_id) { conditions.push('r.building_id=?'); params.push(building_id) }
   if (house_id) { conditions.push('r.house_id=?'); params.push(house_id) }
   if (status) { conditions.push('r.status=?'); params.push(status) }
+  // Employees only see their own records
+  if (req.user.role !== 'admin' && req.user.role !== 'manager') {
+    conditions.push('r.created_by=?')
+    params.push(req.user.id)
+  }
   const where = conditions.length ? ' WHERE ' + conditions.join(' AND ') : ''
   res.json(db.prepare(base + where + ' ORDER BY r.updated_at DESC').all(...params))
 })
@@ -130,13 +135,12 @@ router.put('/:id', (req, res) => {
   res.json(getRecord(req.params.id))
 })
 
-// Delete record
+// Delete record (admin or owner only)
 router.delete('/:id', (req, res) => {
   const record = db.prepare('SELECT * FROM inspection_records WHERE id=?').get(req.params.id)
   if (!record) return res.status(404).json({ error: '记录不存在' })
   if (req.user.role !== 'admin' && record.created_by !== req.user.id) {
-    const isPA = db.prepare('SELECT * FROM project_members WHERE project_id=? AND user_id=? AND role=?').get(record.project_id, req.user.id, 'admin')
-    if (!isPA) return res.status(403).json({ error: '只能删除自己的记录' })
+    return res.status(403).json({ error: '只能删除自己的记录，管理员可删除所有记录' })
   }
   db.prepare('DELETE FROM inspection_records WHERE id=?').run(req.params.id)
   res.json({ message: '已删除' })

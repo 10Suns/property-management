@@ -50,7 +50,14 @@ const routes = [
   {
     path: '/projects/:id/settings',
     name: 'Settings',
-    component: () => import('../views/Settings.vue')
+    component: () => import('../views/Settings.vue'),
+    meta: { manager: true }
+  },
+  {
+    path: '/projects/:id/dashboard',
+    name: 'Dashboard',
+    component: () => import('../views/Dashboard.vue'),
+    meta: { manager: true }
   }
 ]
 
@@ -69,6 +76,10 @@ router.beforeEach((to, from, next) => {
   if (to.meta.admin) {
     const user = JSON.parse(localStorage.getItem('user') || 'null')
     if (user?.role !== 'admin') return next('/projects')
+  }
+  if (to.meta.manager) {
+    const user = JSON.parse(localStorage.getItem('user') || 'null')
+    if (user?.role !== 'admin' && user?.role !== 'manager') return next('/projects')
   }
   next()
 })
