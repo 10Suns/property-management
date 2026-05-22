@@ -20,11 +20,11 @@
       <div class="app-body">
         <aside class="sidebar">
           <div class="sidebar-section">工作台</div>
-          <router-link :to="'/projects/' + projectId" class="sidebar-link" active-class="active" exact>📋 我的表单</router-link>
-          <router-link :to="'/projects/' + projectId + '/records'" class="sidebar-link" active-class="active">✅ 检查记录</router-link>
-          <router-link :to="'/projects/' + projectId + '/equipment'" class="sidebar-link" active-class="active">🔧 设备档案</router-link>
+          <router-link :to="'/projects/' + projectId" class="sidebar-link">📋 我的表单</router-link>
+          <router-link :to="'/projects/' + projectId + '/records'" class="sidebar-link">✅ 检查记录</router-link>
+          <router-link :to="'/projects/' + projectId + '/equipment'" class="sidebar-link">🔧 设备档案</router-link>
           <div class="sidebar-section">资源</div>
-          <router-link :to="'/projects/' + projectId + '/templates'" class="sidebar-link" active-class="active">📁 参考表单 <span class="badge badge-skip">28</span></router-link>
+          <router-link :to="'/projects/' + projectId + '/templates'" class="sidebar-link">📁 参考表单 <span class="badge badge-skip">28</span></router-link>
         </aside>
         <main class="main-content">
           <router-view />
