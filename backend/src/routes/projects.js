@@ -32,8 +32,16 @@ router.post('/', adminRequired, (req, res) => {
   const { name, type, address, area, handover_date, developer, manager_name, manager_phone } = req.body
   if (!name) return res.status(400).json({ error: '项目名称不能为空' })
   const tx = db.transaction(() => {
-    const r = db.prepare(`INSERT INTO projects (name,type,address,area,handover_date,developer,manager_name,manager_phone,created_by) VALUES (?,?,?,?,?,?,?,?,?)`)
-      .run(name, type||'industrial', address, area, handover_date, developer, manager_name, manager_phone, req.user.id)
+    // Auto-generate project code: find max numeric suffix and increment
+    const last = db.prepare("SELECT code FROM projects WHERE code GLOB 'P[0-9][0-9][0-9][0-9]' ORDER BY id DESC LIMIT 1").get()
+    let nextNum = 1
+    if (last && last.code) {
+      const m = last.code.match(/^P(\d+)$/)
+      if (m) nextNum = parseInt(m[1]) + 1
+    }
+    const code = 'P' + String(nextNum).padStart(4, '0')
+    const r = db.prepare(`INSERT INTO projects (code,name,type,address,area,handover_date,developer,manager_name,manager_phone,created_by) VALUES (?,?,?,?,?,?,?,?,?,?)`)
+      .run(code, name, type||'industrial', address, area, handover_date, developer, manager_name, manager_phone, req.user.id)
     const pid = r.lastInsertRowid
     db.prepare('INSERT INTO project_members (project_id,user_id,role) VALUES (?,?,?)').run(pid, req.user.id, 'admin')
     return pid

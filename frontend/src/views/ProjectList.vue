@@ -15,6 +15,7 @@
 
     <router-link v-for="p in projects" :key="p.id" :to="'/projects/' + p.id" class="card" style="text-decoration:none;color:inherit;cursor:pointer;display:block">
       <div class="card-header">
+        <span v-if="p.code" class="badge badge-skip" style="flex-shrink:0;margin-right:8px">{{ p.code }}</span>
         <span class="card-title" style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-right:8px">{{ p.name }}</span>
         <span class="badge" :class="p.member_role === 'admin' ? 'badge-pass' : 'badge-skip'" style="flex-shrink:0">{{ p.member_role === 'admin' ? '管理员' : '成员' }}</span>
       </div>
@@ -97,10 +98,6 @@ const form = ref({ name: '', type: 'industrial', address: '', area: '', handover
 onMounted(async () => {
   try {
     const { data } = await api.get('/projects')
-    if (data.length === 1) {
-      router.replace('/projects/' + data[0].id)
-      return
-    }
     projects.value = data
   } finally {
     loading.value = false

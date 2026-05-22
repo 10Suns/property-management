@@ -87,10 +87,10 @@ router.post('/', (req, res) => {
     const rid = r.lastInsertRowid
 
     if (ufid) {
-      // Create results from user_form_items
+      // Create results from user_form_items — snapshot item names
       const items = db.prepare('SELECT * FROM user_form_items WHERE form_id=? ORDER BY sort_order').all(ufid)
-      const ins = db.prepare('INSERT INTO inspection_results (record_id,user_form_item_id,sort_order) VALUES (?,?,?)')
-      for (const item of items) ins.run(rid, item.id, item.sort_order)
+      const ins = db.prepare('INSERT INTO inspection_results (record_id,user_form_item_id,custom_item_name,custom_standard,sort_order) VALUES (?,?,?,?,?)')
+      for (const item of items) ins.run(rid, item.id, item.item_name, item.check_standard, item.sort_order)
     } else {
       // Create results from template_items (legacy)
       const items = db.prepare('SELECT * FROM template_items WHERE template_id=? ORDER BY sort_order').all(tid)

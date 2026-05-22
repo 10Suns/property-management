@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="page-header">
-      <h1 class="page-title">✅ 检查记录</h1>
+      <h1 class="page-title">📝 检查记录</h1>
       <button class="btn btn-sm" @click="showCreate=true">+ 新增记录</button>
     </div>
 
@@ -24,7 +24,7 @@
 
     <div v-if="loading" class="empty">加载中...</div>
     <div v-else-if="records.length === 0" class="empty" style="padding:60px 16px">
-      <div style="font-size:48px;margin-bottom:12px">✅</div>
+      <div style="font-size:48px;margin-bottom:12px">📝</div>
       <p style="font-weight:600;font-size:15px;margin-bottom:6px">暂无检查记录</p>
       <p class="text-sm">点击右上角「+ 新增记录」开始<br>选择表单和位置，即可逐项录入检查结果</p>
     </div>
@@ -52,11 +52,11 @@
     <div class="modal" v-if="showCreate" @click.self="showCreate=false">
       <div class="modal-card" style="max-width:500px;max-height:70vh;overflow-y:auto">
         <h3>新增检查记录</h3>
-        <p class="text-sm text-secondary">选择要检查的表单模板</p>
-        <div v-if="templates.length === 0" class="empty text-sm">暂无可用的表单模板</div>
-        <div v-for="t in templates" :key="t.id" class="card" style="cursor:pointer;padding:12px 16px;margin-bottom:6px" @click="createRecord(t)">
-          <div style="font-weight:500;font-size:14px">{{ t.form_id }} {{ t.title }}</div>
-          <div class="text-sm text-secondary">{{ t.item_count || 0 }} 项</div>
+        <p class="text-sm text-secondary">选择要检查的表单</p>
+        <div v-if="myForms.length === 0" class="empty text-sm">暂无可用表单，请先在「我的表单」中创建</div>
+        <div v-for="f in myForms" :key="f.id" class="card" style="cursor:pointer;padding:12px 16px;margin-bottom:6px" @click="createRecord(f)">
+          <div style="font-weight:500;font-size:14px">{{ f.template_form_id || '自定义' }} {{ f.title }}</div>
+          <div class="text-sm text-secondary">{{ f.item_count || 0 }} 项 · {{ f.creator_name }}</div>
         </div>
         <div class="modal-actions">
           <button class="btn btn-outline" @click="showCreate=false">取消</button>
@@ -71,6 +71,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import api from '../api'
+import { formatDate } from '../utils/format'
 
 const route = useRoute()
 const router = useRouter()
@@ -78,19 +79,22 @@ const auth = useAuthStore()
 const projectId = route.params.id
 const records = ref([])
 const templates = ref([])
+const myForms = ref([])
 const buildings = ref([])
 const loading = ref(true)
 const filters = ref({ template_id: null, building_id: null, status: '' })
 const showCreate = ref(false)
 
 onMounted(async () => {
-  const [{ data: r }, { data: t }, { data: b }] = await Promise.all([
+  const [{ data: r }, { data: t }, { data: f }, { data: b }] = await Promise.all([
     api.get('/records?project_id=' + projectId),
     api.get('/templates'),
+    api.get('/forms?project_id=' + projectId),
     api.get('/projects/' + projectId + '/buildings')
   ])
   records.value = r
   templates.value = t
+  myForms.value = f
   buildings.value = b
   loading.value = false
 })
@@ -108,11 +112,6 @@ async function loadRecords() {
 
 const statusBadgeMap = { completed: 'badge-completed', in_progress: 'badge-in_progress', pending: 'badge-pending' }
 const statusLabelMap = { completed: '已完成', in_progress: '查验中', pending: '待查验' }
-
-function formatDate(d) {
-  if (!d) return '-'
-  return new Date(d).toLocaleDateString('zh-CN')
-}
 
 function canDelete(r) {
   return auth.isAdmin || r.created_by === auth.user?.id
@@ -132,18 +131,9 @@ async function del(r) {
   }
 }
 
-async function createRecord(t) {
+async function createRecord(f) {
   showCreate.value = false
-  try {
-    const formTitle = t.title + ' - ' + (auth.user?.display_name || '用户')
-    const { data: form } = await api.post('/forms', {
-      project_id: parseInt(projectId),
-      template_id: t.id,
-      title: formTitle
-    })
-    router.push('/projects/' + projectId + '/template/' + t.id + '?form=' + form.id + '&inspect=1')
-  } catch (e) {
-    alert('创建失败：' + (e.response?.data?.error || '未知错误'))
-  }
+  const tid = f.template_id || 0
+  router.push('/projects/' + projectId + '/template/' + tid + '?form=' + f.id + '&inspect=1')
 }
 </script>

@@ -10,6 +10,20 @@ db.pragma('journal_mode = WAL')
 db.pragma('foreign_keys = ON')
 
 function runMigrations() {
+  // Add code column to projects if not present
+  const codeCol = db.prepare("PRAGMA table_info(projects)").all().find(c => c.name === 'code')
+  if (!codeCol) {
+    db.exec("ALTER TABLE projects ADD COLUMN code TEXT")
+    // Assign codes to existing projects ordered by id
+    const rows = db.prepare("SELECT id FROM projects ORDER BY id").all()
+    const stmt = db.prepare("UPDATE projects SET code=? WHERE id=?")
+    const tx = db.transaction(() => {
+      rows.forEach((r, i) => stmt.run('P' + String(i + 1).padStart(4, '0'), r.id))
+    })
+    tx()
+    console.log('Added code column to projects table')
+  }
+
   const tableInfo = db.prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name='users'").get()
   if (tableInfo && tableInfo.sql && tableInfo.sql.includes("role IN ('admin','user')")) {
     db.pragma('foreign_keys = OFF')

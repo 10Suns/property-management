@@ -8,8 +8,12 @@
     <!-- 主壳：顶栏 + 侧边栏 + 内容区 -->
     <template v-else>
       <nav class="topbar">
-        <span class="topbar-title">{{ project?.name || '物业承接查验系统' }}</span>
+        <span class="topbar-title">
+          <router-link v-if="projectId" to="/projects" class="topbar-back">‹</router-link>
+          {{ titleLabel }}
+        </span>
         <div class="topbar-actions">
+          <router-link v-if="auth.isAdmin" to="/admin/users" class="topbar-action">用户管理</router-link>
           <router-link v-if="auth.isManager && projectId" :to="'/projects/' + projectId + '/dashboard'" class="topbar-action">仪表盘</router-link>
           <router-link v-if="auth.isManager && projectId" :to="'/projects/' + projectId + '/settings'" class="topbar-action">配置</router-link>
           <span class="topbar-action" style="cursor:default">{{ auth.user?.display_name }}</span>
@@ -18,15 +22,15 @@
         </div>
       </nav>
       <div class="app-body">
-        <aside class="sidebar">
+        <aside v-if="projectId" class="sidebar">
           <div class="sidebar-section">工作台</div>
           <router-link :to="'/projects/' + projectId" class="sidebar-link">📋 我的表单</router-link>
-          <router-link :to="'/projects/' + projectId + '/records'" class="sidebar-link">✅ 检查记录</router-link>
+          <router-link :to="'/projects/' + projectId + '/records'" class="sidebar-link">📝 检查记录</router-link>
           <router-link :to="'/projects/' + projectId + '/equipment'" class="sidebar-link">🔧 设备档案</router-link>
           <div class="sidebar-section">资源</div>
-          <router-link :to="'/projects/' + projectId + '/templates'" class="sidebar-link">📁 参考表单 <span class="badge badge-skip">28</span></router-link>
+          <router-link :to="'/projects/' + projectId + '/templates'" class="sidebar-link">📁 参考表单</router-link>
         </aside>
-        <main class="main-content">
+        <main class="main-content" :class="{ 'main-full': !projectId }">
           <router-view />
         </main>
       </div>
@@ -50,7 +54,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from './stores/auth'
 import api from './api'
@@ -61,6 +65,10 @@ const auth = useAuthStore()
 
 const projectId = computed(() => route.params.id || null)
 const project = ref(null)
+const titleLabel = computed(() => {
+  if (!project.value) return '物业承接查验系统'
+  return (project.value.code ? `[${project.value.code}] ` : '') + project.value.name
+})
 const isStandalone = ref(window.matchMedia('(display-mode: standalone)').matches)
 const showPwdModal = ref(false)
 const pwdForm = ref({ old: '', new1: '', new2: '' })
@@ -75,10 +83,6 @@ watch(projectId, async (id) => {
     } catch (_) {}
   }
 }, { immediate: true })
-
-onMounted(() => {
-  // project loaded via watch(projectId) above
-})
 
 function logout() {
   auth.logout()

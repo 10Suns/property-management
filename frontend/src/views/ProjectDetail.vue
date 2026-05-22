@@ -53,6 +53,7 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import api from '../api'
+import { formatDate } from '../utils/format'
 
 const route = useRoute()
 const router = useRouter()
@@ -73,11 +74,6 @@ onMounted(async () => {
     loading.value = false
   }
 })
-
-function formatDate(d) {
-  if (!d) return '-'
-  return new Date(d).toLocaleDateString('zh-CN')
-}
 
 async function loadMyForms() {
   const { data } = await api.get('/forms?project_id=' + route.params.id)

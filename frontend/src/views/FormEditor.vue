@@ -8,7 +8,10 @@
             <span class="text-sm text-secondary" style="font-weight:600">{{ template.form_id }}</span>
             <span class="text-sm text-secondary">{{ template.category || '' }}</span>
           </div>
-          <h1 class="page-title">{{ displayTitle }}</h1>
+          <h1 class="page-title">
+            {{ displayTitle }}
+            <span v-if="record" class="badge" style="background:#c5221f;color:#fff;font-size:11px;vertical-align:middle;margin-left:8px">查验录入</span>
+          </h1>
           <div class="text-sm text-secondary">{{ project?.name }}</div>
         </div>
         <div class="flex gap-8">
@@ -16,7 +19,6 @@
             {{ savingForm ? '保存中...' : '保存为我的表单' }}
           </button>
           <template v-if="userForm && !record">
-            <button class="btn btn-sm" @click="createRecord">信息录入</button>
             <button class="btn btn-sm" @click="printBlank">打印空白表</button>
           </template>
           <button v-if="record" class="btn btn-sm" @click="saveRecordMeta" :disabled="saving">
@@ -27,32 +29,8 @@
       </div>
 
       <!-- Location info -->
-      <div class="card mb-16" v-if="userForm && !record">
-        <div class="card-title mb-8">查验位置</div>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">楼栋</label>
-            <select v-model="recordForm.building_id" class="select" @change="onBuildingChange">
-              <option :value="null">不选择</option>
-              <option v-for="b in buildings" :key="b.id" :value="b.id">{{ b.name }}</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">房源</label>
-            <select v-model="recordForm.house_id" class="select">
-              <option :value="null">不选择</option>
-              <option v-for="h in houses" :key="h.id" :value="h.id">{{ h.house_number }} {{ h.building_name ? '('+h.building_name+')' : '' }}</option>
-            </select>
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">位置信息</label>
-          <input v-model="recordForm.location_info" class="input" placeholder="具体位置描述" />
-        </div>
-      </div>
-
-      <!-- Location when record exists -->
-      <div class="card mb-16" v-if="record">
+      <div class="card mb-16" v-if="userForm || record">
+        <div class="card-title mb-8" v-if="!record">查验位置</div>
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">楼栋</label>
@@ -148,13 +126,11 @@
         </div>
       </div>
 
-      <!-- Inspector comment -->
-      <div class="card mt-16" v-if="record">
-        <div class="form-group">
-          <label class="form-label">查验意见</label>
-          <textarea v-model="recordForm.inspector_comment" class="textarea" placeholder="整体查验意见..." @change="autoSaveComment"></textarea>
-        </div>
-        <div class="flex gap-8 items-center">
+      <!-- Inspector comment — table footer style -->
+      <div v-if="record" class="form-footer">
+        <div class="form-footer-label">查验意见</div>
+        <textarea v-model="recordForm.inspector_comment" class="textarea form-footer-textarea" placeholder="整体查验意见..." @change="autoSaveComment"></textarea>
+        <div class="flex gap-8 items-center mt-8">
           <label class="form-label">状态：</label>
           <select v-model="recordForm.status" class="select" style="width:auto" @change="autoSaveComment">
             <option value="pending">待查验</option>
@@ -371,7 +347,17 @@ async function saveAsMyForm() {
       title: formTitle,
       items: itemList
     })
-    await loadUserForm(data.id)
+    userForm.value = data
+    items.value = (data.items || []).map(item => ({
+      ...item,
+      _key: 'f_' + item.id,
+      _photos: [],
+      _photoCount: 0,
+      _editing: false,
+      _editName: item.item_name,
+      _editStd: item.check_standard
+    }))
+    router.replace({ query: { form: data.id } })
   } catch (e) {
     alert('保存失败：' + (e.response?.data?.error || '未知错误'))
   } finally {
@@ -385,12 +371,6 @@ function startEditItem(item) {
   item._editing = true
   item._editName = item.item_name || item.custom_item_name || item._editName || ''
   item._editStd = item.check_standard || item.custom_standard || item._editStd || ''
-}
-
-function cancelEditItem(item) {
-  item._editing = false
-  item._editName = item.item_name || ''
-  item._editStd = item.check_standard || ''
 }
 
 async function finishEditItem(item) {
@@ -590,3 +570,35 @@ function printBlank() {
   router.push('/print-preview')
 }
 </script>
+
+<style scoped>
+.form-footer {
+  border: 2px solid #333;
+  border-top: none;
+  background: #fff;
+  display: grid;
+  grid-template-columns: 14% 1fr;
+}
+.form-footer-label {
+  background: #f5f5f5;
+  font-weight: 600;
+  font-size: 12px;
+  text-align: center;
+  padding: 12px;
+  border-right: 1px solid #999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+}
+.form-footer-textarea {
+  min-height: 120px;
+  border: none;
+  border-radius: 0;
+  resize: vertical;
+}
+.form-footer-textarea:focus {
+  box-shadow: none;
+  outline: 1px solid var(--primary);
+}
+</style>
