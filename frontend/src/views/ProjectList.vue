@@ -97,7 +97,7 @@ const form = ref({ name: '', type: 'industrial', address: '', area: '', handover
 onMounted(async () => {
   try {
     const { data } = await api.get('/projects')
-    if (data.length > 0) {
+    if (data.length === 1) {
       router.replace('/projects/' + data[0].id)
       return
     }
