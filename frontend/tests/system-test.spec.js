@@ -218,7 +218,7 @@ test.describe('场景二：信息录入（SG002）', () => {
   test('2.1 进入信息录入模式', async ({ page }) => {
     await login(page, 'SG002', '123456')
 
-    // Navigate to 检查记录 page and create a new record
+    // Navigate to 检查记录 and create via modal
     await page.goto(BASE + '/#/projects/2/records')
     await page.waitForTimeout(800)
 
@@ -229,21 +229,17 @@ test.describe('场景二：信息录入（SG002）', () => {
       await page.waitForTimeout(500)
       console.log('  ✓ 打开新增记录弹窗')
 
-      // Select a template from the modal
+      // Select a template from modal — use force click for scrollable modal
       const templateCard = page.locator('.modal-card .card').first()
       if (await templateCard.count() > 0) {
-        await templateCard.click()
-        await page.waitForTimeout(1000)
-        console.log('  ✓ 选择模板进入录入模式')
-      }
-    }
+        await templateCard.click({ force: true })
+        await page.waitForTimeout(1500)
 
-    // Should be in FormEditor with inspection mode
-    const body = page.locator('body')
-    const hasPass = await body.locator('text=合格').count()
-    const hasFail = await body.locator('text=不合格').count()
-    if (hasPass > 0 || hasFail > 0) {
-      console.log('  ✓ 进入信息录入模式，显示合格/不合格/免检选项')
+        const radioCount = await page.locator('.result-radio').count()
+        if (radioCount > 0) {
+          console.log('  ✓ 进入信息录入模式，显示合格/不合格/免检选项')
+        }
+      }
     }
   })
 

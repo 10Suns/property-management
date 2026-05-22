@@ -50,7 +50,7 @@
 
     <!-- Create record modal: select form -->
     <div class="modal" v-if="showCreate" @click.self="showCreate=false">
-      <div class="modal-card" style="max-width:500px">
+      <div class="modal-card" style="max-width:500px;max-height:70vh;overflow-y:auto">
         <h3>新增检查记录</h3>
         <p class="text-sm text-secondary">选择要检查的表单模板</p>
         <div v-if="templates.length === 0" class="empty text-sm">暂无可用的表单模板</div>
@@ -132,8 +132,18 @@ async function del(r) {
   }
 }
 
-function createRecord(t) {
+async function createRecord(t) {
   showCreate.value = false
-  router.push('/projects/' + projectId + '/template/' + t.id + '?inspect=1')
+  try {
+    const formTitle = t.title + ' - ' + (auth.user?.display_name || '用户')
+    const { data: form } = await api.post('/forms', {
+      project_id: parseInt(projectId),
+      template_id: t.id,
+      title: formTitle
+    })
+    router.push('/projects/' + projectId + '/template/' + t.id + '?form=' + form.id + '&inspect=1')
+  } catch (e) {
+    alert('创建失败：' + (e.response?.data?.error || '未知错误'))
+  }
 }
 </script>
