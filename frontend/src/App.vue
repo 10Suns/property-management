@@ -50,7 +50,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from './stores/auth'
 import api from './api'
@@ -59,7 +59,7 @@ const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()
 
-const projectId = ref(null)
+const projectId = computed(() => route.params.id || null)
 const project = ref(null)
 const isStandalone = ref(window.matchMedia('(display-mode: standalone)').matches)
 const showPwdModal = ref(false)
@@ -67,16 +67,17 @@ const pwdForm = ref({ old: '', new1: '', new2: '' })
 const pwdError = ref('')
 const pwdLoading = ref(false)
 
-onMounted(async () => {
-  if (auth.isLoggedIn) {
+watch(projectId, async (id) => {
+  if (id && auth.isLoggedIn) {
     try {
-      const { data } = await api.get('/projects')
-      if (data.length > 0) {
-        projectId.value = data[0].id
-        project.value = data[0]
-      }
+      const { data } = await api.get('/projects/' + id)
+      project.value = data
     } catch (_) {}
   }
+}, { immediate: true })
+
+onMounted(() => {
+  // project loaded via watch(projectId) above
 })
 
 function logout() {
