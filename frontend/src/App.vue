@@ -1,32 +1,38 @@
 <template>
   <div id="app" :class="{ 'standalone': isStandalone }">
-    <nav class="topbar" v-if="auth.isLoggedIn">
-      <button class="menu-btn" @click="showMenu=!showMenu">&#9776;</button>
-      <span class="topbar-title">{{ pageTitle }}</span>
-      <span class="topbar-user">{{ auth.user?.display_name }}</span>
-    </nav>
-    <div class="sidebar-overlay" v-if="showMenu" @click="showMenu=false"></div>
-    <aside class="sidebar" :class="{ open: showMenu }">
-      <div class="sidebar-header">
-        <span>菜单</span>
-        <button class="close-btn" @click="showMenu=false">&times;</button>
-      </div>
-      <router-link to="/projects" class="sidebar-link" @click="showMenu=false">项目列表</router-link>
-      <router-link v-if="auth.isAdmin" to="/admin/users" class="sidebar-link" @click="showMenu=false">用户管理</router-link>
-      <div class="sidebar-section">当前项目</div>
-      <router-link v-if="currentProjectId" :to="'/projects/' + currentProjectId" class="sidebar-link" @click="showMenu=false">项目详情</router-link>
-      <router-link v-if="auth.isManager && currentProjectId" :to="'/projects/' + currentProjectId + '/dashboard'" class="sidebar-link" @click="showMenu=false">项目仪表盘</router-link>
-      <router-link v-if="currentProjectId" :to="'/projects/' + currentProjectId + '/records'" class="sidebar-link" @click="showMenu=false">查验记录</router-link>
-      <router-link v-if="auth.isManager && currentProjectId" :to="'/projects/' + currentProjectId + '/settings'" class="sidebar-link" @click="showMenu=false">项目配置</router-link>
-      <router-link v-if="currentProjectId" :to="'/projects/' + currentProjectId + '/print'" class="sidebar-link" @click="showMenu=false">打印表单</router-link>
-      <div class="sidebar-footer">
-        <button v-if="auth.isAdmin" class="btn btn-sm" @click="changePwd">修改密码</button>
-        <button class="btn btn-sm btn-outline" @click="logout">退出</button>
-      </div>
-    </aside>
-    <main class="main-content">
+    <!-- 登录页无壳 -->
+    <template v-if="!auth.isLoggedIn">
       <router-view />
-    </main>
+    </template>
+
+    <!-- 主壳：顶栏 + 侧边栏 + 内容区 -->
+    <template v-else>
+      <nav class="topbar">
+        <span class="topbar-title">{{ project?.name || '物业承接查验系统' }}</span>
+        <div class="topbar-actions">
+          <router-link v-if="auth.isManager && projectId" :to="'/projects/' + projectId + '/dashboard'" class="topbar-action">仪表盘</router-link>
+          <router-link v-if="auth.isManager && projectId" :to="'/projects/' + projectId + '/settings'" class="topbar-action">配置</router-link>
+          <span class="topbar-action" style="cursor:default">{{ auth.user?.display_name }}</span>
+          <button v-if="auth.isAdmin" class="topbar-action" @click="changePwd">修改密码</button>
+          <button class="topbar-action" @click="logout">退出</button>
+        </div>
+      </nav>
+      <div class="app-body">
+        <aside class="sidebar">
+          <div class="sidebar-section">工作台</div>
+          <router-link :to="'/projects/' + projectId" class="sidebar-link" active-class="active" exact>📋 我的表单</router-link>
+          <router-link :to="'/projects/' + projectId + '/records'" class="sidebar-link" active-class="active">✅ 检查记录</router-link>
+          <router-link :to="'/projects/' + projectId + '/equipment'" class="sidebar-link" active-class="active">🔧 设备档案</router-link>
+          <div class="sidebar-section">资源</div>
+          <router-link :to="'/projects/' + projectId + '/templates'" class="sidebar-link" active-class="active">📁 参考表单 <span class="badge badge-skip">28</span></router-link>
+        </aside>
+        <main class="main-content">
+          <router-view />
+        </main>
+      </div>
+    </template>
+
+    <!-- 修改密码 Modal -->
     <div class="modal" v-if="showPwdModal" @click.self="showPwdModal=false">
       <div class="modal-card">
         <h3>修改密码</h3>
@@ -44,23 +50,34 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from './stores/auth'
+import api from './api'
 
 const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()
 
-const showMenu = ref(false)
+const projectId = ref(null)
+const project = ref(null)
+const isStandalone = ref(window.matchMedia('(display-mode: standalone)').matches)
 const showPwdModal = ref(false)
 const pwdForm = ref({ old: '', new1: '', new2: '' })
 const pwdError = ref('')
 const pwdLoading = ref(false)
-const isStandalone = ref(window.matchMedia('(display-mode: standalone)').matches)
 
-const pageTitle = computed(() => route.meta.title || '物业承接查验系统')
-const currentProjectId = computed(() => route.params.id)
+onMounted(async () => {
+  if (auth.isLoggedIn) {
+    try {
+      const { data } = await api.get('/projects')
+      if (data.length > 0) {
+        projectId.value = data[0].id
+        project.value = data[0]
+      }
+    } catch (_) {}
+  }
+})
 
 function logout() {
   auth.logout()

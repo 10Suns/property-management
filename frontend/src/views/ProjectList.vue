@@ -13,13 +13,17 @@
       <button class="btn mt-8" @click="showCreate=true">创建第一个项目</button>
     </div>
 
-    <router-link v-for="p in projects" :key="p.id" :to="'/projects/' + p.id" class="list-item" style="text-decoration:none;color:inherit">
-      <div class="list-item-body">
-        <div class="list-item-title">{{ p.name }}</div>
-        <div class="list-item-sub">{{ p.address || '未设置地址' }} · {{ p.building_count || 0 }}栋 · {{ p.house_count || 0 }}户</div>
+    <router-link v-for="p in projects" :key="p.id" :to="'/projects/' + p.id" class="card" style="text-decoration:none;color:inherit;cursor:pointer;display:block">
+      <div class="card-header">
+        <span class="card-title" style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-right:8px">{{ p.name }}</span>
+        <span class="badge" :class="p.member_role === 'admin' ? 'badge-pass' : 'badge-skip'" style="flex-shrink:0">{{ p.member_role === 'admin' ? '管理员' : '成员' }}</span>
       </div>
-      <span class="badge" :class="p.member_role === 'admin' ? 'badge-pass' : 'badge-skip'">{{ p.member_role === 'admin' ? '管理员' : '成员' }}</span>
-      <span class="list-item-arrow">›</span>
+      <div class="flex gap-12 text-sm text-secondary" style="flex-wrap:wrap">
+        <span v-if="p.address">{{ p.address }}</span>
+        <span>{{ p.building_count || 0 }} 栋</span>
+        <span>{{ p.house_count || 0 }} 户</span>
+        <span>{{ typeLabel(p.type) }}</span>
+      </div>
     </router-link>
 
     <!-- Create modal -->
@@ -93,11 +97,18 @@ const form = ref({ name: '', type: 'industrial', address: '', area: '', handover
 onMounted(async () => {
   try {
     const { data } = await api.get('/projects')
+    if (data.length > 0) {
+      router.replace('/projects/' + data[0].id)
+      return
+    }
     projects.value = data
   } finally {
     loading.value = false
   }
 })
+
+const typeLabels = { industrial: '工业', commercial: '商业', residential: '住宅', other: '其他' }
+function typeLabel(t) { return typeLabels[t] || t }
 
 async function doCreate() {
   createError.value = ''
