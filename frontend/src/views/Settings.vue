@@ -1,10 +1,7 @@
 <template>
   <div>
     <div class="page-header">
-      <div class="flex items-center gap-8">
-        <button class="btn btn-sm btn-outline" @click="router.push('/projects/' + projectId)">← 返回</button>
-        <h1 class="page-title">项目配置</h1>
-      </div>
+      <h1 class="page-title">⚙️ 项目配置</h1>
     </div>
 
     <div class="tabs">
@@ -20,12 +17,12 @@
         <button class="btn btn-sm" @click="addBuilding">添加</button>
       </div>
       <div v-if="buildings.length === 0" class="empty">暂无楼栋</div>
-      <div v-for="b in buildings" :key="b.id" class="list-item">
-        <div class="list-item-body">
-          <div class="list-item-title">{{ b.name }}</div>
-          <div class="list-item-sub">{{ b.house_count || 0 }} 户</div>
+      <div v-for="b in buildings" :key="b.id" class="card">
+        <div class="card-header">
+          <span class="card-title">{{ b.name }}</span>
+          <button class="btn btn-sm btn-outline" @click="deleteBuilding(b)">删除</button>
         </div>
-        <button class="btn btn-sm btn-outline" @click="deleteBuilding(b)">删除</button>
+        <div class="text-sm text-secondary">{{ b.house_count || 0 }} 户</div>
       </div>
     </div>
 
@@ -41,12 +38,12 @@
         <button class="btn btn-sm" @click="addHouse">添加</button>
       </div>
       <div v-if="houses.length === 0" class="empty">暂无房源</div>
-      <div v-for="h in houses" :key="h.id" class="list-item">
-        <div class="list-item-body">
-          <div class="list-item-title">{{ h.house_number }}</div>
-          <div class="list-item-sub">{{ h.building_name || '未分配楼栋' }} · {{ h.area || '-' }}㎡</div>
+      <div v-for="h in houses" :key="h.id" class="card">
+        <div class="card-header">
+          <span class="card-title">{{ h.house_number }}</span>
+          <button class="btn btn-sm btn-outline" @click="deleteHouse(h)">删除</button>
         </div>
-        <button class="btn btn-sm btn-outline" @click="deleteHouse(h)">删除</button>
+        <div class="text-sm text-secondary">{{ h.building_name || '未分配楼栋' }} · {{ h.area || '-' }}㎡</div>
       </div>
     </div>
 

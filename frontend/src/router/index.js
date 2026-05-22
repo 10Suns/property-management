@@ -32,11 +32,6 @@ const routes = [
     component: () => import('../views/RecordList.vue')
   },
   {
-    path: '/projects/:id/print',
-    name: 'PrintSelect',
-    component: () => import('../views/PrintSelect.vue')
-  },
-  {
     path: '/projects/:id/equipment',
     name: 'Equipment',
     component: () => import('../views/Equipment.vue')
