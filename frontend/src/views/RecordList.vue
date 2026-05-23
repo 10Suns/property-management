@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="page-header">
-      <h1 class="page-title">📝 检查记录</h1>
+      <h1 class="page-title">{{ recordTypeLabel }}</h1>
       <button class="btn btn-sm" @click="showCreate=true">+ 新增记录</button>
     </div>
 
@@ -24,9 +24,9 @@
 
     <div v-if="loading" class="empty">加载中...</div>
     <div v-else-if="records.length === 0" class="empty" style="padding:60px 16px">
-      <div style="font-size:48px;margin-bottom:12px">📝</div>
+      <div style="font-size:48px;margin-bottom:12px">{{ recordTypeEmoji }}</div>
       <p style="font-weight:600;font-size:15px;margin-bottom:6px">暂无检查记录</p>
-      <p class="text-sm">点击右上角「+ 新增记录」开始<br>选择表单和位置，即可逐项录入检查结果</p>
+      <p class="text-sm">点击右上角「+ 新增记录」开始<br>选择{{ recordTypeLabel }}表单和位置，即可逐项录入检查结果</p>
     </div>
     <div v-for="r in records" :key="r.id" class="card" style="cursor:pointer" @click="openRecord(r)">
       <div class="flex justify-between items-start">
@@ -67,7 +67,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import api from '../api'
@@ -83,11 +83,15 @@ const myForms = ref([])
 const buildings = ref([])
 const loading = ref(true)
 const filters = ref({ template_id: null, building_id: null, status: '' })
+const recordType = computed(() => route.meta.recordType || 'routine')
+const recordTypeLabel = computed(() => recordType.value === 'acceptance' ? '🏗 承接查验' : '📝 日常巡检')
+const recordTypeEmoji = computed(() => recordType.value === 'acceptance' ? '🏗' : '📝')
+const recordsUrl = () => '/records?project_id=' + projectId + '&record_type=' + recordType.value
 const showCreate = ref(false)
 
 onMounted(async () => {
   const [{ data: r }, { data: t }, { data: f }, { data: b }] = await Promise.all([
-    api.get('/records?project_id=' + projectId),
+    api.get(recordsUrl()),
     api.get('/templates'),
     api.get('/forms?project_id=' + projectId),
     api.get('/projects/' + projectId + '/buildings')
@@ -101,7 +105,7 @@ onMounted(async () => {
 
 async function loadRecords() {
   loading.value = true
-  let url = '/records?project_id=' + projectId
+  let url = recordsUrl()
   if (filters.value.template_id) url += '&template_id=' + filters.value.template_id
   if (filters.value.building_id) url += '&building_id=' + filters.value.building_id
   if (filters.value.status) url += '&status=' + filters.value.status
@@ -134,6 +138,6 @@ async function del(r) {
 async function createRecord(f) {
   showCreate.value = false
   const tid = f.template_id || 0
-  router.push('/projects/' + projectId + '/template/' + tid + '?form=' + f.id + '&inspect=1')
+  router.push('/projects/' + projectId + '/template/' + tid + '?form=' + f.id + '&inspect=1&record_type=' + recordType.value)
 }
 </script>

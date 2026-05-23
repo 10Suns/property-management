@@ -463,7 +463,8 @@ async function createRecord() {
       user_form_id: userForm.value.id,
       building_id: recordForm.building_id,
       house_id: recordForm.house_id,
-      location_info: recordForm.location_info
+      location_info: recordForm.location_info,
+      record_type: route.query.record_type || 'routine'
     })
     record.value = data
     recordForm.status = data.status

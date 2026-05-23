@@ -38,7 +38,7 @@ function getRecord(id) {
 
 // List records
 router.get('/', (req, res) => {
-  const { project_id, template_id, user_form_id, building_id, house_id, status } = req.query
+  const { project_id, template_id, user_form_id, building_id, house_id, status, record_type } = req.query
   const base = `
     SELECT r.*, t.title as template_title, t.form_id, u.display_name as creator_name,
       b.name as building_name, h.house_number, uf.title as user_form_title
@@ -57,6 +57,7 @@ router.get('/', (req, res) => {
   if (building_id) { conditions.push('r.building_id=?'); params.push(building_id) }
   if (house_id) { conditions.push('r.house_id=?'); params.push(house_id) }
   if (status) { conditions.push('r.status=?'); params.push(status) }
+  if (record_type) { conditions.push('r.record_type=?'); params.push(record_type) }
   // Employees only see their own records
   if (req.user.role !== 'admin' && req.user.role !== 'manager') {
     conditions.push('r.created_by=?')
@@ -68,7 +69,7 @@ router.get('/', (req, res) => {
 
 // Create record from user_form
 router.post('/', (req, res) => {
-  const { project_id, user_form_id, template_id, building_id, house_id, location_info } = req.body
+  const { project_id, user_form_id, template_id, building_id, house_id, location_info, record_type } = req.body
   if (!project_id) return res.status(400).json({ error: '项目不能为空' })
   if (!user_form_id && !template_id) return res.status(400).json({ error: '表单或模板不能为空' })
 
@@ -82,8 +83,8 @@ router.post('/', (req, res) => {
       tid = uf.template_id
     }
 
-    const r = db.prepare(`INSERT INTO inspection_records (project_id,user_form_id,template_id,building_id,house_id,location_info,created_by) VALUES (?,?,?,?,?,?,?)`)
-      .run(project_id, ufid, tid, building_id||null, house_id||null, location_info, req.user.id)
+    const r = db.prepare(`INSERT INTO inspection_records (project_id,user_form_id,template_id,building_id,house_id,location_info,record_type,created_by) VALUES (?,?,?,?,?,?,?,?)`)
+      .run(project_id, ufid, tid, building_id||null, house_id||null, location_info, record_type||'routine', req.user.id)
     const rid = r.lastInsertRowid
 
     if (ufid) {

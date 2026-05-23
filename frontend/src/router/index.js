@@ -29,7 +29,14 @@ const routes = [
   {
     path: '/projects/:id/records',
     name: 'RecordList',
-    component: () => import('../views/RecordList.vue')
+    component: () => import('../views/RecordList.vue'),
+    meta: { recordType: 'routine' }
+  },
+  {
+    path: '/projects/:id/acceptance',
+    name: 'AcceptanceRecords',
+    component: () => import('../views/RecordList.vue'),
+    meta: { recordType: 'acceptance' }
   },
   {
     path: '/projects/:id/equipment',

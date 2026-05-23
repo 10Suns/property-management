@@ -51,6 +51,12 @@ function runMigrations() {
     db.pragma('foreign_keys = ON')
     console.log('Migrated users table: role constraint updated (admin/manager/employee)')
   }
+
+  const rtCol = db.prepare("PRAGMA table_info(inspection_records)").all().find(c => c.name === 'record_type')
+  if (!rtCol) {
+    db.exec("ALTER TABLE inspection_records ADD COLUMN record_type TEXT DEFAULT 'routine' CHECK(record_type IN ('routine','acceptance'))")
+    console.log('Added record_type column to inspection_records')
+  }
 }
 
 export function initDB() {
@@ -198,6 +204,7 @@ export function initDB() {
       location_info TEXT,
       inspector_comment TEXT,
       status TEXT DEFAULT 'pending' CHECK(status IN ('pending','in_progress','completed')),
+      record_type TEXT DEFAULT 'routine' CHECK(record_type IN ('routine','acceptance')),
       created_by INTEGER NOT NULL REFERENCES users(id),
       created_at TEXT DEFAULT (datetime('now')),
       updated_at TEXT DEFAULT (datetime('now'))

@@ -25,7 +25,8 @@
         <aside v-if="projectId" class="sidebar">
           <div class="sidebar-section">工作台</div>
           <router-link :to="'/projects/' + projectId" class="sidebar-link">📋 我的表单</router-link>
-          <router-link :to="'/projects/' + projectId + '/records'" class="sidebar-link">📝 检查记录</router-link>
+          <router-link :to="'/projects/' + projectId + '/records'" class="sidebar-link">📝 日常巡检</router-link>
+          <router-link :to="'/projects/' + projectId + '/acceptance'" class="sidebar-link">🏗 承接查验</router-link>
           <router-link :to="'/projects/' + projectId + '/equipment'" class="sidebar-link">🔧 设备档案</router-link>
           <div class="sidebar-section">资源</div>
           <router-link :to="'/projects/' + projectId + '/templates'" class="sidebar-link">📁 参考表单</router-link>
