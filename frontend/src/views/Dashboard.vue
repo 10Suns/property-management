@@ -1,18 +1,18 @@
 <template>
   <div>
     <div class="page-header">
-      <h1 class="page-title">📊 项目仪表盘</h1>
+      <h1 class="page-title">项目仪表盘</h1>
     </div>
 
     <!-- Month range selector -->
-    <div class="card mb-16" style="padding:12px 16px">
-      <div class="flex items-center gap-12" style="flex-wrap:wrap">
-        <span style="font-weight:500;font-size:13px">统计范围：</span>
-        <select v-model="fromMonth" class="select" style="width:auto" @change="loadStats">
+    <div class="card mb-16" style="padding:12px 20px">
+      <div class="flex items-center gap-12 flex-wrap">
+        <span class="form-label" style="margin-bottom:0">统计范围：</span>
+        <select v-model="fromMonth" class="select" @change="loadStats">
           <option v-for="m in monthOptions" :key="m.value" :value="m.value">{{ m.label }}</option>
         </select>
-        <span class="text-secondary" style="font-size:13px">至</span>
-        <select v-model="toMonth" class="select" style="width:auto" @change="loadStats">
+        <span class="text-sm text-secondary">至</span>
+        <select v-model="toMonth" class="select" @change="loadStats">
           <option v-for="m in toMonthOptions" :key="m.value" :value="m.value">{{ m.label }}</option>
         </select>
         <div class="flex gap-4" style="flex-shrink:0">
@@ -64,7 +64,7 @@
         </div>
       </div>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px" class="mb-16">
+      <div class="dash-grid mb-16">
         <!-- By template -->
         <div class="card">
           <div class="card-title mb-8">按模板统计</div>
@@ -104,13 +104,13 @@
       <div class="card">
         <div class="card-title mb-8">最近提交的记录</div>
         <div v-if="!stats.recentRecords || stats.recentRecords.length === 0" class="empty text-sm">暂无记录</div>
-        <div v-for="r in stats.recentRecords" :key="r.id" class="flex items-center gap-8" style="padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer" @click="openRecord(r)">
-          <div class="flex-1" style="min-width:0">
-            <div style="font-weight:500;font-size:14px">{{ r.template_title }}</div>
-            <div class="text-sm text-secondary">{{ r.creator_name }} · {{ r.building_name || r.house_number || r.location_info || '未指定位置' }} · {{ r.updated_at }}</div>
+        <div v-for="r in stats.recentRecords" :key="r.id" class="list-item" @click="openRecord(r)">
+          <div class="list-item-body">
+            <div class="list-item-title">{{ r.template_title }}</div>
+            <div class="list-item-sub">{{ r.creator_name }} · {{ r.building_name || r.house_number || r.location_info || '未指定位置' }} · {{ r.updated_at }}</div>
           </div>
           <span class="badge" :class="statusBadgeMap[r.status] || 'badge-pending'">{{ statusLabelMap[r.status] || r.status }}</span>
-          <span style="color:var(--text-light);font-size:18px">›</span>
+          <span class="list-item-arrow">›</span>
         </div>
       </div>
     </template>
@@ -199,17 +199,24 @@ function openRecord(r) {
 </script>
 
 <style scoped>
-.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-.stat-card { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px; text-align: center; }
-.stat-value { font-size: 32px; font-weight: 700; color: var(--primary); }
-.stat-label { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.stat-card {
+  background: var(--surface); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 20px 22px; text-align: center;
+  border: 1px solid var(--border);
+}
+.stat-value {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 34px; font-weight: 600; color: var(--primary); line-height: 1.1;
+}
+.stat-label { font-size: 13px; color: var(--text-light); margin-top: 4px; letter-spacing: 0.3px; }
 .stat-pass .stat-value { color: var(--success); }
 .stat-fail .stat-value { color: var(--danger); }
 
 .chart { padding: 4px 0; }
 .chart-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
 .chart-label { width: 60px; font-size: 11px; color: var(--text-secondary); text-align: right; flex-shrink: 0; }
-.chart-bars { flex: 1; display: flex; height: 20px; border-radius: 3px; overflow: hidden; background: #f1f3f4; }
+.chart-bars { flex: 1; display: flex; height: 20px; border-radius: 2px; overflow: hidden; background: #ede9e0; }
 .chart-bar { height: 100%; transition: width 0.3s; }
 .chart-bar-done { background: var(--primary); }
 .chart-bar-pending { background: var(--danger); }

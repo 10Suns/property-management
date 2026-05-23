@@ -6,12 +6,12 @@
     </div>
 
     <div class="filter-bar">
-      <select v-model="filter.category" class="select" style="width:auto" @change="load">
+      <select v-model="filter.category" class="select" @change="load">
         <option value="">全部分类</option>
         <option value="配电">配电</option><option value="消防">消防</option><option value="电梯">电梯</option>
         <option value="给排水">给排水</option><option value="暖通">暖通</option><option value="弱电">弱电</option><option value="其他">其他</option>
       </select>
-      <select v-model="filter.status" class="select" style="width:auto" @change="load">
+      <select v-model="filter.status" class="select" @change="load">
         <option value="">全部状态</option>
         <option value="normal">正常</option><option value="maintenance">保养中</option>
         <option value="repair">待修</option><option value="scrapped">已报废</option>
@@ -19,29 +19,31 @@
     </div>
 
     <div v-if="error" class="empty">{{ error }}</div>
-    <div v-else-if="list.length === 0" class="empty">暂无设备档案</div>
-    <div v-for="eq in list" :key="eq.id" class="card">
-      <div class="card-header">
-        <span class="card-title" style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-right:8px">{{ eq.name }}</span>
-        <div class="flex gap-8" style="flex-shrink:0">
+    <div v-else class="data-grid">
+      <div v-for="eq in list" :key="eq.id" class="data-grid-item">
+        <div class="item-main">
+          <div class="item-title-row">
+            <span v-if="eq.category" class="badge badge-pass">{{ eq.category }}</span>
+            <span class="cell-title">{{ eq.name }}</span>
+          </div>
+          <span class="cell-meta">型号：{{ eq.model || '-' }} · 编号：{{ eq.serial_number || '-' }} · 位置：{{ [eq.building_name, eq.house_number, eq.location].filter(Boolean).join(' ') || '-' }} · 安装：{{ eq.install_date || '-' }} · 备注：{{ eq.notes || '-' }}</span>
+        </div>
+        <div class="item-actions">
           <span class="badge" :class="statusClass(eq.status)">{{ statusLabel(eq.status) }}</span>
-          <button v-if="auth.isManager" class="btn btn-sm btn-outline" @click="edit(eq)">编辑</button>
-          <button v-if="auth.isManager" class="btn btn-sm btn-danger-outline" @click="del(eq)">删除</button>
+          <button v-if="auth.isManager" class="action-btn" @click="edit(eq)">编辑</button>
+          <button v-if="auth.isManager" class="action-btn danger" @click="del(eq)">删除</button>
         </div>
       </div>
-      <div class="equip-info">
-        <div><span class="text-secondary">分类：</span>{{ eq.category || '-' }}</div>
-        <div><span class="text-secondary">型号：</span>{{ eq.model || '-' }}</div>
-        <div><span class="text-secondary">编号：</span>{{ eq.serial_number || '-' }}</div>
-        <div><span class="text-secondary">安装日期：</span>{{ eq.install_date || '-' }}</div>
-        <div><span class="text-secondary">位置：</span>{{ [eq.building_name, eq.house_number, eq.location].filter(Boolean).join(' ') || '-' }}</div>
-        <div><span class="text-secondary">备注：</span>{{ eq.notes || '-' }}</div>
+      <div v-if="list.length === 0" class="data-grid-empty">
+        <div class="empty-icon">🔧</div>
+        <div class="empty-title">暂无设备档案</div>
+        <div class="empty-desc">点击右上角「+ 添加设备」录入设备信息</div>
       </div>
     </div>
 
     <!-- Modal -->
     <div class="modal" v-if="showModal" @click.self="showModal=false">
-      <div class="modal-card" style="max-width:500px">
+      <div class="modal-card modal-card-sm">
         <h3>{{ editingId ? '编辑设备' : '添加设备' }}</h3>
         <div class="form-group"><label class="form-label">设备名称 *</label><input v-model="form.name" class="input" /></div>
         <div class="form-row">
@@ -130,12 +132,12 @@ async function save() {
 
 async function del(eq) {
   if (!confirm('确定删除设备 "' + eq.name + '"？')) return
-  await api.delete('/equipment/' + eq.id)
-  load()
+  try {
+    await api.delete('/equipment/' + eq.id)
+    load()
+  } catch (e) {
+    alert('删除失败：' + (e.response?.data?.error || '未知错误'))
+  }
 }
 </script>
 
-<style scoped>
-.equip-info { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px 12px; font-size: 12px; color: var(--text); }
-@media (max-width: 768px) { .equip-info { grid-template-columns: 1fr 1fr; } }
-</style>

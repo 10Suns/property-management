@@ -6,15 +6,15 @@
     </div>
 
     <div class="filter-bar">
-      <select v-model="filters.template_id" class="select" style="width:auto" @change="loadRecords">
+      <select v-model="filters.template_id" class="select" @change="loadRecords">
         <option :value="null">全部表单</option>
         <option v-for="t in templates" :key="t.id" :value="t.id">{{ t.form_id }} {{ t.title }}</option>
       </select>
-      <select v-model="filters.building_id" class="select" style="width:auto" @change="loadRecords">
+      <select v-model="filters.building_id" class="select" @change="loadRecords">
         <option :value="null">全部楼栋</option>
         <option v-for="b in buildings" :key="b.id" :value="b.id">{{ b.name }}</option>
       </select>
-      <select v-model="filters.status" class="select" style="width:auto" @change="loadRecords">
+      <select v-model="filters.status" class="select" @change="loadRecords">
         <option value="">全部状态</option>
         <option value="pending">待查验</option>
         <option value="in_progress">查验中</option>
@@ -23,39 +23,38 @@
     </div>
 
     <div v-if="loading" class="empty">加载中...</div>
-    <div v-else-if="records.length === 0" class="empty" style="padding:60px 16px">
-      <div style="font-size:48px;margin-bottom:12px">{{ recordTypeEmoji }}</div>
-      <p style="font-weight:600;font-size:15px;margin-bottom:6px">暂无检查记录</p>
-      <p class="text-sm">点击右上角「+ 新增记录」开始<br>选择{{ recordTypeLabel }}表单和位置，即可逐项录入检查结果</p>
-    </div>
-    <div v-for="r in records" :key="r.id" class="card" style="cursor:pointer" @click="openRecord(r)">
-      <div class="flex justify-between items-start">
-        <div style="flex:1;min-width:0">
-          <div style="font-weight:600;font-size:14px;margin-bottom:4px">{{ r.template_title || r.form_title || '未命名记录' }}</div>
-          <div class="flex gap-12 text-sm text-secondary" style="flex-wrap:wrap">
-            <span>{{ r.creator_name }}</span>
-            <span v-if="r.building_name || r.location_info">{{ r.building_name }} {{ r.location_info || '' }}</span>
-            <span>{{ formatDate(r.updated_at || r.created_at) }}</span>
-            <span>{{ r.item_count || 0 }} 项</span>
-            <span v-if="r.fail_count" style="color:var(--danger)">{{ r.fail_count }} 不合格</span>
+    <div v-else class="data-grid">
+      <div v-for="r in records" :key="r.id" class="data-grid-item clickable" @click="openRecord(r)">
+        <div class="item-main">
+          <div class="item-title-row">
+            <span v-if="r.template_form_id" class="badge badge-pass">{{ r.template_form_id }}</span>
+            <span class="cell-title">{{ r.template_title || r.form_title || '未命名记录' }}</span>
           </div>
+          <span class="cell-meta">{{ r.creator_name }} · {{ r.building_name || '' }} {{ r.location_info || '' }} · {{ formatDate(r.updated_at || r.created_at) }} · {{ r.item_count || 0 }} 项<span v-if="r.fail_count" class="cell-fail"> · {{ r.fail_count }} 不合格</span></span>
         </div>
-        <div class="flex gap-8 items-center" style="flex-shrink:0;margin-left:12px">
+        <div class="item-actions">
           <span class="badge" :class="statusBadgeMap[r.status] || 'badge-pending'">{{ statusLabelMap[r.status] || r.status }}</span>
-          <button v-if="canDelete(r)" class="btn btn-sm btn-danger-outline" @click.stop="del(r)">删除</button>
-          <span class="text-secondary" style="font-size:18px">›</span>
+          <button v-if="canDelete(r)" class="action-btn danger" @click.stop="del(r)">删除</button>
         </div>
+      </div>
+      <div v-if="records.length === 0" class="data-grid-empty">
+        <div class="empty-icon">{{ recordTypeEmoji }}</div>
+        <div class="empty-title">暂无检查记录</div>
+        <div class="empty-desc">点击右上角「+ 新增记录」开始录入</div>
       </div>
     </div>
 
     <!-- Create record modal: select form -->
     <div class="modal" v-if="showCreate" @click.self="showCreate=false">
-      <div class="modal-card" style="max-width:500px;max-height:70vh;overflow-y:auto">
+      <div class="modal-card modal-card-sm modal-scroll">
         <h3>新增检查记录</h3>
         <p class="text-sm text-secondary">选择要检查的表单</p>
         <div v-if="myForms.length === 0" class="empty text-sm">暂无可用表单，请先在「我的表单」中创建</div>
-        <div v-for="f in myForms" :key="f.id" class="card" style="cursor:pointer;padding:12px 16px;margin-bottom:6px" @click="createRecord(f)">
-          <div style="font-weight:500;font-size:14px">{{ f.template_form_id || '自定义' }} {{ f.title }}</div>
+        <div v-for="f in myForms" :key="f.id" class="card form-select-item" @click="createRecord(f)">
+          <div style="font-weight:500;font-size:14px">
+            <span v-if="f.template_form_id" class="badge badge-pass mr-4">{{ f.template_form_id }}</span>
+            {{ f.title }}
+          </div>
           <div class="text-sm text-secondary">{{ f.item_count || 0 }} 项 · {{ f.creator_name }}</div>
         </div>
         <div class="modal-actions">

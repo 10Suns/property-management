@@ -1,9 +1,9 @@
 <template>
   <div>
     <div class="page-header">
-      <router-link to="/projects" class="btn btn-sm btn-outline">← 返回</router-link>
+      <button class="btn btn-sm btn-outline" @click="$router.back()">← 返回</button>
       <h1 class="page-title">用户管理</h1>
-      <button class="btn" @click="showCreate=true">新建用户</button>
+      <button class="btn btn-sm" @click="showCreate=true">+ 新建用户</button>
     </div>
 
     <div class="card">

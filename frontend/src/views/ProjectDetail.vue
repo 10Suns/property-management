@@ -7,33 +7,31 @@
     <p class="text-sm text-secondary mb-16">从左侧「📁 参考表单」选择模板一键创建，或点击右上角创建空白表单。完成后打印空白表带去现场检查。</p>
 
     <div v-if="loading" class="empty">加载中...</div>
-    <template v-else>
-      <div v-if="myForms.length === 0" class="empty" style="padding:60px 16px">
-        <div style="font-size:48px;margin-bottom:12px">📋</div>
-        <p style="font-weight:600;font-size:15px;margin-bottom:6px">还没有表单</p>
-        <p class="text-sm">去左侧「📁 参考表单」浏览 28 套系统模板<br>选择需要的模板，一键创建为你的表单<br>或点击右上角「+ 创建空白表单」从零开始</p>
-      </div>
-      <div v-for="f in myForms" :key="f.id" class="card">
-        <div class="card-header">
-          <div style="flex:1;min-width:0">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-              <span v-if="f.template_form_id" class="badge badge-pass">{{ f.template_form_id }}</span>
-              <span class="card-title" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ f.title }}</span>
-            </div>
-            <span class="text-sm text-secondary">{{ f.item_count || 0 }} 项 · {{ f.creator_name }} · {{ formatDate(f.created_at) }}</span>
+    <div v-else class="data-grid">
+      <div v-for="f in myForms" :key="f.id" class="data-grid-item">
+        <div class="item-main">
+          <div class="item-title-row">
+            <span v-if="f.template_form_id" class="badge badge-pass">{{ f.template_form_id }}</span>
+            <span class="cell-title">{{ f.title }}</span>
           </div>
-          <div class="flex gap-8" style="flex-shrink:0">
-            <button class="btn btn-sm" @click="printBlank(f)">🖨 打印空白表</button>
-            <button class="btn btn-sm btn-outline" @click="editMyForm(f)">编辑</button>
-            <button class="btn btn-sm btn-danger-outline" @click="deleteForm(f)">删除</button>
-          </div>
+          <span class="cell-meta">{{ f.item_count || 0 }} 项 · {{ f.creator_name }} · {{ formatDate(f.created_at) }}</span>
+        </div>
+        <div class="item-actions">
+          <button class="action-btn" @click="printBlank(f)">打印</button>
+          <button class="action-btn" @click="editMyForm(f)">编辑</button>
+          <button class="action-btn danger" @click="deleteForm(f)">删除</button>
         </div>
       </div>
-    </template>
+      <div v-if="myForms.length === 0" class="data-grid-empty">
+        <div class="empty-icon">📋</div>
+        <div class="empty-title">还没有表单</div>
+        <div class="empty-desc">在左侧「参考表单」选择模板一键创建，或点击右上角「+ 创建空白表单」从零开始</div>
+      </div>
+    </div>
 
     <!-- Create blank form modal -->
     <div class="modal" v-if="showCreateBlank" @click.self="showCreateBlank=false">
-      <div class="modal-card" style="max-width:420px">
+      <div class="modal-card modal-card-sm">
         <h3>创建空白表单</h3>
         <div class="form-group">
           <label class="form-label">表单标题 *</label>
@@ -113,7 +111,6 @@ async function doCreateBlank() {
     })
     showCreateBlank.value = false
     blankForm.value = { title: '' }
-    await loadMyForms()
     router.push('/projects/' + route.params.id + '/template/0?form=' + data.id)
   } catch (e) {
     blankError.value = e.response?.data?.error || '创建失败'

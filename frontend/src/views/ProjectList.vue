@@ -2,30 +2,29 @@
   <div>
     <div class="page-header">
       <h1 class="page-title">项目列表</h1>
-      <button class="btn" @click="showCreate=true">新建项目</button>
+      <button class="btn btn-sm" @click="showCreate=true">+ 新建项目</button>
     </div>
 
     <div v-if="loading" class="empty">加载中...</div>
-
-    <div v-else-if="projects.length === 0" class="empty">
-      <div class="empty-icon">📋</div>
-      <p>暂无项目</p>
-      <button class="btn mt-8" @click="showCreate=true">创建第一个项目</button>
+    <div v-else class="data-grid">
+      <div v-for="p in projects" :key="p.id" class="data-grid-item clickable" @click="router.push('/projects/' + p.id)">
+        <div class="item-main">
+          <div class="item-title-row">
+            <span v-if="p.code" class="badge badge-skip">{{ p.code }}</span>
+            <span class="cell-title">{{ p.name }}</span>
+          </div>
+          <span class="cell-meta">{{ p.address || '' }} · {{ p.building_count || 0 }} 栋 / {{ p.house_count || 0 }} 户 · {{ typeLabel(p.type) }}</span>
+        </div>
+        <div class="item-actions">
+          <span class="badge" :class="p.member_role === 'admin' ? 'badge-pass' : 'badge-skip'">{{ p.member_role === 'admin' ? '管理员' : '成员' }}</span>
+        </div>
+      </div>
+      <div v-if="projects.length === 0" class="data-grid-empty">
+        <div class="empty-icon">📋</div>
+        <div class="empty-title">暂无项目</div>
+        <div class="empty-desc">点击右上角「+ 新建项目」创建第一个项目</div>
+      </div>
     </div>
-
-    <router-link v-for="p in projects" :key="p.id" :to="'/projects/' + p.id" class="card" style="text-decoration:none;color:inherit;cursor:pointer;display:block">
-      <div class="card-header">
-        <span v-if="p.code" class="badge badge-skip" style="flex-shrink:0;margin-right:8px">{{ p.code }}</span>
-        <span class="card-title" style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-right:8px">{{ p.name }}</span>
-        <span class="badge" :class="p.member_role === 'admin' ? 'badge-pass' : 'badge-skip'" style="flex-shrink:0">{{ p.member_role === 'admin' ? '管理员' : '成员' }}</span>
-      </div>
-      <div class="flex gap-12 text-sm text-secondary" style="flex-wrap:wrap">
-        <span v-if="p.address">{{ p.address }}</span>
-        <span>{{ p.building_count || 0 }} 栋</span>
-        <span>{{ p.house_count || 0 }} 户</span>
-        <span>{{ typeLabel(p.type) }}</span>
-      </div>
-    </router-link>
 
     <!-- Create modal -->
     <div class="modal" v-if="showCreate" @click.self="showCreate=false">

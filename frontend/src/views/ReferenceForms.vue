@@ -7,30 +7,33 @@
     <p class="text-sm text-secondary mb-16">{{ templates.length }} 套系统预设模板。点击查看后可使用「保存为我的表单」。</p>
 
     <div v-if="loading" class="empty">加载中...</div>
-    <template v-else>
-      <div v-for="cat in categories" :key="cat.name" class="mb-16">
-        <h3 class="text-sm text-secondary mb-8" style="font-weight:600;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--border);padding-bottom:6px">{{ cat.name }}</h3>
-        <div class="template-grid">
-          <div v-for="t in cat.templates" :key="t.id" class="card" style="padding:12px 16px;cursor:pointer" @click="createFromTemplate(t)">
-            <div class="flex items-center justify-between">
-              <div style="min-width:0">
-                <span class="badge badge-pass" style="margin-right:8px;flex-shrink:0">{{ t.form_id }}</span>
-                <span style="font-weight:500;font-size:14px">{{ t.title }}</span>
-                <span class="text-sm text-secondary" style="margin-left:8px">{{ t.item_count || 0 }}项</span>
-              </div>
-              <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:12px">
-                <button v-if="auth.isAdmin" class="btn btn-xs btn-outline" @click.stop="openEditTemplate(t)">编辑</button>
-                <span style="color:var(--primary);font-weight:500;font-size:12px">查看 ›</span>
-              </div>
+    <div v-else class="data-grid">
+      <template v-for="cat in categories" :key="cat.name">
+        <div class="data-grid-cat">{{ cat.name }}</div>
+        <div v-for="t in cat.templates" :key="t.id" class="data-grid-item clickable" @click="createFromTemplate(t)">
+          <div class="item-main">
+            <div class="item-title-row">
+              <span class="badge badge-pass">{{ t.form_id }}</span>
+              <span class="cell-title">{{ t.title }}</span>
             </div>
+            <span class="cell-meta">{{ t.item_count || 0 }} 项</span>
+          </div>
+          <div class="item-actions" @click.stop>
+            <button v-if="auth.isAdmin" class="action-btn" @click="openEditTemplate(t)">编辑</button>
+            <span class="action-btn primary">查看</span>
           </div>
         </div>
+      </template>
+      <div v-if="templates.length === 0" class="data-grid-empty">
+        <div class="empty-icon">📁</div>
+        <div class="empty-title">暂无参考表单</div>
+        <div class="empty-desc">系统预设模板将在此处显示</div>
       </div>
-    </template>
+    </div>
 
     <!-- Admin: create/edit template modal -->
     <div class="modal" v-if="showTemplateModal" @click.self="showTemplateModal=false">
-      <div class="modal-card" style="max-width:640px;max-height:80vh;overflow-y:auto">
+      <div class="modal-card modal-card-lg" style="max-height:80vh;overflow-y:auto">
         <h3>{{ editingTemplate ? '编辑参考表单' : '新建参考表单' }}</h3>
         <div class="form-row">
           <div class="form-group">
@@ -57,10 +60,10 @@
           <label class="form-label" style="margin:0">检查项目（{{ templateForm.items.length }}项）</label>
           <button class="btn btn-sm" @click="addTemplateItem">+ 添加条目</button>
         </div>
-        <div v-for="(item, i) in templateForm.items" :key="i" class="flex gap-8 mb-4" style="align-items:center">
-          <span class="text-sm text-secondary" style="width:24px;text-align:center">{{ i + 1 }}</span>
-          <input v-model="item.item_name" class="input" style="flex:1" placeholder="检查项目名称" />
-          <input v-model="item.check_standard" class="input" style="flex:1" placeholder="检查标准" />
+        <div v-for="(item, i) in templateForm.items" :key="i" class="flex gap-8 mb-4 items-center">
+          <span class="text-sm text-secondary text-center" style="width:24px">{{ i + 1 }}</span>
+          <input v-model="item.item_name" class="input flex-1" placeholder="检查项目名称" />
+          <input v-model="item.check_standard" class="input flex-1" placeholder="检查标准" />
           <button class="btn btn-xs btn-danger-outline" @click="templateForm.items.splice(i,1)">删除</button>
         </div>
         <p v-if="templateError" class="error-msg">{{ templateError }}</p>
@@ -191,8 +194,3 @@ function createFromTemplate(t) {
   router.push('/projects/' + route.params.id + '/template/' + t.id)
 }
 </script>
-
-<style scoped>
-.template-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-@media (max-width: 900px) { .template-grid { grid-template-columns: 1fr; } }
-</style>

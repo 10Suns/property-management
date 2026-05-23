@@ -11,135 +11,88 @@
 
     <div v-if="loading" class="empty no-print">加载中...</div>
 
-    <!-- Blank template documents -->
-    <div v-for="(tpl, ti) in blankTemplates" :key="'bt_'+ti" class="print-document">
-      <div class="print-frame">
-        <div class="print-company">瑞界物业 查验记录表</div>
-        <div class="print-form-title">{{ cleanTitle(tpl.title) }}</div>
-        <table class="print-info-table">
-          <colgroup>
-            <col class="info-label-col"><col class="info-value-col">
-            <col class="info-label-col"><col class="info-value-col">
-          </colgroup>
-          <tr>
-            <th>项目名称</th><td>{{ projectName }}</td>
-            <th>查验日期</th><td>____年____月____日</td>
-          </tr>
-          <tr>
-            <th>位置</th><td>____栋____层____号</td>
-            <th>查验人</th><td>____________</td>
-          </tr>
-        </table>
-
-        <table class="print-data-table">
-          <colgroup>
-            <col class="col-seq">
-            <col class="col-item">
-            <col class="col-standard">
-            <col class="col-result">
-          </colgroup>
-          <thead>
-            <tr>
-              <th>序号</th>
-              <th>检查项目</th>
-              <th>检查标准</th>
-              <th>查验结果</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(item, ii) in tpl.items" :key="ii">
-              <td class="cell-center">{{ ii+1 }}</td>
-              <td class="cell-top">{{ item.item_name }}</td>
-              <td class="cell-top">{{ item.check_standard }}</td>
-              <td class="cell-top"></td>
-            </tr>
-            <tr v-for="n in paddingRows(tpl.items?.length || 0)" :key="'pad_'+n" class="row-pad">
-              <td class="cell-center">&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <table class="print-footer-table">
-          <tr><th>查验意见</th><td class="comment-cell">&nbsp;</td></tr>
-          <tr class="signature-row">
-            <td class="signature-cell">查验人签字：<div class="signature-line"></div></td>
-            <td class="signature-cell">日期：<div class="signature-line"></div></td>
-          </tr>
-        </table>
-      </div>
-    </div>
-
-    <!-- Filled record documents -->
-    <div v-for="(record, ri) in printRecords" :key="'r_'+record.id" class="print-document">
-      <div class="print-frame">
+    <template v-for="(doc, di) in allDocuments" :key="di">
+      <div class="print-document">
+        <!-- Page 1 -->
+        <div class="print-page">
           <div class="print-company">瑞界物业 查验记录表</div>
-          <div class="print-form-title">{{ cleanTitle(record.template_title) }}</div>
+          <div v-if="doc.subtitle" class="print-form-title">{{ doc.subtitle }}</div>
           <table class="print-info-table">
-            <colgroup>
-              <col class="info-label-col"><col class="info-value-col">
-              <col class="info-label-col"><col class="info-value-col">
-            </colgroup>
-            <tr>
-              <th>项目名称</th><td>{{ projectName }}</td>
-              <th>查验日期</th><td>{{ record.updated_at?.slice(0,10) }}</td>
-            </tr>
-            <tr>
-              <th>位置</th><td>{{ record.building_name || '' }} {{ record.house_number || '' }} {{ record.location_info || '' }}</td>
-              <th>查验人</th><td>{{ record.creator_name }}</td>
-            </tr>
+            <colgroup><col class="col-seq"><col class="col-item"><col class="col-standard"><col class="col-result"></colgroup>
+            <tr><th colspan="2">项目名称</th><td colspan="2">{{ doc.projectName }}</td></tr>
+            <tr><th colspan="2">查验日期</th><td colspan="2">{{ doc.dateStr }}</td></tr>
+            <tr><th colspan="2">位置</th><td colspan="2">{{ doc.locationStr }}</td></tr>
+            <tr><th colspan="2">查验人</th><td colspan="2">{{ doc.inspectorName }}</td></tr>
           </table>
+          <table class="print-data-table">
+            <colgroup><col class="col-seq"><col class="col-item"><col class="col-standard"><col class="col-result"></colgroup>
+            <thead><tr><th>序号</th><th>检查项目</th><th>检查标准</th><th>查验结果</th></tr></thead>
+            <tbody>
+              <tr v-for="(item, ii) in doc.page1" :key="ii">
+                <td class="cell-center">{{ item ? (ii + 1) : '&nbsp;' }}</td>
+                <td class="cell-top">{{ item ? item.name : '' }}</td>
+                <td class="cell-top">{{ item ? item.standard : '' }}</td>
+                <td class="cell-top">
+                  <template v-if="item">
+                    <span v-if="item.resultClass" :class="item.resultClass">{{ item.resultLabel }}</span>
+                    <div v-if="item.problem" class="problem-desc">{{ item.problem }}</div>
+                  </template>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="print-footer">
+            <table class="print-footer-table">
+              <colgroup><col class="col-seq"><col class="col-item"><col class="col-standard"><col class="col-result"></colgroup>
+              <tr><th colspan="2">查验意见</th><td colspan="2" class="comment-cell">{{ doc.comment || '' }}</td></tr>
+              <tr class="signature-row">
+                <td colspan="3" class="signature-cell">查验人签字：<div class="signature-line"></div></td>
+                <td class="signature-cell">日期：<div class="signature-line"></div></td>
+              </tr>
+            </table>
+          </div>
+        </div>
 
-        <table class="print-data-table">
-          <colgroup>
-            <col class="col-seq">
-            <col class="col-item">
-            <col class="col-standard">
-            <col class="col-result">
-          </colgroup>
-          <thead>
-            <tr>
-              <th>序号</th>
-              <th>检查项目</th>
-              <th>检查标准</th>
-              <th>查验结果</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(item, ii) in record.printItems" :key="ii">
-              <td class="cell-center">{{ ii+1 }}</td>
-              <td class="cell-top">{{ item.item_name || item.custom_item_name }}</td>
-              <td class="cell-top">{{ item.check_standard || item.custom_standard }}</td>
-              <td class="cell-top">
-                <span v-if="item.result==='pass'" class="result-pass">合格</span>
-                <span v-else-if="item.result==='fail'" class="result-fail">不合格
-                  <div v-if="item.problem_description" class="problem-desc">{{ item.problem_description }}</div>
-                </span>
-                <span v-else-if="item.result==='skip'" class="result-skip">免检</span>
-                <span v-else class="result-pending">—</span>
-              </td>
-            </tr>
-            <tr v-for="n in paddingRows(record.printItems?.length || 0)" :key="'pad_'+n" class="row-pad">
-              <td class="cell-center">&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <table class="print-footer-table">
-          <tr><th>查验意见</th><td class="comment-cell">{{ record.inspector_comment || '' }}</td></tr>
-          <tr class="signature-row">
-            <td class="signature-cell">查验人签字：<div class="signature-line"></div></td>
-            <td class="signature-cell">日期：<div class="signature-line"></div></td>
-          </tr>
-        </table>
+        <!-- Page 2 -->
+        <div class="print-page">
+          <div class="print-company">瑞界物业 查验记录表（续）</div>
+          <table class="print-data-table">
+            <colgroup><col class="col-seq"><col class="col-item"><col class="col-standard"><col class="col-result"></colgroup>
+            <thead><tr><th>序号</th><th>检查项目</th><th>检查标准</th><th>查验结果</th></tr></thead>
+            <tbody>
+              <tr v-for="(item, ii) in doc.page2" :key="ii">
+                <td class="cell-center">{{ item ? (PAGE1_ROWS + ii + 1) : '&nbsp;' }}</td>
+                <td class="cell-top">{{ item ? item.name : '' }}</td>
+                <td class="cell-top">{{ item ? item.standard : '' }}</td>
+                <td class="cell-top">
+                  <template v-if="item">
+                    <span v-if="item.resultClass" :class="item.resultClass">{{ item.resultLabel }}</span>
+                    <div v-if="item.problem" class="problem-desc">{{ item.problem }}</div>
+                  </template>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="print-footer">
+            <table class="print-footer-table">
+              <colgroup><col class="col-seq"><col class="col-item"><col class="col-standard"><col class="col-result"></colgroup>
+              <tr><th colspan="2">查验意见</th><td colspan="2" class="comment-cell">&nbsp;</td></tr>
+              <tr class="signature-row">
+                <td colspan="3" class="signature-cell">查验人签字：<div class="signature-line"></div></td>
+                <td class="signature-cell">日期：<div class="signature-line"></div></td>
+              </tr>
+            </table>
+          </div>
+        </div>
       </div>
 
-      <!-- Photos: always on a new page -->
-      <div v-if="record.photos?.length" class="print-photo-section">
-        <div class="print-frame">
-          <div class="print-company" style="font-size:14pt">照片附件 — {{ cleanTitle(record.template_title) }}</div>
+      <!-- Photos: separate page -->
+      <div v-if="doc.photos?.length" class="print-document">
+        <div class="print-page">
+          <div class="print-company" style="font-size:14pt">照片附件 — {{ doc.subtitle }}</div>
           <table class="print-photo-table">
             <tbody>
-              <tr v-for="(p, pi) in record.photos" :key="pi">
+              <tr v-for="(p, pi) in doc.photos" :key="pi">
                 <td class="photo-img-cell"><img :src="'/uploads/' + p.filename" class="print-photo" /></td>
                 <td class="photo-info-cell">
                   <div class="photo-name">{{ p.original_name }}</div>
@@ -148,23 +101,31 @@
               </tr>
             </tbody>
           </table>
-          <table class="print-footer-table">
-            <tr class="signature-row">
-              <td class="signature-cell">查验人签字：<div class="signature-line"></div></td>
-            </tr>
-          </table>
+          <div class="print-footer">
+            <table class="print-footer-table">
+              <tr class="signature-row">
+                <td class="signature-cell">查验人签字：<div class="signature-line"></div></td>
+              </tr>
+            </table>
+          </div>
         </div>
       </div>
-    </div>
+    </template>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import api from '../api'
 import { cleanTitle } from '../utils/title'
-// pdf-builder is loaded dynamically to avoid bloating initial bundle
+import { PAGE1_ROWS, PAGE2_ROWS, splitItems } from '../utils/print-constants'
+
+const RESULT_MAP = {
+  pass: { label: '合格', cls: 'result-pass' },
+  fail: { label: '不合格', cls: 'result-fail' },
+  skip: { label: '免检', cls: 'result-skip' },
+}
 
 const route = useRoute()
 const router = useRouter()
@@ -175,13 +136,55 @@ const loading = ref(true)
 const pdfLoading = ref(false)
 const window = globalThis
 
-const ROWS_PER_PAGE = 20
-
-function paddingRows(count) {
-  if (count <= 10) return 0
-  const remainder = count % ROWS_PER_PAGE
-  return remainder === 0 ? 0 : ROWS_PER_PAGE - remainder
+function normalizeItem(item) {
+  if (!item) return null
+  const r = RESULT_MAP[item.result]
+  return {
+    name: item.item_name || item.custom_item_name,
+    standard: item.check_standard || item.custom_standard,
+    resultLabel: r ? r.label : '—',
+    resultClass: item.result ? (r ? r.cls : 'result-pending') : null,
+    problem: item.problem_description || null,
+  }
 }
+
+// Pre-compute all documents as a flat list
+const allDocuments = computed(() => {
+  const docs = []
+
+  for (const tpl of blankTemplates.value) {
+    const items = (tpl.items || []).map(normalizeItem)
+    const { page1, page2 } = splitItems(items)
+    docs.push({
+      subtitle: cleanTitle(tpl.title),
+      projectName: projectName.value,
+      dateStr: '____年____月____日',
+      locationStr: '____栋____层____号',
+      inspectorName: '____________',
+      comment: '',
+      page1,
+      page2,
+    })
+  }
+
+  for (const rec of printRecords.value) {
+    const items = (rec.printItems || rec.results || []).map(normalizeItem)
+    const { page1, page2 } = splitItems(items)
+    docs.push({
+      subtitle: cleanTitle(rec.template_title),
+      projectName: projectName.value,
+      dateStr: rec.updated_at?.slice(0, 10) || '____年____月____日',
+      locationStr: [rec.building_name, rec.house_number, rec.location_info].filter(Boolean).join(' ') || ' ',
+      inspectorName: rec.creator_name || '____________',
+      comment: rec.inspector_comment || '',
+      photos: rec.photos,
+      page1,
+      page2,
+    })
+  }
+
+  return docs
+})
 
 async function downloadPdf() {
   pdfLoading.value = true
@@ -248,16 +251,20 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-/* === Document: one per form/record === */
 .print-document {
   page-break-after: always;
   margin-bottom: 24px;
-  background: #fff;
 }
 
-/* === Unified outer frame — single 2px border around all content === */
-.print-frame {
-  border: 2px solid #333;
+.print-page {
+  width: 210mm;
+  min-height: 297mm;
+  margin: 0 auto 16px;
+  background: #fff;
+  border: 1px solid #ccc;
+  display: flex;
+  flex-direction: column;
+  page-break-after: always;
 }
 
 .print-company {
@@ -267,6 +274,7 @@ onMounted(async () => {
   padding: 8px 0;
   background: #f0f0f0;
   letter-spacing: 2px;
+  flex-shrink: 0;
 }
 
 .print-form-title {
@@ -275,12 +283,14 @@ onMounted(async () => {
   padding: 5px 0;
   background: #f8f8f8;
   color: #555;
+  flex-shrink: 0;
 }
 
-/* === Info table: only cell borders === */
 .print-info-table {
   width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
+  flex-shrink: 0;
 }
 
 .print-info-table th,
@@ -297,55 +307,53 @@ onMounted(async () => {
   text-align: center;
 }
 
-.info-label-col { width: 14%; }
-.info-value-col { width: 36%; }
-
-/* === Data table: only cell borders, header row repeats on each page === */
 .print-data-table {
   width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
+  flex-shrink: 0;
 }
 
 .print-data-table th,
 .print-data-table td {
   border: 1px solid #999;
-  padding: 6px 8px;
-  font-size: 10pt;
-  line-height: 1.5;
+  padding: 5px 6px;
+  font-size: 9.5pt;
+  line-height: 1.4;
 }
 
 .print-data-table thead th {
   background: #f5f5f5;
   font-weight: 600;
-  font-size: 9.5pt;
+  font-size: 9pt;
   text-align: center;
 }
 
-.col-seq { width: 3.5%; }
-.col-item { width: 10%; }
-.col-standard { width: 48%; }
-.col-result { width: 38.5%; }
+.col-seq { width: 4%; }
+.col-item { width: 15%; }
+.col-standard { width: 45%; }
+.col-result { width: 36%; }
 
-/* === Cells === */
 .cell-center { text-align: center; vertical-align: middle; }
 .cell-top { vertical-align: top; text-align: left; }
 
-/* === Result indicators === */
 .result-pass { font-weight: 600; color: #188038; }
 .result-fail { font-weight: 600; color: #c5221f; }
-.result-skip { font-weight: 600; color: #5f6368; }
+.result-skip { font-weight: 600; color: var(--text-light); }
 .result-pending { color: #999; }
-.problem-desc { font-size: 9pt; color: #c5221f; margin-top: 2px; line-height: 1.4; font-weight: normal; }
+.problem-desc { font-size: 8.5pt; color: #c5221f; margin-top: 2px; line-height: 1.3; font-weight: normal; }
 
-/* === Footer table === */
+.print-footer {
+  flex-shrink: 0;
+}
+
 .print-footer-table {
   width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
-  break-inside: avoid;
 }
 
 .print-footer-table th {
-  width: 14%;
   background: #f5f5f5;
   font-weight: 600;
   font-size: 9.5pt;
@@ -361,14 +369,13 @@ onMounted(async () => {
 }
 
 .comment-cell {
-  height: 80px;
+  height: 200px;
   vertical-align: top;
 }
 
-/* === Signature === */
 .signature-row td {
   border: none;
-  padding: 24px 12px 8px;
+  padding: 16px 12px 4px;
 }
 
 .signature-cell {
@@ -377,21 +384,16 @@ onMounted(async () => {
 }
 
 .signature-line {
-  margin-top: 32px;
+  margin-top: 24px;
   border-bottom: 1px solid #333;
   width: 70%;
-  min-width: 160px;
-}
-
-/* === Photos === */
-.print-photo-section {
-  page-break-before: always;
-  margin-top: 16px;
+  min-width: 140px;
 }
 
 .print-photo-table {
   width: 100%;
   border-collapse: collapse;
+  flex-shrink: 0;
 }
 
 .print-photo-table td {
@@ -405,7 +407,7 @@ onMounted(async () => {
 
 .print-photo {
   max-width: 100%;
-  max-height: 180px;
+  max-height: 160px;
   display: block;
   object-fit: contain;
 }
@@ -413,9 +415,16 @@ onMounted(async () => {
 .photo-name { font-size: 10pt; }
 .photo-date { font-size: 9pt; color: #888; margin-top: 4px; }
 
-/* === Print media === */
 @media print {
+  .no-print { display: none; }
   .print-document { margin-bottom: 0; }
-  @page { margin: 10mm; size: A4; }
+  .print-page {
+    width: auto;
+    min-height: auto;
+    margin: 0;
+    border: none;
+    page-break-after: always;
+  }
+  @page { margin: 8mm; size: A4; }
 }
 </style>
