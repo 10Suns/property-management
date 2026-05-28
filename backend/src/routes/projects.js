@@ -29,10 +29,9 @@ router.get('/', (req, res) => {
 
 // Create project (admin only)
 router.post('/', adminRequired, (req, res) => {
-  const { name, type, address, area, handover_date, developer, manager_name, manager_phone } = req.body
+  const { name, type, address, area, land_area, building_area, handover_date, developer, manager_name, manager_phone, email } = req.body
   if (!name) return res.status(400).json({ error: '项目名称不能为空' })
   const tx = db.transaction(() => {
-    // Auto-generate project code: find max numeric suffix and increment
     const last = db.prepare("SELECT code FROM projects WHERE code GLOB 'P[0-9][0-9][0-9][0-9]' ORDER BY id DESC LIMIT 1").get()
     let nextNum = 1
     if (last && last.code) {
@@ -40,8 +39,8 @@ router.post('/', adminRequired, (req, res) => {
       if (m) nextNum = parseInt(m[1]) + 1
     }
     const code = 'P' + String(nextNum).padStart(4, '0')
-    const r = db.prepare(`INSERT INTO projects (code,name,type,address,area,handover_date,developer,manager_name,manager_phone,created_by) VALUES (?,?,?,?,?,?,?,?,?,?)`)
-      .run(code, name, type||'industrial', address, area, handover_date, developer, manager_name, manager_phone, req.user.id)
+    const r = db.prepare(`INSERT INTO projects (code,name,type,address,area,land_area,building_area,handover_date,developer,manager_name,manager_phone,email,created_by) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`)
+      .run(code, name, type||'industrial', address, area, land_area, building_area, handover_date, developer, manager_name, manager_phone, email, req.user.id)
     const pid = r.lastInsertRowid
     db.prepare('INSERT INTO project_members (project_id,user_id,role) VALUES (?,?,?)').run(pid, req.user.id, 'admin')
     return pid
@@ -60,11 +59,13 @@ router.get('/:id', (req, res) => {
   res.json(p)
 })
 
-// Update project (admin only)
-router.put('/:id', adminRequired, (req, res) => {
-  const { name, type, address, area, handover_date, developer, manager_name, manager_phone } = req.body
-  db.prepare(`UPDATE projects SET name=?,type=?,address=?,area=?,handover_date=?,developer=?,manager_name=?,manager_phone=?,updated_at=datetime('now') WHERE id=?`)
-    .run(name, type, address, area, handover_date, developer, manager_name, manager_phone, req.params.id)
+// Update project (manager only)
+router.put('/:id', managerRequired, (req, res) => {
+  const { name, type, address, area, land_area, building_area, handover_date, developer, manager_name, manager_phone, email } = req.body
+  const p = db.prepare('SELECT * FROM projects WHERE id=?').get(req.params.id)
+  if (!p) return res.status(404).json({ error: '项目不存在' })
+  db.prepare(`UPDATE projects SET name=?,type=?,address=?,area=?,land_area=?,building_area=?,handover_date=?,developer=?,manager_name=?,manager_phone=?,email=?,updated_at=datetime('now') WHERE id=?`)
+    .run(name||p.name, type||p.type, address||p.address, area||p.area, land_area||p.land_area, building_area||p.building_area, handover_date||p.handover_date, developer||p.developer, manager_name||p.manager_name, manager_phone||p.manager_phone, email||p.email, req.params.id)
   res.json(db.prepare('SELECT * FROM projects WHERE id=?').get(req.params.id))
 })
 

@@ -1,9 +1,10 @@
 <template>
   <div class="login-page">
+    <div class="login-bg"></div>
     <div class="login-card">
       <div class="login-brand">
-        <h1>物业承接查验</h1>
-        <p class="login-subtitle">Property Inspection System</p>
+        <h1>瑞界物业</h1>
+        <p class="login-subtitle">SG Properties</p>
       </div>
       <div class="login-form">
         <div class="form-group">
@@ -27,6 +28,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import api from '../api'
 
 const router = useRouter()
 const auth = useAuthStore()
@@ -44,7 +46,13 @@ async function doLogin() {
   loading.value = true
   try {
     await auth.login(username.value, password.value)
-    router.push('/projects')
+    // Redirect to single project
+    const { data: projects } = await api.get('/projects')
+    if (projects && projects.length > 0) {
+      router.push('/projects/' + projects[0].id)
+    } else {
+      router.push('/projects')
+    }
   } catch (e) {
     error.value = e.response?.data?.error || '登录失败'
   } finally {
@@ -56,12 +64,22 @@ async function doLogin() {
 <style scoped>
 .login-page {
   display: flex; align-items: center; justify-content: center;
-  min-height: 100vh; padding: 24px; background: var(--bg);
+  width: 100vw; min-height: 100vh; padding: 24px;
+  position: relative;
+}
+.login-bg {
+  position: fixed; inset: 0; z-index: 0;
+  background: url(https://images.unsplash.com/photo-1722537273909-a41f4f44ad6c?w=1400&q=80) center / cover no-repeat;
+}
+.login-bg::after {
+  content: ''; position: absolute; inset: 0;
+  background: rgba(0,0,0,0.35);
 }
 .login-card {
-  background: var(--surface); border-radius: var(--radius);
-  box-shadow: 0 2px 16px rgba(0,0,0,0.07);
-  padding: 48px 40px; width: 100%; max-width: 380px;
+  position: relative; z-index: 1;
+  background: rgba(255,255,255,0.93); border-radius: var(--radius);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.2);
+  padding: 52px 44px; width: 100%; max-width: 420px;
   border: 1px solid var(--border);
 }
 .login-brand { text-align: center; margin-bottom: 36px; }

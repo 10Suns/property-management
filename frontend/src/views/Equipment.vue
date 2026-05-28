@@ -20,9 +20,10 @@
 
     <div v-if="error" class="empty">{{ error }}</div>
     <div v-else class="data-grid">
-      <div v-for="eq in list" :key="eq.id" class="data-grid-item">
+      <div v-for="eq in list" :key="eq.id" class="data-grid-item clickable" @click="goDetail(eq)">
         <div class="item-main">
           <div class="item-title-row">
+            <span v-if="eq.next_maintenance_date" class="maint-dot" :class="maintDotClass(eq)"></span>
             <span v-if="eq.category" class="badge badge-pass">{{ eq.category }}</span>
             <span class="cell-title">{{ eq.name }}</span>
           </div>
@@ -30,8 +31,9 @@
         </div>
         <div class="item-actions">
           <span class="badge" :class="statusClass(eq.status)">{{ statusLabel(eq.status) }}</span>
-          <button v-if="auth.isManager" class="action-btn" @click="edit(eq)">编辑</button>
-          <button v-if="auth.isManager" class="action-btn danger" @click="del(eq)">删除</button>
+          <button class="action-btn primary" @click.stop="goDetail(eq)">查看</button>
+          <button v-if="auth.isManager" class="action-btn" @click.stop="edit(eq)">编辑</button>
+          <button v-if="auth.isManager" class="action-btn danger" @click.stop="del(eq)">删除</button>
         </div>
       </div>
       <div v-if="list.length === 0" class="data-grid-empty">
@@ -70,11 +72,12 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import api from '../api'
 
 const route = useRoute()
+const router = useRouter()
 const auth = useAuthStore()
 
 const list = ref([])
@@ -128,6 +131,20 @@ async function save() {
     showModal.value = false
     load()
   } finally { saving.value = false }
+}
+
+function goDetail(eq) {
+  router.push(`/projects/${route.params.id}/equipment/${eq.id}`)
+}
+
+function maintDotClass(eq) {
+  if (!eq.next_maintenance_date) return 'maint-dot-ok'
+  const today = new Date(); today.setHours(0, 0, 0, 0)
+  const next = new Date(eq.next_maintenance_date); next.setHours(0, 0, 0, 0)
+  const diff = Math.floor((next - today) / (1000 * 60 * 60 * 24))
+  if (diff < 0) return 'maint-dot-overdue'
+  if (diff <= 7) return 'maint-dot-soon'
+  return 'maint-dot-ok'
 }
 
 async function del(eq) {

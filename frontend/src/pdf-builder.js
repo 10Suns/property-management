@@ -53,8 +53,6 @@ const styles = {
 }
 
 const LINE_LAYOUT = { hLineWidth: 0.5, vLineWidth: 0.5 }
-const COMPANY_HEADER = '瑞界物业 查验记录表'
-const COMPANY_HEADER_CONT = '瑞界物业 查验记录表（续）'
 const DOC_CONFIG = {
   pageSize: 'A4',
   pageMargins: [28, 28, 28, BOTTOM_MARGIN],
@@ -136,15 +134,16 @@ function buildDataTable(items, getName, getStandard, getResult, startSeq) {
 
 function buildFormPages({ title, info, items, getName, getStandard, getResult }) {
   const { page1, page2 } = splitItems(items)
+  const pn = info.projectName || ''
 
   return [
-    { text: COMPANY_HEADER, style: 'header' },
+    { text: pn + ' 查验记录表', style: 'header' },
     { text: cleanTitle(title), style: 'subheader' },
-    buildInfoTable(info.projectName, info.dateStr, info.locationStr, info.inspectorName),
+    buildInfoTable(pn, info.dateStr, info.locationStr, info.inspectorName),
     buildDataTable(page1, getName, getStandard, getResult, 1),
 
     { text: '', pageBreak: 'before' },
-    { text: COMPANY_HEADER_CONT, style: 'header' },
+    { text: pn + ' 查验记录表（续）', style: 'header' },
     buildDataTable(page2, getName, getStandard, getResult, PAGE1_ROWS + 1),
   ]
 }

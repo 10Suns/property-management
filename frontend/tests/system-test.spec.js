@@ -185,7 +185,7 @@ test.describe('场景一：员工基础流程（SG002）', () => {
 
     const printContent = page.locator('.print-document').first()
     if (await printContent.count() > 0) {
-      await expect(printContent).toContainText('瑞界物业 查验记录表')
+      await expect(printContent).toContainText('查验记录表')
 
       await expect(printContent).toContainText('序号')
       await expect(printContent).toContainText('检查项目')
@@ -527,11 +527,10 @@ test.describe('场景六：UI 和打印质量验证', () => {
     await page.waitForTimeout(1500)
 
     // Verify print title format
-    const title = page.locator('.print-title').first()
+    const title = page.locator('.print-company').first()
     if (await title.count() > 0) {
       const titleText = await title.textContent()
-      expect(titleText).toContain('瑞界物业')
-      expect(titleText).toContain('物业承接查验记录表')
+      expect(titleText).toContain('查验记录表')
       console.log(`  打印标题: "${titleText.trim()}"`)
     }
 

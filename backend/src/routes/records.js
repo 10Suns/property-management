@@ -115,6 +115,8 @@ router.put('/:id', (req, res) => {
   const record = db.prepare('SELECT * FROM inspection_records WHERE id=?').get(req.params.id)
   if (!record) return res.status(404).json({ error: '记录不存在' })
 
+  if (record.submitted) return res.status(403).json({ error: '记录已提交，无法修改' })
+
   if (req.user.role !== 'admin' && record.created_by !== req.user.id) {
     const isPA = db.prepare('SELECT * FROM project_members WHERE project_id=? AND user_id=? AND role=?').get(record.project_id, req.user.id, 'admin')
     if (!isPA) return res.status(403).json({ error: '只能编辑自己的记录' })
@@ -136,10 +138,11 @@ router.put('/:id', (req, res) => {
   res.json(getRecord(req.params.id))
 })
 
-// Delete record (admin or owner only)
+// Delete record (admin or owner only, cannot delete submitted)
 router.delete('/:id', (req, res) => {
   const record = db.prepare('SELECT * FROM inspection_records WHERE id=?').get(req.params.id)
   if (!record) return res.status(404).json({ error: '记录不存在' })
+  if (record.submitted) return res.status(403).json({ error: '记录已提交，无法删除' })
   if (req.user.role !== 'admin' && record.created_by !== req.user.id) {
     return res.status(403).json({ error: '只能删除自己的记录，管理员可删除所有记录' })
   }
@@ -147,8 +150,23 @@ router.delete('/:id', (req, res) => {
   res.json({ message: '已删除' })
 })
 
+// Submit record (lock it permanently)
+router.post('/:id/submit', (req, res) => {
+  const record = db.prepare('SELECT * FROM inspection_records WHERE id=?').get(req.params.id)
+  if (!record) return res.status(404).json({ error: '记录不存在' })
+  if (record.submitted) return res.status(403).json({ error: '记录已提交' })
+  if (req.user.role !== 'admin' && record.created_by !== req.user.id) {
+    return res.status(403).json({ error: '只能提交自己的记录' })
+  }
+  db.prepare("UPDATE inspection_records SET submitted=1, updated_at=datetime('now') WHERE id=?").run(req.params.id)
+  res.json(getRecord(req.params.id))
+})
+
 // Add custom result item
 router.post('/:rid/results', (req, res) => {
+  const record = db.prepare('SELECT submitted FROM inspection_records WHERE id=?').get(req.params.rid)
+  if (!record) return res.status(404).json({ error: '记录不存在' })
+  if (record.submitted) return res.status(403).json({ error: '记录已提交，无法修改' })
   const { custom_item_name, custom_standard, user_form_item_id, result, problem_description } = req.body
   if (!custom_item_name && !user_form_item_id) return res.status(400).json({ error: '条目名称不能为空' })
   const max = db.prepare('SELECT MAX(sort_order) as m FROM inspection_results WHERE record_id=?').get(req.params.rid)
@@ -166,8 +184,9 @@ router.post('/:rid/results', (req, res) => {
 
 // Update result
 router.put('/results/:id', (req, res) => {
-  const item = db.prepare('SELECT * FROM inspection_results WHERE id=?').get(req.params.id)
+  const item = db.prepare('SELECT ir.*, r.submitted FROM inspection_results ir JOIN inspection_records r ON ir.record_id=r.id WHERE ir.id=?').get(req.params.id)
   if (!item) return res.status(404).json({ error: '条目不存在' })
+  if (item.submitted) return res.status(403).json({ error: '记录已提交，无法修改' })
   const { result, problem_description, custom_item_name, custom_standard } = req.body
   db.prepare(`UPDATE inspection_results SET result=?,problem_description=?,custom_item_name=?,custom_standard=?,updated_at=datetime('now') WHERE id=?`)
     .run(
@@ -187,8 +206,9 @@ router.put('/results/:id', (req, res) => {
 })
 
 router.delete('/results/:id', (req, res) => {
-  const item = db.prepare('SELECT ir.*, r.created_by FROM inspection_results ir JOIN inspection_records r ON ir.record_id=r.id WHERE ir.id=?').get(req.params.id)
+  const item = db.prepare('SELECT ir.*, r.created_by, r.submitted FROM inspection_results ir JOIN inspection_records r ON ir.record_id=r.id WHERE ir.id=?').get(req.params.id)
   if (!item) return res.status(404).json({ error: '条目不存在' })
+  if (item.submitted) return res.status(403).json({ error: '记录已提交，无法修改' })
   if (item.created_by !== req.user.id && req.user.role !== 'admin') return res.status(403).json({ error: '只能删除自己的记录' })
   db.prepare('DELETE FROM inspection_results WHERE id=?').run(req.params.id)
   res.json({ message: '已删除' })

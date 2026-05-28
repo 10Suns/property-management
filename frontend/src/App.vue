@@ -5,25 +5,25 @@
     </template>
 
     <template v-else>
-      <aside v-if="projectId" class="sidebar">
-        <div class="sidebar-brand">{{ project?.code || project?.name || '物业承接查验' }}</div>
+      <aside class="sidebar">
+        <div class="sidebar-brand">{{ project?.name || '瑞界物业' }}</div>
         <div class="sidebar-section">工作台</div>
-        <router-link :to="'/projects/' + projectId" class="sidebar-link">我的表单</router-link>
-        <router-link :to="'/projects/' + projectId + '/records'" class="sidebar-link">日常巡检</router-link>
-        <router-link :to="'/projects/' + projectId + '/acceptance'" class="sidebar-link">承接查验</router-link>
-        <router-link :to="'/projects/' + projectId + '/equipment'" class="sidebar-link">设备档案</router-link>
+        <router-link :to="'/projects/' + pid" class="sidebar-link">我的表单</router-link>
+        <router-link :to="'/projects/' + pid + '/records'" class="sidebar-link">日常巡检</router-link>
+        <router-link :to="'/projects/' + pid + '/acceptance'" class="sidebar-link">承接查验</router-link>
+        <router-link :to="'/projects/' + pid + '/equipment'" class="sidebar-link">设备档案</router-link>
         <div class="sidebar-section">资源</div>
-        <router-link :to="'/projects/' + projectId + '/templates'" class="sidebar-link">参考表单</router-link>
+        <router-link :to="'/projects/' + pid + '/templates'" class="sidebar-link">参考表单</router-link>
         <div class="sidebar-section sidebar-spacer">账户</div>
-        <router-link v-if="auth.isManager" :to="'/projects/' + projectId + '/dashboard'" class="sidebar-link">仪表盘</router-link>
-        <router-link v-if="auth.isManager" :to="'/projects/' + projectId + '/settings'" class="sidebar-link">项目配置</router-link>
-        <router-link v-if="auth.isAdmin" to="/admin/users" class="sidebar-link">用户管理</router-link>
+        <router-link v-if="auth.isManager" :to="'/projects/' + pid + '/dashboard'" class="sidebar-link">仪表盘</router-link>
+        <router-link v-if="auth.isManager" :to="'/projects/' + pid + '/settings'" class="sidebar-link">项目配置</router-link>
+
         <a class="sidebar-link" @click="changePwd">修改密码</a>
         <a class="sidebar-link" @click="logout">
           {{ auth.user?.display_name || '' }} · 退出
         </a>
       </aside>
-      <main class="main-content" :class="{ 'main-full': !projectId }">
+      <main class="main-content">
         <router-view />
       </main>
     </template>
@@ -45,7 +45,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from './stores/auth'
 import api from './api'
@@ -54,21 +54,43 @@ const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()
 
-const projectId = computed(() => route.params.id || null)
+// Persistent project ID, available on all routes (not just /projects/:id)
+const pid = ref('')
+
 const project = ref(null)
 const showPwdModal = ref(false)
 const pwdForm = ref({ old: '', new1: '', new2: '' })
 const pwdError = ref('')
 const pwdLoading = ref(false)
 
-watch(projectId, async (id) => {
-  if (id && auth.isLoggedIn) {
+// Load project ID once on mount (single-project system)
+async function loadProjectId() {
+  try {
+    const { data } = await api.get('/projects')
+    if (data.length > 0) {
+      pid.value = data[0].id
+      project.value = data[0]
+    }
+  } catch (_) {}
+}
+
+// Keep project in sync when navigating project-scoped routes
+watch(() => route.params.id, async (id) => {
+  if (id && id !== pid.value) {
+    pid.value = id
     try {
       const { data } = await api.get('/projects/' + id)
       project.value = data
-    } catch (_) {}
+    } catch (_) { project.value = null }
   }
-}, { immediate: true })
+})
+
+// Load project ID on login
+watch(() => auth.isLoggedIn, async (loggedIn) => {
+  if (loggedIn && !pid.value) await loadProjectId()
+})
+
+if (auth.isLoggedIn) loadProjectId()
 
 function logout() {
   auth.logout()

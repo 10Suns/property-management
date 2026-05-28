@@ -3,8 +3,7 @@
     <div class="page-header no-print">
       <h1 class="page-title">打印预览</h1>
       <div class="flex gap-8">
-        <button class="btn" @click="downloadPdf" :disabled="pdfLoading">{{ pdfLoading ? '生成中...' : '下载 PDF' }}</button>
-        <button class="btn btn-outline" @click="window.print()">浏览器打印</button>
+        <button class="btn" @click="window.print()">浏览器打印</button>
         <button class="btn btn-outline" @click="router.back()">返回</button>
       </div>
     </div>
@@ -12,10 +11,10 @@
     <div v-if="loading" class="empty no-print">加载中...</div>
 
     <template v-for="(doc, di) in allDocuments" :key="di">
+      <!-- Page 1 -->
       <div class="print-document">
-        <!-- Page 1 -->
         <div class="print-page">
-          <div class="print-company">瑞界物业 查验记录表</div>
+          <div class="print-company">{{ projectName }} 查验记录表</div>
           <div v-if="doc.subtitle" class="print-form-title">{{ doc.subtitle }}</div>
           <table class="print-info-table">
             <colgroup><col class="col-seq"><col class="col-item"><col class="col-standard"><col class="col-result"></colgroup>
@@ -41,10 +40,16 @@
               </tr>
             </tbody>
           </table>
-          <div class="print-footer">
+          <div class="print-comment">
             <table class="print-footer-table">
               <colgroup><col class="col-seq"><col class="col-item"><col class="col-standard"><col class="col-result"></colgroup>
               <tr><th colspan="2">查验意见</th><td colspan="2" class="comment-cell">{{ doc.comment || '' }}</td></tr>
+            </table>
+          </div>
+          <div class="print-page-filler"></div>
+          <div class="print-signature">
+            <table class="print-footer-table">
+              <colgroup><col class="col-seq"><col class="col-item"><col class="col-standard"><col class="col-result"></colgroup>
               <tr class="signature-row">
                 <td colspan="3" class="signature-cell">查验人签字：<div class="signature-line"></div></td>
                 <td class="signature-cell">日期：<div class="signature-line"></div></td>
@@ -52,10 +57,12 @@
             </table>
           </div>
         </div>
+      </div>
 
-        <!-- Page 2 -->
+      <!-- Page 2 -->
+      <div class="print-document">
         <div class="print-page">
-          <div class="print-company">瑞界物业 查验记录表（续）</div>
+          <div class="print-company">{{ projectName }} 查验记录表（续）</div>
           <table class="print-data-table">
             <colgroup><col class="col-seq"><col class="col-item"><col class="col-standard"><col class="col-result"></colgroup>
             <thead><tr><th>序号</th><th>检查项目</th><th>检查标准</th><th>查验结果</th></tr></thead>
@@ -73,38 +80,29 @@
               </tr>
             </tbody>
           </table>
-          <div class="print-footer">
+          <div v-if="doc.photos?.length" class="print-photo-strip">
+            <div class="photo-strip-label">照片附件：</div>
+            <div class="photo-strip-items">
+              <div v-for="(p, pi) in doc.photos.slice(0, 4)" :key="pi" class="photo-strip-item">
+                <img :src="'/uploads/' + p.filename" class="print-photo-thumb" />
+                <div class="photo-strip-name">{{ p.original_name }}</div>
+              </div>
+              <div v-if="doc.photos.length > 4" class="photo-strip-more">等{{ doc.photos.length }}张照片</div>
+            </div>
+          </div>
+          <div class="print-comment">
             <table class="print-footer-table">
               <colgroup><col class="col-seq"><col class="col-item"><col class="col-standard"><col class="col-result"></colgroup>
               <tr><th colspan="2">查验意见</th><td colspan="2" class="comment-cell">&nbsp;</td></tr>
+            </table>
+          </div>
+          <div class="print-page-filler"></div>
+          <div class="print-signature">
+            <table class="print-footer-table">
+              <colgroup><col class="col-seq"><col class="col-item"><col class="col-standard"><col class="col-result"></colgroup>
               <tr class="signature-row">
                 <td colspan="3" class="signature-cell">查验人签字：<div class="signature-line"></div></td>
                 <td class="signature-cell">日期：<div class="signature-line"></div></td>
-              </tr>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- Photos: separate page -->
-      <div v-if="doc.photos?.length" class="print-document">
-        <div class="print-page">
-          <div class="print-company" style="font-size:14pt">照片附件 — {{ doc.subtitle }}</div>
-          <table class="print-photo-table">
-            <tbody>
-              <tr v-for="(p, pi) in doc.photos" :key="pi">
-                <td class="photo-img-cell"><img :src="'/uploads/' + p.filename" class="print-photo" /></td>
-                <td class="photo-info-cell">
-                  <div class="photo-name">{{ p.original_name }}</div>
-                  <div class="photo-date">{{ p.uploaded_at }}</div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <div class="print-footer">
-            <table class="print-footer-table">
-              <tr class="signature-row">
-                <td class="signature-cell">查验人签字：<div class="signature-line"></div></td>
               </tr>
             </table>
           </div>
@@ -133,7 +131,6 @@ const printRecords = ref([])
 const blankTemplates = ref([])
 const projectName = ref('')
 const loading = ref(true)
-const pdfLoading = ref(false)
 const window = globalThis
 
 function normalizeItem(item) {
@@ -186,25 +183,6 @@ const allDocuments = computed(() => {
   return docs
 })
 
-async function downloadPdf() {
-  pdfLoading.value = true
-  try {
-    const { buildBlankPdf, buildRecordPdf } = await import('../pdf-builder.js')
-    let pdf
-    if (printRecords.value.length > 0) {
-      pdf = await buildRecordPdf(printRecords.value, projectName.value)
-    } else {
-      pdf = await buildBlankPdf(blankTemplates.value, projectName.value)
-    }
-    pdf.download('查验记录表.pdf')
-  } catch (e) {
-    console.error('PDF generation failed:', e)
-    alert('PDF生成失败：' + e.message)
-  } finally {
-    pdfLoading.value = false
-  }
-}
-
 onMounted(async () => {
   const recordIds = JSON.parse(localStorage.getItem('printRecords') || '[]')
   const blankIds = JSON.parse(localStorage.getItem('printBlankTemplates') || '[]')
@@ -232,16 +210,28 @@ onMounted(async () => {
     const { type, projectId, ...rest } = b
     blankTemplates.value.push(rest)
     if (projectId && !projectName.value) {
-      const { data: p } = await api.get('/projects/' + projectId)
-      projectName.value = p.name
+      try {
+        const { data: p } = await api.get('/projects/' + projectId)
+        projectName.value = p.name
+      } catch (_) {}
     }
   }
 
   printRecords.value = loadedRecords
 
   if (!projectName.value && loadedRecords.length > 0) {
-    const { data: p } = await api.get('/projects/' + loadedRecords[0].project_id)
-    projectName.value = p.name
+    try {
+      const { data: p } = await api.get('/projects/' + loadedRecords[0].project_id)
+      projectName.value = p.name
+    } catch (_) {}
+  }
+
+  // Fallback: load first available project
+  if (!projectName.value) {
+    try {
+      const { data: projects } = await api.get('/projects')
+      if (projects.length > 0) projectName.value = projects[0].name
+    } catch (_) {}
   }
 
   if (!projectName.value) projectName.value = '____________'
@@ -252,19 +242,18 @@ onMounted(async () => {
 
 <style scoped>
 .print-document {
-  page-break-after: always;
   margin-bottom: 24px;
 }
 
 .print-page {
   width: 210mm;
-  min-height: 297mm;
+  height: 297mm;
   margin: 0 auto 16px;
   background: #fff;
   border: 1px solid #ccc;
   display: flex;
   flex-direction: column;
-  page-break-after: always;
+  overflow: hidden;
 }
 
 .print-company {
@@ -320,6 +309,8 @@ onMounted(async () => {
   padding: 5px 6px;
   font-size: 9.5pt;
   line-height: 1.4;
+  overflow: hidden;
+  max-height: 2.8em;
 }
 
 .print-data-table thead th {
@@ -327,6 +318,11 @@ onMounted(async () => {
   font-weight: 600;
   font-size: 9pt;
   text-align: center;
+}
+
+.print-page-filler {
+  flex: 1;
+  min-height: 0;
 }
 
 .col-seq { width: 4%; }
@@ -343,7 +339,11 @@ onMounted(async () => {
 .result-pending { color: #999; }
 .problem-desc { font-size: 8.5pt; color: #c5221f; margin-top: 2px; line-height: 1.3; font-weight: normal; }
 
-.print-footer {
+.print-comment {
+  flex-shrink: 0;
+}
+
+.print-signature {
   flex-shrink: 0;
 }
 
@@ -369,7 +369,7 @@ onMounted(async () => {
 }
 
 .comment-cell {
-  height: 200px;
+  height: 100px;
   vertical-align: top;
 }
 
@@ -390,41 +390,82 @@ onMounted(async () => {
   min-width: 140px;
 }
 
-.print-photo-table {
-  width: 100%;
-  border-collapse: collapse;
+.print-photo-strip {
   flex-shrink: 0;
+  padding: 6px 8px;
+  border-top: 1px solid #ccc;
 }
 
-.print-photo-table td {
-  border: 1px solid #999;
-  padding: 8px;
-  font-size: 10pt;
+.photo-strip-label {
+  font-size: 9pt;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #555;
 }
 
-.photo-img-cell { width: 60%; }
-.photo-info-cell { width: 40%; }
+.photo-strip-items {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
 
-.print-photo {
-  max-width: 100%;
-  max-height: 160px;
+.photo-strip-item {
+  text-align: center;
+  max-width: 80px;
+}
+
+.print-photo-thumb {
+  width: 72px;
+  height: 54px;
+  object-fit: cover;
+  border: 1px solid #ddd;
   display: block;
-  object-fit: contain;
 }
 
-.photo-name { font-size: 10pt; }
-.photo-date { font-size: 9pt; color: #888; margin-top: 4px; }
+.photo-strip-name {
+  font-size: 7.5pt;
+  color: #888;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 72px;
+}
+
+.photo-strip-more {
+  font-size: 8pt;
+  color: #999;
+  display: flex;
+  align-items: center;
+}
 
 @media print {
   .no-print { display: none; }
-  .print-document { margin-bottom: 0; }
+  html, body {
+    margin: 0;
+    padding: 0;
+  }
+  .print-document {
+    margin: 0;
+    padding: 0;
+    break-inside: avoid;
+  }
+  .print-document + .print-document {
+    break-before: page;
+    page-break-before: always;
+  }
   .print-page {
-    width: auto;
-    min-height: auto;
+    width: 210mm;
+    height: 297mm;
     margin: 0;
     border: none;
-    page-break-after: always;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: none;
   }
-  @page { margin: 8mm; size: A4; }
+  @page {
+    margin: 0;
+    size: A4;
+  }
 }
 </style>

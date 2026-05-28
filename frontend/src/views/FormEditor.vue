@@ -10,7 +10,8 @@
           </div>
           <h1 class="page-title">
             {{ displayTitle }}
-            <span v-if="record" class="badge" style="background:#c5221f;color:#fff;font-size:11px;vertical-align:middle;margin-left:8px">查验录入</span>
+            <span v-if="record" class="badge ml-8" style="background:#c5221f;color:#fff;font-size:11px">查验录入</span>
+            <span v-if="record?.submitted" class="badge badge-submitted ml-8">已提交</span>
           </h1>
           <div class="text-sm text-secondary">{{ project?.name }}</div>
         </div>
@@ -21,9 +22,14 @@
           <template v-if="userForm && !record">
             <button class="btn btn-sm" @click="printBlank">打印空白表</button>
           </template>
-          <button v-if="record" class="btn btn-sm" @click="saveRecordMeta" :disabled="saving">
-            {{ saving ? '保存中...' : '保存记录' }}
-          </button>
+          <template v-if="record && !record.submitted">
+            <button class="btn btn-sm" @click="saveRecordMeta" :disabled="saving">
+              {{ saving ? '保存中...' : '保存记录' }}
+            </button>
+            <button class="btn btn-sm btn-success" @click="submitRecord" :disabled="submitting">
+              {{ submitting ? '提交中...' : '提交' }}
+            </button>
+          </template>
           <button class="btn btn-sm btn-outline" @click="router.back()">返回</button>
         </div>
       </div>
@@ -34,14 +40,14 @@
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">楼栋</label>
-            <select v-model="recordForm.building_id" class="select" @change="onBuildingChange">
+            <select v-model="recordForm.building_id" class="select" @change="onBuildingChange" :disabled="record?.submitted">
               <option :value="null">不选择</option>
               <option v-for="b in buildings" :key="b.id" :value="b.id">{{ b.name }}</option>
             </select>
           </div>
           <div class="form-group">
             <label class="form-label">房源</label>
-            <select v-model="recordForm.house_id" class="select">
+            <select v-model="recordForm.house_id" class="select" :disabled="record?.submitted">
               <option :value="null">不选择</option>
               <option v-for="h in houses" :key="h.id" :value="h.id">{{ h.house_number }} {{ h.building_name ? '('+h.building_name+')' : '' }}</option>
             </select>
@@ -49,7 +55,7 @@
         </div>
         <div class="form-group">
           <label class="form-label">位置信息</label>
-          <input v-model="recordForm.location_info" class="input" placeholder="具体位置描述" />
+          <input v-model="recordForm.location_info" class="input" placeholder="具体位置描述" :disabled="record?.submitted" />
         </div>
       </div>
 
@@ -97,14 +103,14 @@
                 <td>
                   <template v-if="record">
                     <div class="result-group" style="flex-wrap:wrap;gap:2px">
-                      <input type="radio" :id="'pass_'+item._key" class="result-radio" value="pass" v-model="item.result" @change="autoSaveResult(item)" />
+                      <input type="radio" :id="'pass_'+item._key" class="result-radio" value="pass" v-model="item.result" :disabled="record.submitted" @change="autoSaveResult(item)" />
                       <label :for="'pass_'+item._key" style="font-size:12px;padding:3px 8px">合格</label>
-                      <input type="radio" :id="'fail_'+item._key" class="result-radio" value="fail" v-model="item.result" @change="autoSaveResult(item)" />
+                      <input type="radio" :id="'fail_'+item._key" class="result-radio" value="fail" v-model="item.result" :disabled="record.submitted" @change="autoSaveResult(item)" />
                       <label :for="'fail_'+item._key" style="font-size:12px;padding:3px 8px">不合格</label>
-                      <input type="radio" :id="'skip_'+item._key" class="result-radio" value="skip" v-model="item.result" @change="autoSaveResult(item)" />
+                      <input type="radio" :id="'skip_'+item._key" class="result-radio" value="skip" v-model="item.result" :disabled="record.submitted" @change="autoSaveResult(item)" />
                       <label :for="'skip_'+item._key" style="font-size:12px;padding:3px 8px">免检</label>
                     </div>
-                    <input v-if="item.result === 'fail'" v-model="item.problem_description" class="input mt-4" style="font-size:12px;padding:4px 6px" placeholder="问题描述..." @change="autoSaveResult(item)" />
+                    <input v-if="item.result === 'fail'" v-model="item.problem_description" class="input mt-4" style="font-size:12px;padding:4px 6px" placeholder="问题描述..." :disabled="record.submitted" @change="autoSaveResult(item)" />
                   </template>
                   <template v-else>
                     <span class="text-sm text-secondary">—</span>
@@ -129,10 +135,10 @@
       <!-- Inspector comment — table footer style -->
       <div v-if="record" class="form-footer">
         <div class="form-footer-label">查验意见</div>
-        <textarea v-model="recordForm.inspector_comment" class="textarea form-footer-textarea" placeholder="整体查验意见..." @change="autoSaveComment"></textarea>
+        <textarea v-model="recordForm.inspector_comment" class="textarea form-footer-textarea" placeholder="整体查验意见..." :disabled="record.submitted" @change="autoSaveComment"></textarea>
         <div class="flex gap-8 items-center mt-8">
           <label class="form-label">状态：</label>
-          <select v-model="recordForm.status" class="select" style="width:auto" @change="autoSaveComment">
+          <select v-model="recordForm.status" class="select" style="width:auto" @change="autoSaveComment" :disabled="record.submitted">
             <option value="pending">待查验</option>
             <option value="in_progress">查验中</option>
             <option value="completed">已完成</option>
@@ -151,12 +157,13 @@
             <button class="photo-del" @click="deletePhoto(p)">✕</button>
           </div>
         </div>
-        <div v-if="!photoItem._photos || photoItem._photos.length < 6">
+        <div v-if="(!photoItem._photos || photoItem._photos.length < 6) && !record?.submitted">
           <input type="file" accept="image/*" capture="environment" multiple @change="uploadPhotos" class="input" />
         </div>
         <p class="text-sm text-secondary mt-8">最多6张，每张不超过10MB</p>
+        <p class="success-msg text-center" v-if="photoToast">{{ photoToast }}</p>
         <div class="modal-actions">
-          <button class="btn btn-outline" @click="photoItem=null">关闭</button>
+          <button class="btn" @click="photoItem=null">完成</button>
         </div>
       </div>
     </div>
@@ -201,6 +208,7 @@ const houses = ref([])
 const loading = ref(true)
 const saving = ref(false)
 const savingForm = ref(false)
+const submitting = ref(false)
 const photoItem = ref(null)
 const showAddItem = ref(false)
 const newItem = ref({ name: '', standard: '' })
@@ -487,7 +495,7 @@ async function createRecord() {
 }
 
 async function saveRecordMeta() {
-  if (!record.value) return
+  if (!record.value || record.value.submitted) return
   saving.value = true
   try {
     await api.put('/records/' + record.value.id, {
@@ -502,8 +510,25 @@ async function saveRecordMeta() {
   }
 }
 
-function autoSaveResult(item) {
+async function submitRecord() {
   if (!record.value) return
+  if (!confirm('提交后记录将锁定，无法再修改或删除，确认提交？')) return
+  submitting.value = true
+  try {
+    // Save first
+    await saveRecordMeta()
+    // Then submit
+    const { data } = await api.post('/records/' + record.value.id + '/submit')
+    record.value = data
+  } catch (e) {
+    alert('提交失败：' + (e.response?.data?.error || '未知错误'))
+  } finally {
+    submitting.value = false
+  }
+}
+
+function autoSaveResult(item) {
+  if (!record.value || record.value.submitted) return
   clearTimeout(resultSaveTimer)
   resultSaveTimer = setTimeout(() => {
     api.put('/records/results/' + item.id, {
@@ -516,6 +541,7 @@ function autoSaveResult(item) {
 }
 
 function autoSaveComment() {
+  if (record.value?.submitted) return
   clearTimeout(commentSaveTimer)
   commentSaveTimer = setTimeout(() => saveRecordMeta(), 600)
 }
@@ -525,9 +551,17 @@ onUnmounted(() => {
   clearTimeout(commentSaveTimer)
 })
 
+const photoToast = ref('')
+
+function showPhotoToast(msg) {
+  photoToast.value = msg
+  setTimeout(() => { photoToast.value = '' }, 2000)
+}
+
 // Photos
 function openPhotos(item) {
   photoItem.value = item
+  photoToast.value = ''
   if (!item._photos) item._photos = []
 }
 
@@ -555,6 +589,7 @@ async function uploadPhotos(e) {
     photoItem.value._photos.push(p)
     photoItem.value._photoCount = photoItem.value._photos.length
   }
+  showPhotoToast('已上传 ' + data.length + ' 张照片')
   e.target.value = ''
 }
 

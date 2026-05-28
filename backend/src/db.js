@@ -57,6 +57,77 @@ function runMigrations() {
     db.exec("ALTER TABLE inspection_records ADD COLUMN record_type TEXT DEFAULT 'routine' CHECK(record_type IN ('routine','acceptance'))")
     console.log('Added record_type column to inspection_records')
   }
+
+  // Equipment maintenance fields
+  const eqCols = ['maintenance_cycle', 'maintenance_interval_days', 'next_maintenance_date', 'last_maintenance_date', 'maintenance_hint']
+  const eqInfo = db.prepare("PRAGMA table_info(equipment)").all()
+  for (const col of eqCols) {
+    if (!eqInfo.find(c => c.name === col)) {
+      const type = col === 'maintenance_interval_days' ? 'INTEGER' : 'TEXT'
+      db.exec(`ALTER TABLE equipment ADD COLUMN ${col} ${type}`)
+      console.log('Added equipment.' + col)
+    }
+  }
+
+  // Add updated_at to maintenance_records
+  const mrInfo = db.prepare("PRAGMA table_info(maintenance_records)").all()
+  if (!mrInfo.find(c => c.name === 'updated_at')) {
+    db.exec("ALTER TABLE maintenance_records ADD COLUMN updated_at TEXT DEFAULT (datetime('now'))")
+    console.log('Added maintenance_records.updated_at')
+  }
+
+  // Migrate maintenance_records: add content column + pending status
+  if (!mrInfo.find(c => c.name === 'content')) {
+    db.pragma('foreign_keys = OFF')
+    db.exec(`
+      CREATE TABLE maintenance_records_new (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        equipment_id INTEGER NOT NULL REFERENCES equipment(id) ON DELETE CASCADE,
+        scheduled_date TEXT,
+        completed_date TEXT,
+        content TEXT,
+        status TEXT DEFAULT 'pending' CHECK(status IN ('pending','completed','skipped')),
+        notes TEXT,
+        photos TEXT DEFAULT '[]',
+        created_by INTEGER REFERENCES users(id),
+        created_at TEXT DEFAULT (datetime('now')),
+        updated_at TEXT DEFAULT (datetime('now'))
+      );
+      INSERT INTO maintenance_records_new (id, equipment_id, scheduled_date, completed_date, status, notes, photos, created_by, created_at, updated_at)
+        SELECT id, equipment_id, scheduled_date, completed_date, status, notes, photos, created_by, created_at, updated_at FROM maintenance_records;
+      DROP TABLE maintenance_records;
+      ALTER TABLE maintenance_records_new RENAME TO maintenance_records;
+    `)
+    db.pragma('foreign_keys = ON')
+    console.log('Migrated maintenance_records: added content column + pending status')
+  }
+
+  // Add submitted column to inspection_records and maintenance_records
+  const irInfo2 = db.prepare("PRAGMA table_info(inspection_records)").all()
+  if (!irInfo2.find(c => c.name === 'submitted')) {
+    db.exec("ALTER TABLE inspection_records ADD COLUMN submitted INTEGER DEFAULT 0")
+    console.log('Added inspection_records.submitted')
+  }
+  const mrInfo2 = db.prepare("PRAGMA table_info(maintenance_records)").all()
+  if (!mrInfo2.find(c => c.name === 'submitted')) {
+    db.exec("ALTER TABLE maintenance_records ADD COLUMN submitted INTEGER DEFAULT 0")
+    console.log('Added maintenance_records.submitted')
+  }
+
+  // Add project config columns
+  const pInfo = db.prepare("PRAGMA table_info(projects)").all()
+  if (!pInfo.find(c => c.name === 'land_area')) {
+    db.exec("ALTER TABLE projects ADD COLUMN land_area TEXT DEFAULT ''")
+    console.log('Added projects.land_area')
+  }
+  if (!pInfo.find(c => c.name === 'building_area')) {
+    db.exec("ALTER TABLE projects ADD COLUMN building_area TEXT DEFAULT ''")
+    console.log('Added projects.building_area')
+  }
+  if (!pInfo.find(c => c.name === 'email')) {
+    db.exec("ALTER TABLE projects ADD COLUMN email TEXT DEFAULT ''")
+    console.log('Added projects.email')
+  }
 }
 
 export function initDB() {
@@ -78,10 +149,13 @@ export function initDB() {
       type TEXT DEFAULT 'industrial',
       address TEXT,
       area TEXT,
+      land_area TEXT DEFAULT '',
+      building_area TEXT DEFAULT '',
       handover_date TEXT,
       developer TEXT,
       manager_name TEXT,
       manager_phone TEXT,
+      email TEXT DEFAULT '',
       created_by INTEGER REFERENCES users(id),
       created_at TEXT DEFAULT (datetime('now')),
       updated_at TEXT DEFAULT (datetime('now'))
@@ -174,6 +248,32 @@ export function initDB() {
       updated_at TEXT DEFAULT (datetime('now'))
     );
 
+    -- Maintenance plans/records for equipment
+    CREATE TABLE IF NOT EXISTS maintenance_records (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      equipment_id INTEGER NOT NULL REFERENCES equipment(id) ON DELETE CASCADE,
+      scheduled_date TEXT NOT NULL,
+      completed_date TEXT,
+      content TEXT,
+      status TEXT DEFAULT 'pending' CHECK(status IN ('pending','completed','skipped')),
+      notes TEXT,
+      photos TEXT DEFAULT '[]',
+      created_by INTEGER REFERENCES users(id),
+      created_at TEXT DEFAULT (datetime('now')),
+      updated_at TEXT DEFAULT (datetime('now')),
+      submitted INTEGER DEFAULT 0
+    );
+
+    -- Equipment manuals/documents
+    CREATE TABLE IF NOT EXISTS equipment_manuals (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      equipment_id INTEGER NOT NULL REFERENCES equipment(id) ON DELETE CASCADE,
+      filename TEXT NOT NULL,
+      original_name TEXT NOT NULL,
+      uploaded_by INTEGER REFERENCES users(id),
+      created_at TEXT DEFAULT (datetime('now'))
+    );
+
     -- Template access control (admin assigns templates to users)
     CREATE TABLE IF NOT EXISTS user_template_access (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -207,7 +307,8 @@ export function initDB() {
       record_type TEXT DEFAULT 'routine' CHECK(record_type IN ('routine','acceptance')),
       created_by INTEGER NOT NULL REFERENCES users(id),
       created_at TEXT DEFAULT (datetime('now')),
-      updated_at TEXT DEFAULT (datetime('now'))
+      updated_at TEXT DEFAULT (datetime('now')),
+      submitted INTEGER DEFAULT 0
     );
 
     CREATE TABLE IF NOT EXISTS inspection_results (

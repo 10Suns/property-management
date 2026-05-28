@@ -44,6 +44,11 @@ const routes = [
     component: () => import('../views/Equipment.vue')
   },
   {
+    path: '/projects/:id/equipment/:eid',
+    name: 'EquipmentDetail',
+    component: () => import('../views/EquipmentDetail.vue')
+  },
+  {
     path: '/projects/:id/templates',
     name: 'ReferenceForms',
     component: () => import('../views/ReferenceForms.vue')

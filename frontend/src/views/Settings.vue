@@ -5,9 +5,34 @@
     </div>
 
     <div class="tabs">
+      <div class="tab" :class="{ active: tab === 'info' }" @click="tab='info'">项目信息</div>
       <div class="tab" :class="{ active: tab === 'buildings' }" @click="tab='buildings'">楼栋管理</div>
       <div class="tab" :class="{ active: tab === 'houses' }" @click="tab='houses'">房源管理</div>
       <div class="tab" :class="{ active: tab === 'members' }" @click="tab='members'; loadMembers()">成员管理</div>
+    </div>
+
+    <!-- Project Info -->
+    <div v-if="tab === 'info'" class="card">
+      <div class="card-header"><h3 class="card-title">基本信息</h3></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">项目名称 *</label><input v-model="projectForm.name" class="input" placeholder="如：瑞界物业" /></div>
+        <div class="form-group"><label class="form-label">项目类型</label><select v-model="projectForm.type" class="select"><option value="industrial">工业</option><option value="commercial">商业</option><option value="residential">住宅</option><option value="other">其他</option></select></div>
+      </div>
+      <div class="form-group"><label class="form-label">地址</label><input v-model="projectForm.address" class="input" placeholder="详细地址" /></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">占地面积</label><input v-model="projectForm.land_area" class="input" placeholder="如：34000 ㎡" /></div>
+        <div class="form-group"><label class="form-label">建筑面积</label><input v-model="projectForm.building_area" class="input" placeholder="如：120000 ㎡" /></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">交接日期</label><input v-model="projectForm.handover_date" type="date" class="input" /></div>
+        <div class="form-group"><label class="form-label">开发商</label><input v-model="projectForm.developer" class="input" placeholder="开发商名称" /></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">物业经理</label><input v-model="projectForm.manager_name" class="input" placeholder="经理姓名" /></div>
+        <div class="form-group"><label class="form-label">联系电话</label><input v-model="projectForm.manager_phone" class="input" placeholder="联系电话" /></div>
+      </div>
+      <div class="form-group"><label class="form-label">联系邮箱</label><input v-model="projectForm.email" class="input" placeholder="联系邮箱" /></div>
+      <button class="btn" @click="saveProject" :disabled="projectSaving">{{ projectSaving ? '保存中...' : '保存项目信息' }}</button>
     </div>
 
     <!-- Buildings -->
@@ -150,8 +175,28 @@ import api from '../api'
 const route = useRoute()
 const router = useRouter()
 const projectId = route.params.id
-const tab = ref('buildings')
+const tab = ref(route.query.tab || 'info')
 const currentUserId = ref(null)
+
+// Project config
+const projectForm = ref({ name: '', type: '', address: '', area: '', land_area: '', building_area: '', handover_date: '', developer: '', manager_name: '', manager_phone: '', email: '' })
+const projectSaving = ref(false)
+
+async function loadProject() {
+  try {
+    const { data } = await api.get('/projects/' + projectId)
+    projectForm.value = { ...data }
+  } catch (_) {}
+}
+async function saveProject() {
+  if (!projectForm.value.name.trim()) return
+  projectSaving.value = true
+  try {
+    await api.put('/projects/' + projectId, projectForm.value)
+  } catch (e) {
+    alert('保存失败：' + (e.response?.data?.error || '未知错误'))
+  } finally { projectSaving.value = false }
+}
 
 // Buildings
 const buildings = ref([])
@@ -182,6 +227,7 @@ function roleLabel(r) {
 onMounted(async () => {
   const user = JSON.parse(localStorage.getItem('user') || 'null')
   currentUserId.value = user?.id
+  await loadProject()
   await loadBuildings()
 })
 

@@ -34,6 +34,7 @@
         </div>
         <div class="item-actions">
           <span class="badge" :class="statusBadgeMap[r.status] || 'badge-pending'">{{ statusLabelMap[r.status] || r.status }}</span>
+          <span v-if="r.submitted" class="badge badge-submitted">已提交</span>
           <button v-if="canDelete(r)" class="action-btn danger" @click.stop="del(r)">删除</button>
         </div>
       </div>
@@ -66,7 +67,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import api from '../api'
@@ -88,18 +89,25 @@ const recordTypeEmoji = computed(() => recordType.value === 'acceptance' ? '🏗
 const recordsUrl = () => '/records?project_id=' + projectId + '&record_type=' + recordType.value
 const showCreate = ref(false)
 
-onMounted(async () => {
+async function fetchData() {
+  loading.value = true
   const [{ data: r }, { data: t }, { data: f }, { data: b }] = await Promise.all([
     api.get(recordsUrl()),
     api.get('/templates'),
-    api.get('/forms?project_id=' + projectId),
-    api.get('/projects/' + projectId + '/buildings')
+    api.get('/forms?project_id=' + route.params.id),
+    api.get('/projects/' + route.params.id + '/buildings')
   ])
   records.value = r
   templates.value = t
   myForms.value = f
   buildings.value = b
   loading.value = false
+}
+
+onMounted(fetchData)
+
+watch(() => [route.params.id, route.meta.recordType], () => {
+  if (route.params.id) fetchData()
 })
 
 async function loadRecords() {
@@ -117,6 +125,7 @@ const statusBadgeMap = { completed: 'badge-completed', in_progress: 'badge-in_pr
 const statusLabelMap = { completed: '已完成', in_progress: '查验中', pending: '待查验' }
 
 function canDelete(r) {
+  if (r.submitted) return false
   return auth.isAdmin || r.created_by === auth.user?.id
 }
 

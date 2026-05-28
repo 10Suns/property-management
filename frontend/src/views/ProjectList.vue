@@ -98,6 +98,11 @@ onMounted(async () => {
   try {
     const { data } = await api.get('/projects')
     projects.value = data
+    // Single-project mode: auto-redirect
+    if (data.length === 1) {
+      router.push('/projects/' + data[0].id)
+      return
+    }
   } finally {
     loading.value = false
   }

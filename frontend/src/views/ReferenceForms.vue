@@ -20,7 +20,7 @@
           </div>
           <div class="item-actions" @click.stop>
             <button v-if="auth.isAdmin" class="action-btn" @click="openEditTemplate(t)">编辑</button>
-            <span class="action-btn primary">查看</span>
+            <button class="action-btn primary" @click="viewTemplate(t)">查看</button>
           </div>
         </div>
       </template>
@@ -191,6 +191,10 @@ async function saveTemplate() {
 }
 
 function createFromTemplate(t) {
+  router.push('/projects/' + route.params.id + '/template/' + t.id)
+}
+
+function viewTemplate(t) {
   router.push('/projects/' + route.params.id + '/template/' + t.id)
 }
 </script>

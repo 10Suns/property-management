@@ -28,8 +28,9 @@ router.post('/upload', upload.array('photos', 6), (req, res) => {
   const insert = db.prepare('INSERT INTO inspection_photos (record_id,result_id,filename,original_name,uploaded_by) VALUES (?,?,?,?,?)')
   const photos = []
   for (const file of req.files) {
-    const r = insert.run(record_id, result_id||null, file.filename, file.originalname, req.user.id)
-    photos.push({ id: r.lastInsertRowid, filename: file.filename, original_name: file.originalname })
+    const originalName = Buffer.from(file.originalname, 'latin1').toString('utf8')
+    const r = insert.run(record_id, result_id||null, file.filename, originalName, req.user.id)
+    photos.push({ id: r.lastInsertRowid, filename: file.filename, original_name: originalName })
   }
   res.json(photos)
 })
