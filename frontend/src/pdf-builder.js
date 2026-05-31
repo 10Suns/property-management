@@ -1,6 +1,6 @@
 import { cleanTitle } from './utils/title'
 import { RESULT_MAP } from './utils/translations'
-import { PAGE1_ROWS, PAGE2_ROWS, PAGE3_ROWS, BOTTOM_MARGIN, COL_WIDTHS, INFO_COL_WIDTHS, splitItems } from './utils/print-constants'
+import { BOTTOM_MARGIN, COL_WIDTHS, INFO_COL_WIDTHS, splitItems } from './utils/print-constants'
 
 let pdfMake = null
 let pdfFonts = null
@@ -156,7 +156,7 @@ function buildDataTable(items, getName, getStandard, getResult, startSeq) {
 }
 
 function buildFormPages({ title, info, items, getName, getStandard, getResult }) {
-  const { page1, page2, page3 } = splitItems(items)
+  const { page1, page2, page3, start2, start3 } = splitItems(items)
   const pn = info.projectName || ''
 
   const pages = [
@@ -170,7 +170,7 @@ function buildFormPages({ title, info, items, getName, getStandard, getResult })
     pages.push(
       { text: '', pageBreak: 'before' },
       bilingual(pn + ' 查验记录表（续）', pn + ' Phiếu kiểm tra (tiếp theo)', { bold: true, fontSize: 16, alignment: 'center' }, { fontSize: 11, color: '#555', italics: true, alignment: 'center' }),
-      buildDataTable(page2, getName, getStandard, getResult, PAGE1_ROWS + 1),
+      buildDataTable(page2, getName, getStandard, getResult, start2),
     )
   }
 
@@ -178,7 +178,7 @@ function buildFormPages({ title, info, items, getName, getStandard, getResult })
     pages.push(
       { text: '', pageBreak: 'before' },
       bilingual(pn + ' 查验记录表（续二）', pn + ' Phiếu kiểm tra (tiếp theo 2)', { bold: true, fontSize: 16, alignment: 'center' }, { fontSize: 11, color: '#555', italics: true, alignment: 'center' }),
-      buildDataTable(page3, getName, getStandard, getResult, PAGE1_ROWS + PAGE2_ROWS + 1),
+      buildDataTable(page3, getName, getStandard, getResult, start3),
     )
   }
 

@@ -70,7 +70,7 @@
             <thead><tr><th>序号<span class="vi-print-th">STT</span></th><th>检查项目<span class="vi-print-th">Hạng mục kiểm tra</span></th><th>检查标准<span class="vi-print-th">Tiêu chuẩn kiểm tra</span></th><th>查验结果<span class="vi-print-th">Kết quả kiểm tra</span></th></tr></thead>
             <tbody>
               <tr v-for="(item, ii) in doc.page2" :key="ii">
-                <td class="cell-center">{{ PAGE1_ROWS + ii + 1 }}</td>
+                <td class="cell-center">{{ doc.start2 + ii }}</td>
                 <td class="cell-top">{{ item.name }}<span v-if="item.nameVi" class="vi-print">{{ item.nameVi }}</span></td>
                 <td class="cell-top">{{ item.standard }}<span v-if="item.standardVi" class="vi-print">{{ item.standardVi }}</span></td>
                 <td class="cell-top">
@@ -120,7 +120,7 @@
             <thead><tr><th>序号<span class="vi-print-th">STT</span></th><th>检查项目<span class="vi-print-th">Hạng mục kiểm tra</span></th><th>检查标准<span class="vi-print-th">Tiêu chuẩn kiểm tra</span></th><th>查验结果<span class="vi-print-th">Kết quả kiểm tra</span></th></tr></thead>
             <tbody>
               <tr v-for="(item, ii) in doc.page3" :key="ii">
-                <td class="cell-center">{{ PAGE1_ROWS + PAGE2_ROWS + ii + 1 }}</td>
+                <td class="cell-center">{{ doc.start3 + ii }}</td>
                 <td class="cell-top">{{ item.name }}<span v-if="item.nameVi" class="vi-print">{{ item.nameVi }}</span></td>
                 <td class="cell-top">{{ item.standard }}<span v-if="item.standardVi" class="vi-print">{{ item.standardVi }}</span></td>
                 <td class="cell-top">
@@ -159,7 +159,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import api from '../api'
 import { cleanTitle } from '../utils/title'
-import { PAGE1_ROWS, PAGE2_ROWS, PAGE3_ROWS, splitItems } from '../utils/print-constants'
+import { splitItems } from '../utils/print-constants'
 import { RESULT_MAP } from '../utils/translations'
 
 const route = useRoute()
@@ -191,8 +191,9 @@ const allDocuments = computed(() => {
 
   for (const tpl of blankTemplates.value) {
     const items = (tpl.items || []).map(normalizeItem)
-    const { page1, page2, page3 } = splitItems(items)
+    const { page1, page2, page3, start2, start3 } = splitItems(items)
     docs.push({
+      start2, start3,
       subtitle: cleanTitle(tpl.title),
       projectName: projectName.value,
       dateStr: '____年____月____日',
@@ -207,8 +208,9 @@ const allDocuments = computed(() => {
 
   for (const rec of printRecords.value) {
     const items = (rec.printItems || rec.results || []).map(normalizeItem)
-    const { page1, page2, page3 } = splitItems(items)
+    const { page1, page2, page3, start2, start3 } = splitItems(items)
     docs.push({
+      start2, start3,
       subtitle: cleanTitle(rec.template_title),
       projectName: projectName.value,
       dateStr: rec.updated_at?.slice(0, 10) || '____年____月____日',
