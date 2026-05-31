@@ -1,6 +1,6 @@
 import { cleanTitle } from './utils/title'
 import { RESULT_MAP } from './utils/translations'
-import { BOTTOM_MARGIN, COL_WIDTHS, INFO_COL_WIDTHS, splitItems } from './utils/print-constants'
+import { BOTTOM_MARGIN, COL_WIDTHS, INFO_COL_WIDTHS } from './utils/print-constants'
 
 let pdfMake = null
 let pdfFonts = null
@@ -156,33 +156,53 @@ function buildDataTable(items, getName, getStandard, getResult, startSeq) {
 }
 
 function buildFormPages({ title, info, items, getName, getStandard, getResult }) {
-  const { page1, page2, page3, start2, start3 } = splitItems(items)
   const pn = info.projectName || ''
 
-  const pages = [
+  return [
     bilingual(pn + ' 查验记录表', pn + ' Phiếu kiểm tra', { bold: true, fontSize: 16, alignment: 'center' }, { fontSize: 11, color: '#555', italics: true, alignment: 'center' }),
     bilingual(cleanTitle(title), '', { fontSize: 11, alignment: 'center', color: '#555' }, {}),
     buildInfoTable(pn, info.dateStr, info.locationStr, info.inspectorName),
-    buildDataTable(page1, getName, getStandard, getResult, 1),
+    buildDataTable(items, getName, getStandard, getResult, 1),
   ]
+}
 
-  if (page2.length) {
-    pages.push(
-      { text: '', pageBreak: 'before' },
-      bilingual(pn + ' 查验记录表（续）', pn + ' Phiếu kiểm tra (tiếp theo)', { bold: true, fontSize: 16, alignment: 'center' }, { fontSize: 11, color: '#555', italics: true, alignment: 'center' }),
-      buildDataTable(page2, getName, getStandard, getResult, start2),
-    )
+// Unified builder for PrintPreview: accepts pre-normalized documents
+// Each doc: { title, dateStr, locationStr, inspectorName, items, hasResults, photos, comment }
+export async function buildPreviewPdf(documents, projectName) {
+  await setupPdfMake()
+  const content = []
+
+  for (const doc of documents) {
+    const items = doc.items || []
+    content.push(...buildFormPages({
+      title: doc.title,
+      info: {
+        projectName: projectName || '____________',
+        dateStr: doc.dateStr || '____年____月____日',
+        locationStr: doc.locationStr || '',
+        inspectorName: doc.inspectorName || '____________',
+      },
+      items,
+      getName: (i, vi) => vi ? (i.nameVi || '') : i.name,
+      getStandard: (i, vi) => vi ? (i.standardVi || '') : i.standard,
+      getResult: doc.hasResults ? buildResultCell : undefined,
+    }))
+
+    if (doc.photos?.length) {
+      content.push({ text: '', pageBreak: 'before' })
+      content.push(bilingual('照片附件 — ' + cleanTitle(doc.title || ''), 'Ảnh đính kèm — ' + cleanTitle(doc.title || ''), { bold: true, fontSize: 14, alignment: 'center', margin: [0, 0, 0, 8] }, { fontSize: 10, color: '#555', italics: true }))
+      const photoRows = doc.photos.map((p) => [
+        { image: '/uploads/' + p.filename, width: 280, margin: [4, 4] },
+        { text: [{ text: p.original_name + '\n', fontSize: 10 }, { text: p.uploaded_at || '', fontSize: 8, color: '#888' }], ...styles.td },
+      ])
+      content.push({ layout: LINE_LAYOUT, table: { widths: ['60%', '40%'], body: photoRows } })
+      content.push({ layout: LINE_LAYOUT, table: { widths: ['50%', '50%'], body: [[
+        { ...INSPECTOR_LABEL, border: [false, true, false, false], ...styles.td, margin: [0, 20, 0, 0] }, {},
+      ]]}})
+    }
   }
 
-  if (page3.length) {
-    pages.push(
-      { text: '', pageBreak: 'before' },
-      bilingual(pn + ' 查验记录表（续二）', pn + ' Phiếu kiểm tra (tiếp theo 2)', { bold: true, fontSize: 16, alignment: 'center' }, { fontSize: 11, color: '#555', italics: true, alignment: 'center' }),
-      buildDataTable(page3, getName, getStandard, getResult, start3),
-    )
-  }
-
-  return pages
+  return pdfMake.createPdf({ ...DOC_CONFIG, footer: () => STATIC_FOOTER, content })
 }
 
 export async function buildBlankPdf(templates, projectName) {
