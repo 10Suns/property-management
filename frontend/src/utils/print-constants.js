@@ -1,12 +1,12 @@
-// Shared print layout constants — kept in sync between PDF builder and browser preview
-// Row counts tuned for bilingual content (~12mm/row including stacked Chinese + Vietnamese text)
-
-export const PAGE1_ROWS = 18
-export const PAGE2_ROWS = 22
-export const PAGE3_ROWS = 22
+// Row counts tuned for bilingual content (~12mm/row: Chinese 9.5pt + Vietnamese 0.82em + padding)
+// Page 1 has info table overhead (~40mm) → fewer rows; page 2/3 have more space (~195mm available)
+export const PAGE1_ROWS = 12
+export const PAGE2_ROWS = 16
+export const PAGE3_ROWS = 16
 export const BOTTOM_MARGIN = 38
-export const COL_WIDTHS = ['4%', '15%', '45%', '36%']
-export const INFO_COL_WIDTHS = ['14%', '36%', '14%', '36%']
+// Wider inspection-item column (22%) for bilingual names; standard column (40%) for bilingual standards
+export const COL_WIDTHS = ['4%', '22%', '40%', '34%']
+export const INFO_COL_WIDTHS = ['18%', '32%', '18%', '32%']
 
 // Split items array into pages — no padding, flex filler pushes footer to bottom
 export function splitItems(items) {

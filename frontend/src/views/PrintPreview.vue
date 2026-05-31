@@ -300,9 +300,9 @@ onMounted(async () => {
 
 .print-company {
   text-align: center;
-  font-size: 16pt;
+  font-size: 15pt;
   font-weight: 700;
-  padding: 8px 0;
+  padding: 6px 0;
   background: #f0f0f0;
   letter-spacing: 2px;
   flex-shrink: 0;
@@ -310,8 +310,8 @@ onMounted(async () => {
 
 .print-form-title {
   text-align: center;
-  font-size: 11pt;
-  padding: 5px 0;
+  font-size: 10pt;
+  padding: 3px 0;
   background: #f8f8f8;
   color: #555;
   flex-shrink: 0;
@@ -327,8 +327,9 @@ onMounted(async () => {
 .print-info-table th,
 .print-info-table td {
   border: 1px solid #999;
-  padding: 5px 8px;
-  font-size: 10pt;
+  padding: 4px 6px;
+  font-size: 9.5pt;
+  line-height: 1.3;
 }
 
 .print-info-table th {
@@ -348,11 +349,10 @@ onMounted(async () => {
 .print-data-table th,
 .print-data-table td {
   border: 1px solid #999;
-  padding: 5px 6px;
-  font-size: 9.5pt;
-  line-height: 1.4;
-  overflow: hidden;
-  max-height: 2.8em;
+  padding: 4px 5px;
+  font-size: 9pt;
+  line-height: 1.35;
+  vertical-align: top;
 }
 
 .print-data-table thead th {
@@ -381,9 +381,9 @@ onMounted(async () => {
 .result-pending { color: #999; }
 .problem-desc { font-size: 8.5pt; color: #c5221f; margin-top: 2px; line-height: 1.3; font-weight: normal; }
 
-.vi-print { display: block; font-size: 0.82em; color: #666; font-style: italic; }
-.vi-print-inline { font-size: 0.82em; color: #666; font-style: italic; }
-.vi-print-th { display: block; font-size: 0.75em; color: #888; font-style: italic; font-weight: normal; }
+.vi-print { display: block; font-size: 0.78em; color: #777; font-style: italic; line-height: 1.25; }
+.vi-print-inline { font-size: 0.78em; color: #777; font-style: italic; }
+.vi-print-th { display: block; font-size: 0.72em; color: #888; font-style: italic; font-weight: normal; }
 
 .print-comment {
   flex-shrink: 0;
@@ -415,15 +415,15 @@ onMounted(async () => {
 }
 
 .comment-cell {
-  height: 100px;
+  height: 80px;
   vertical-align: top;
 }
 
 .print-signature {
-  padding: 12px 16px;
+  padding: 10px 14px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
 
 .signature-item {
