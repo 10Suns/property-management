@@ -444,6 +444,9 @@ label:has(.result-radio:checked) {
 .list-item-sub { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
 .list-item-arrow { color: var(--text-light); font-size: 18px; }
 
+/* ---- Vietnamese inline label ---- */
+.vi-inline { display: block; font-size: 0.8em; color: #888; font-style: italic; }
+
 /* ---- Toast ---- */
 .toast {
   position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);

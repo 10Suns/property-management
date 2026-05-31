@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import db from '../db.js'
+import { buildViMap } from '../vi-helper.js'
 
 const router = Router()
 
@@ -19,7 +20,9 @@ function getRecord(id) {
   if (!record) return null
 
   record.results = db.prepare(`
-    SELECT ir.*, ufi.item_name, ufi.check_standard, ti.item_name as template_item_name, ti.check_standard as template_standard
+    SELECT ir.*, ufi.item_name, ufi.item_name_vi, ufi.check_standard, ufi.check_standard_vi,
+      ti.item_name as template_item_name, ti.name_vi as template_name_vi,
+      ti.check_standard as template_standard, ti.standard_vi as template_standard_vi
     FROM inspection_results ir
     LEFT JOIN user_form_items ufi ON ir.user_form_item_id=ufi.id
     LEFT JOIN template_items ti ON ir.template_item_id=ti.id
@@ -29,7 +32,9 @@ function getRecord(id) {
   // Merge display names: prefer user_form_item, fallback to template_item, then custom
   for (const r of record.results) {
     if (!r.item_name) r.item_name = r.template_item_name || r.custom_item_name
+    if (!r.item_name_vi) r.item_name_vi = r.template_name_vi || r.custom_item_name_vi
     if (!r.check_standard) r.check_standard = r.template_standard || r.custom_standard
+    if (!r.check_standard_vi) r.check_standard_vi = r.template_standard_vi || r.custom_standard_vi
   }
 
   record.photos = db.prepare('SELECT * FROM inspection_photos WHERE record_id=? ORDER BY uploaded_at').all(id)
@@ -88,10 +93,15 @@ router.post('/', (req, res) => {
     const rid = r.lastInsertRowid
 
     if (ufid) {
-      // Create results from user_form_items — snapshot item names
       const items = db.prepare('SELECT * FROM user_form_items WHERE form_id=? ORDER BY sort_order').all(ufid)
-      const ins = db.prepare('INSERT INTO inspection_results (record_id,user_form_item_id,custom_item_name,custom_standard,sort_order) VALUES (?,?,?,?,?)')
-      for (const item of items) ins.run(rid, item.id, item.item_name, item.check_standard, item.sort_order)
+      const viMap = tid ? buildViMap(db, tid) : new Map()
+      const ins = db.prepare('INSERT INTO inspection_results (record_id,user_form_item_id,custom_item_name,custom_item_name_vi,custom_standard,custom_standard_vi,sort_order) VALUES (?,?,?,?,?,?,?)')
+      for (const item of items) {
+        const ti = viMap.get(item.item_name)
+        const nameVi = item.item_name_vi || (ti ? ti.name_vi : '')
+        const stdVi = item.check_standard_vi || (ti ? ti.standard_vi : '')
+        ins.run(rid, item.id, item.item_name, nameVi, item.check_standard, stdVi, item.sort_order)
+      }
     } else {
       // Create results from template_items (legacy)
       const items = db.prepare('SELECT * FROM template_items WHERE template_id=? ORDER BY sort_order').all(tid)
@@ -167,14 +177,14 @@ router.post('/:rid/results', (req, res) => {
   const record = db.prepare('SELECT submitted FROM inspection_records WHERE id=?').get(req.params.rid)
   if (!record) return res.status(404).json({ error: '记录不存在' })
   if (record.submitted) return res.status(403).json({ error: '记录已提交，无法修改' })
-  const { custom_item_name, custom_standard, user_form_item_id, result, problem_description } = req.body
+  const { custom_item_name, custom_item_name_vi, custom_standard, custom_standard_vi, user_form_item_id, result, problem_description } = req.body
   if (!custom_item_name && !user_form_item_id) return res.status(400).json({ error: '条目名称不能为空' })
   const max = db.prepare('SELECT MAX(sort_order) as m FROM inspection_results WHERE record_id=?').get(req.params.rid)
   const sort = (max?.m || 0) + 1
-  const r = db.prepare('INSERT INTO inspection_results (record_id,user_form_item_id,custom_item_name,custom_standard,result,problem_description,sort_order) VALUES (?,?,?,?,?,?,?)')
-    .run(req.params.rid, user_form_item_id || null, custom_item_name || null, custom_standard || null, result || 'pending', problem_description || null, sort)
+  const r = db.prepare('INSERT INTO inspection_results (record_id,user_form_item_id,custom_item_name,custom_item_name_vi,custom_standard,custom_standard_vi,result,problem_description,sort_order) VALUES (?,?,?,?,?,?,?,?,?)')
+    .run(req.params.rid, user_form_item_id || null, custom_item_name || null, custom_item_name_vi || '', custom_standard || null, custom_standard_vi || '', result || 'pending', problem_description || null, sort)
   const item = db.prepare(`
-    SELECT ir.*, ufi.item_name, ufi.check_standard
+    SELECT ir.*, ufi.item_name, ufi.item_name_vi, ufi.check_standard, ufi.check_standard_vi
     FROM inspection_results ir
     LEFT JOIN user_form_items ufi ON ir.user_form_item_id=ufi.id
     WHERE ir.id=?
@@ -187,17 +197,19 @@ router.put('/results/:id', (req, res) => {
   const item = db.prepare('SELECT ir.*, r.submitted FROM inspection_results ir JOIN inspection_records r ON ir.record_id=r.id WHERE ir.id=?').get(req.params.id)
   if (!item) return res.status(404).json({ error: '条目不存在' })
   if (item.submitted) return res.status(403).json({ error: '记录已提交，无法修改' })
-  const { result, problem_description, custom_item_name, custom_standard } = req.body
-  db.prepare(`UPDATE inspection_results SET result=?,problem_description=?,custom_item_name=?,custom_standard=?,updated_at=datetime('now') WHERE id=?`)
+  const { result, problem_description, custom_item_name, custom_item_name_vi, custom_standard, custom_standard_vi } = req.body
+  db.prepare(`UPDATE inspection_results SET result=?,problem_description=?,custom_item_name=?,custom_item_name_vi=?,custom_standard=?,custom_standard_vi=?,updated_at=datetime('now') WHERE id=?`)
     .run(
       result !== undefined ? result : item.result,
       problem_description !== undefined ? problem_description : item.problem_description,
       custom_item_name !== undefined ? custom_item_name : item.custom_item_name,
+      custom_item_name_vi !== undefined ? custom_item_name_vi : item.custom_item_name_vi,
       custom_standard !== undefined ? custom_standard : item.custom_standard,
+      custom_standard_vi !== undefined ? custom_standard_vi : item.custom_standard_vi,
       req.params.id
     )
   const resultItem = db.prepare(`
-    SELECT ir.*, ufi.item_name, ufi.check_standard
+    SELECT ir.*, ufi.item_name, ufi.item_name_vi, ufi.check_standard, ufi.check_standard_vi
     FROM inspection_results ir
     LEFT JOIN user_form_items ufi ON ir.user_form_item_id=ufi.id
     WHERE ir.id=?

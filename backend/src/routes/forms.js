@@ -71,16 +71,16 @@ router.post('/', (req, res) => {
     const fid = r.lastInsertRowid
 
     if (items && Array.isArray(items) && items.length > 0) {
-      const ins = db.prepare('INSERT INTO user_form_items (form_id,item_number,item_name,check_standard,source_item_id,sort_order) VALUES (?,?,?,?,?,?)')
+      const ins = db.prepare('INSERT INTO user_form_items (form_id,item_number,item_name,item_name_vi,check_standard,check_standard_vi,source_item_id,sort_order) VALUES (?,?,?,?,?,?,?,?)')
       items.forEach((item, idx) => {
-        ins.run(fid, idx + 1, item.item_name, item.check_standard || '', item.source_item_id || null, idx)
+        ins.run(fid, idx + 1, item.item_name, item.item_name_vi || '', item.check_standard || '', item.check_standard_vi || '', item.source_item_id || null, idx)
       })
     } else if (template_id) {
       // Copy template items to user form items
       const templateItems = db.prepare('SELECT * FROM template_items WHERE template_id=? ORDER BY sort_order').all(template_id)
-      const ins = db.prepare('INSERT INTO user_form_items (form_id,item_number,item_name,check_standard,source_item_id,sort_order) VALUES (?,?,?,?,?,?)')
+      const ins = db.prepare('INSERT INTO user_form_items (form_id,item_number,item_name,item_name_vi,check_standard,check_standard_vi,source_item_id,sort_order) VALUES (?,?,?,?,?,?,?,?)')
       for (const item of templateItems) {
-        ins.run(fid, item.item_number, item.item_name, item.check_standard, item.id, item.sort_order)
+        ins.run(fid, item.item_number, item.item_name, item.name_vi || '', item.check_standard, item.standard_vi || '', item.id, item.sort_order)
       }
     }
     return fid
@@ -117,13 +117,13 @@ router.post('/:fid/items', (req, res) => {
   if (!form) return res.status(404).json({ error: '表单不存在' })
   if (form.user_id !== req.user.id && req.user.role !== 'admin') return res.status(403).json({ error: '只能编辑自己的表单' })
 
-  const { item_name, item_number, check_standard } = req.body
+  const { item_name, item_number, check_standard, item_name_vi, check_standard_vi } = req.body
   if (!item_name) return res.status(400).json({ error: '条目名称不能为空' })
   const max = db.prepare('SELECT MAX(sort_order) as m FROM user_form_items WHERE form_id=?').get(req.params.fid)
   const sort = (max?.m || 0) + 1
   const num = item_number || sort
-  const r = db.prepare('INSERT INTO user_form_items (form_id,item_number,item_name,check_standard,sort_order) VALUES (?,?,?,?,?)')
-    .run(req.params.fid, num, item_name, check_standard || '', sort)
+  const r = db.prepare('INSERT INTO user_form_items (form_id,item_number,item_name,item_name_vi,check_standard,check_standard_vi,sort_order) VALUES (?,?,?,?,?,?,?)')
+    .run(req.params.fid, num, item_name, item_name_vi || '', check_standard || '', check_standard_vi || '', sort)
   db.prepare('UPDATE user_forms SET updated_at=datetime(\'now\') WHERE id=?').run(req.params.fid)
   res.json(db.prepare('SELECT * FROM user_form_items WHERE id=?').get(r.lastInsertRowid))
 })
@@ -134,9 +134,9 @@ router.put('/items/:id', (req, res) => {
   if (!item) return res.status(404).json({ error: '条目不存在' })
   if (item.user_id !== req.user.id && req.user.role !== 'admin') return res.status(403).json({ error: '只能编辑自己的表单' })
 
-  const { item_name, item_number, check_standard } = req.body
-  db.prepare('UPDATE user_form_items SET item_name=?,item_number=?,check_standard=? WHERE id=?')
-    .run(item_name||item.item_name, item_number||item.item_number, check_standard||item.check_standard, req.params.id)
+  const { item_name, item_number, check_standard, item_name_vi, check_standard_vi } = req.body
+  db.prepare('UPDATE user_form_items SET item_name=?,item_name_vi=?,item_number=?,check_standard=?,check_standard_vi=? WHERE id=?')
+    .run(item_name||item.item_name, item_name_vi !== undefined ? item_name_vi : item.item_name_vi, item_number||item.item_number, check_standard||item.check_standard, check_standard_vi !== undefined ? check_standard_vi : item.check_standard_vi, req.params.id)
   db.prepare('UPDATE user_forms SET updated_at=datetime(\'now\') WHERE id=?').run(item.form_id)
   res.json(db.prepare('SELECT * FROM user_form_items WHERE id=?').get(req.params.id))
 })

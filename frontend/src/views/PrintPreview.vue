@@ -1,10 +1,10 @@
 <template>
   <div>
     <div class="page-header no-print">
-      <h1 class="page-title">打印预览</h1>
+      <h1 class="page-title">打印预览<span class="vi-print-inline">Xem trước khi in</span></h1>
       <div class="flex gap-8">
-        <button class="btn" @click="window.print()">浏览器打印</button>
-        <button class="btn btn-outline" @click="router.back()">返回</button>
+        <button class="btn" @click="window.print()">浏览器打印<span class="vi-print-inline">In trình duyệt</span></button>
+        <button class="btn btn-outline" @click="router.back()">返回<span class="vi-print-inline">Quay lại</span></button>
       </div>
     </div>
 
@@ -14,26 +14,27 @@
       <!-- Page 1 -->
       <div class="print-document">
         <div class="print-page">
-          <div class="print-company">{{ projectName }} 查验记录表</div>
+          <div class="print-company">{{ projectName }} 查验记录表<span class="vi-print">Phiếu kiểm tra</span></div>
           <div v-if="doc.subtitle" class="print-form-title">{{ doc.subtitle }}</div>
           <table class="print-info-table">
             <colgroup><col class="col-seq"><col class="col-item"><col class="col-standard"><col class="col-result"></colgroup>
-            <tr><th colspan="2">项目名称</th><td colspan="2">{{ doc.projectName }}</td></tr>
-            <tr><th colspan="2">查验日期</th><td colspan="2">{{ doc.dateStr }}</td></tr>
-            <tr><th colspan="2">位置</th><td colspan="2">{{ doc.locationStr }}</td></tr>
-            <tr><th colspan="2">查验人</th><td colspan="2">{{ doc.inspectorName }}</td></tr>
+            <tr><th colspan="2">项目名称<span class="vi-print-th">Tên dự án</span></th><td colspan="2">{{ doc.projectName }}</td></tr>
+            <tr><th colspan="2">查验日期<span class="vi-print-th">Ngày kiểm tra</span></th><td colspan="2">{{ doc.dateStr }}</td></tr>
+            <tr><th colspan="2">位置<span class="vi-print-th">Vị trí</span></th><td colspan="2">{{ doc.locationStr }}</td></tr>
+            <tr><th colspan="2">查验人<span class="vi-print-th">Người kiểm tra</span></th><td colspan="2">{{ doc.inspectorName }}</td></tr>
           </table>
           <table class="print-data-table">
             <colgroup><col class="col-seq"><col class="col-item"><col class="col-standard"><col class="col-result"></colgroup>
-            <thead><tr><th>序号</th><th>检查项目</th><th>检查标准</th><th>查验结果</th></tr></thead>
+            <thead><tr><th>序号<span class="vi-print-th">STT</span></th><th>检查项目<span class="vi-print-th">Hạng mục kiểm tra</span></th><th>检查标准<span class="vi-print-th">Tiêu chuẩn kiểm tra</span></th><th>查验结果<span class="vi-print-th">Kết quả kiểm tra</span></th></tr></thead>
             <tbody>
               <tr v-for="(item, ii) in doc.page1" :key="ii">
                 <td class="cell-center">{{ item ? (ii + 1) : '&nbsp;' }}</td>
-                <td class="cell-top">{{ item ? item.name : '' }}</td>
-                <td class="cell-top">{{ item ? item.standard : '' }}</td>
+                <td class="cell-top">{{ item ? item.name : '' }}<span v-if="item && item.nameVi" class="vi-print">{{ item.nameVi }}</span></td>
+                <td class="cell-top">{{ item ? item.standard : '' }}<span v-if="item && item.standardVi" class="vi-print">{{ item.standardVi }}</span></td>
                 <td class="cell-top">
                   <template v-if="item">
                     <span v-if="item.resultClass" :class="item.resultClass">{{ item.resultLabel }}</span>
+                    <span v-if="item.resultLabelVi" class="vi-print-inline">{{ item.resultLabelVi }}</span>
                     <div v-if="item.problem" class="problem-desc">{{ item.problem }}</div>
                   </template>
                 </td>
@@ -43,68 +44,109 @@
           <div class="print-comment">
             <table class="print-footer-table">
               <colgroup><col class="col-seq"><col class="col-item"><col class="col-standard"><col class="col-result"></colgroup>
-              <tr><th colspan="2">查验意见</th><td colspan="2" class="comment-cell">{{ doc.comment || '' }}</td></tr>
+              <tr><th colspan="2">查验意见<span class="vi-print-th">Ý kiến kiểm tra</span></th><td colspan="2" class="comment-cell">{{ doc.comment || '' }}</td></tr>
             </table>
           </div>
           <div class="print-page-filler"></div>
           <div class="print-signature">
-            <table class="print-footer-table">
-              <colgroup><col class="col-seq"><col class="col-item"><col class="col-standard"><col class="col-result"></colgroup>
-              <tr class="signature-row">
-                <td colspan="3" class="signature-cell">查验人签字：<div class="signature-line"></div></td>
-                <td class="signature-cell">日期：<div class="signature-line"></div></td>
-              </tr>
-            </table>
+            <div class="signature-item">
+              <div class="signature-label">查验人签字：<span class="vi-print-inline">Người kiểm tra ký tên</span></div>
+              <div class="signature-line"></div>
+            </div>
+            <div class="signature-item">
+              <div class="signature-label">日期：<span class="vi-print-inline">Ngày</span></div>
+              <div class="signature-line"></div>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Page 2 -->
-      <div class="print-document">
+      <div v-if="doc.page2.length" class="print-document">
         <div class="print-page">
-          <div class="print-company">{{ projectName }} 查验记录表（续）</div>
+          <div class="print-company">{{ projectName }} 查验记录表（续）<span class="vi-print">Phiếu kiểm tra (tiếp theo)</span></div>
           <table class="print-data-table">
             <colgroup><col class="col-seq"><col class="col-item"><col class="col-standard"><col class="col-result"></colgroup>
-            <thead><tr><th>序号</th><th>检查项目</th><th>检查标准</th><th>查验结果</th></tr></thead>
+            <thead><tr><th>序号<span class="vi-print-th">STT</span></th><th>检查项目<span class="vi-print-th">Hạng mục kiểm tra</span></th><th>检查标准<span class="vi-print-th">Tiêu chuẩn kiểm tra</span></th><th>查验结果<span class="vi-print-th">Kết quả kiểm tra</span></th></tr></thead>
             <tbody>
               <tr v-for="(item, ii) in doc.page2" :key="ii">
-                <td class="cell-center">{{ item ? (PAGE1_ROWS + ii + 1) : '&nbsp;' }}</td>
-                <td class="cell-top">{{ item ? item.name : '' }}</td>
-                <td class="cell-top">{{ item ? item.standard : '' }}</td>
+                <td class="cell-center">{{ PAGE1_ROWS + ii + 1 }}</td>
+                <td class="cell-top">{{ item.name }}<span v-if="item.nameVi" class="vi-print">{{ item.nameVi }}</span></td>
+                <td class="cell-top">{{ item.standard }}<span v-if="item.standardVi" class="vi-print">{{ item.standardVi }}</span></td>
                 <td class="cell-top">
-                  <template v-if="item">
-                    <span v-if="item.resultClass" :class="item.resultClass">{{ item.resultLabel }}</span>
-                    <div v-if="item.problem" class="problem-desc">{{ item.problem }}</div>
-                  </template>
+                  <span v-if="item.resultClass" :class="item.resultClass">{{ item.resultLabel }}</span>
+                  <span v-if="item.resultLabelVi" class="vi-print-inline">{{ item.resultLabelVi }}</span>
+                  <div v-if="item.problem" class="problem-desc">{{ item.problem }}</div>
                 </td>
               </tr>
             </tbody>
           </table>
           <div v-if="doc.photos?.length" class="print-photo-strip">
-            <div class="photo-strip-label">照片附件：</div>
+            <div class="photo-strip-label">照片附件：<span class="vi-print-inline">Ảnh đính kèm</span></div>
             <div class="photo-strip-items">
               <div v-for="(p, pi) in doc.photos.slice(0, 4)" :key="pi" class="photo-strip-item">
                 <img :src="'/uploads/' + p.filename" class="print-photo-thumb" />
                 <div class="photo-strip-name">{{ p.original_name }}</div>
               </div>
-              <div v-if="doc.photos.length > 4" class="photo-strip-more">等{{ doc.photos.length }}张照片</div>
+              <div v-if="doc.photos.length > 4" class="photo-strip-more">等{{ doc.photos.length }}张照片<span class="vi-print-inline">tổng {{ doc.photos.length }} ảnh</span></div>
             </div>
           </div>
           <div class="print-comment">
             <table class="print-footer-table">
               <colgroup><col class="col-seq"><col class="col-item"><col class="col-standard"><col class="col-result"></colgroup>
-              <tr><th colspan="2">查验意见</th><td colspan="2" class="comment-cell">&nbsp;</td></tr>
+              <tr><th colspan="2">查验意见<span class="vi-print-th">Ý kiến kiểm tra</span></th><td colspan="2" class="comment-cell">&nbsp;</td></tr>
             </table>
           </div>
           <div class="print-page-filler"></div>
           <div class="print-signature">
+            <div class="signature-item">
+              <div class="signature-label">查验人签字：<span class="vi-print-inline">Người kiểm tra ký tên</span></div>
+              <div class="signature-line"></div>
+            </div>
+            <div class="signature-item">
+              <div class="signature-label">日期：<span class="vi-print-inline">Ngày</span></div>
+              <div class="signature-line"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Page 3 -->
+      <div v-if="doc.page3.length" class="print-document">
+        <div class="print-page">
+          <div class="print-company">{{ projectName }} 查验记录表（续二）<span class="vi-print">Phiếu kiểm tra (tiếp theo 2)</span></div>
+          <table class="print-data-table">
+            <colgroup><col class="col-seq"><col class="col-item"><col class="col-standard"><col class="col-result"></colgroup>
+            <thead><tr><th>序号<span class="vi-print-th">STT</span></th><th>检查项目<span class="vi-print-th">Hạng mục kiểm tra</span></th><th>检查标准<span class="vi-print-th">Tiêu chuẩn kiểm tra</span></th><th>查验结果<span class="vi-print-th">Kết quả kiểm tra</span></th></tr></thead>
+            <tbody>
+              <tr v-for="(item, ii) in doc.page3" :key="ii">
+                <td class="cell-center">{{ PAGE1_ROWS + PAGE2_ROWS + ii + 1 }}</td>
+                <td class="cell-top">{{ item.name }}<span v-if="item.nameVi" class="vi-print">{{ item.nameVi }}</span></td>
+                <td class="cell-top">{{ item.standard }}<span v-if="item.standardVi" class="vi-print">{{ item.standardVi }}</span></td>
+                <td class="cell-top">
+                  <span v-if="item.resultClass" :class="item.resultClass">{{ item.resultLabel }}</span>
+                  <span v-if="item.resultLabelVi" class="vi-print-inline">{{ item.resultLabelVi }}</span>
+                  <div v-if="item.problem" class="problem-desc">{{ item.problem }}</div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="print-comment">
             <table class="print-footer-table">
               <colgroup><col class="col-seq"><col class="col-item"><col class="col-standard"><col class="col-result"></colgroup>
-              <tr class="signature-row">
-                <td colspan="3" class="signature-cell">查验人签字：<div class="signature-line"></div></td>
-                <td class="signature-cell">日期：<div class="signature-line"></div></td>
-              </tr>
+              <tr><th colspan="2">查验意见<span class="vi-print-th">Ý kiến kiểm tra</span></th><td colspan="2" class="comment-cell">&nbsp;</td></tr>
             </table>
+          </div>
+          <div class="print-page-filler"></div>
+          <div class="print-signature">
+            <div class="signature-item">
+              <div class="signature-label">查验人签字：<span class="vi-print-inline">Người kiểm tra ký tên</span></div>
+              <div class="signature-line"></div>
+            </div>
+            <div class="signature-item">
+              <div class="signature-label">日期：<span class="vi-print-inline">Ngày</span></div>
+              <div class="signature-line"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -117,13 +159,8 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import api from '../api'
 import { cleanTitle } from '../utils/title'
-import { PAGE1_ROWS, PAGE2_ROWS, splitItems } from '../utils/print-constants'
-
-const RESULT_MAP = {
-  pass: { label: '合格', cls: 'result-pass' },
-  fail: { label: '不合格', cls: 'result-fail' },
-  skip: { label: '免检', cls: 'result-skip' },
-}
+import { PAGE1_ROWS, PAGE2_ROWS, PAGE3_ROWS, splitItems } from '../utils/print-constants'
+import { RESULT_MAP } from '../utils/translations'
 
 const route = useRoute()
 const router = useRouter()
@@ -138,8 +175,11 @@ function normalizeItem(item) {
   const r = RESULT_MAP[item.result]
   return {
     name: item.item_name || item.custom_item_name,
+    nameVi: item.item_name_vi || item.name_vi || item.custom_item_name_vi || '',
     standard: item.check_standard || item.custom_standard,
+    standardVi: item.check_standard_vi || item.standard_vi || item.custom_standard_vi || '',
     resultLabel: r ? r.label : '—',
+    resultLabelVi: r ? r.labelVi : '—',
     resultClass: item.result ? (r ? r.cls : 'result-pending') : null,
     problem: item.problem_description || null,
   }
@@ -151,7 +191,7 @@ const allDocuments = computed(() => {
 
   for (const tpl of blankTemplates.value) {
     const items = (tpl.items || []).map(normalizeItem)
-    const { page1, page2 } = splitItems(items)
+    const { page1, page2, page3 } = splitItems(items)
     docs.push({
       subtitle: cleanTitle(tpl.title),
       projectName: projectName.value,
@@ -161,12 +201,13 @@ const allDocuments = computed(() => {
       comment: '',
       page1,
       page2,
+      page3,
     })
   }
 
   for (const rec of printRecords.value) {
     const items = (rec.printItems || rec.results || []).map(normalizeItem)
-    const { page1, page2 } = splitItems(items)
+    const { page1, page2, page3 } = splitItems(items)
     docs.push({
       subtitle: cleanTitle(rec.template_title),
       projectName: projectName.value,
@@ -177,6 +218,7 @@ const allDocuments = computed(() => {
       photos: rec.photos,
       page1,
       page2,
+      page3,
     })
   }
 
@@ -339,6 +381,10 @@ onMounted(async () => {
 .result-pending { color: #999; }
 .problem-desc { font-size: 8.5pt; color: #c5221f; margin-top: 2px; line-height: 1.3; font-weight: normal; }
 
+.vi-print { display: block; font-size: 0.82em; color: #666; font-style: italic; }
+.vi-print-inline { font-size: 0.82em; color: #666; font-style: italic; }
+.vi-print-th { display: block; font-size: 0.75em; color: #888; font-style: italic; font-weight: normal; }
+
 .print-comment {
   flex-shrink: 0;
 }
@@ -373,21 +419,27 @@ onMounted(async () => {
   vertical-align: top;
 }
 
-.signature-row td {
-  border: none;
-  padding: 16px 12px 4px;
+.print-signature {
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.signature-cell {
-  text-align: left;
+.signature-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.signature-label {
   font-size: 10.5pt;
 }
 
 .signature-line {
-  margin-top: 24px;
   border-bottom: 1px solid #333;
-  width: 70%;
-  min-width: 140px;
+  width: 60%;
+  min-width: 200px;
 }
 
 .print-photo-strip {

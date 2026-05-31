@@ -12,9 +12,9 @@ function getTemplateWithItems(id) {
 }
 
 function insertTemplateItems(templateId, items) {
-  const ins = db.prepare('INSERT INTO template_items (template_id,item_number,item_name,check_standard,sort_order) VALUES (?,?,?,?,?)')
+  const ins = db.prepare('INSERT INTO template_items (template_id,item_number,item_name,name_vi,check_standard,standard_vi,sort_order) VALUES (?,?,?,?,?,?,?)')
   items.forEach((item, i) => {
-    ins.run(templateId, item.item_number || (i + 1), item.item_name, item.check_standard || '', i)
+    ins.run(templateId, item.item_number || (i + 1), item.item_name, item.name_vi || '', item.check_standard || '', item.standard_vi || '', i)
   })
 }
 

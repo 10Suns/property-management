@@ -114,6 +114,37 @@ function runMigrations() {
     console.log('Added maintenance_records.submitted')
   }
 
+  // Vietnamese translation columns
+  const tiInfo = db.prepare("PRAGMA table_info(template_items)").all()
+  if (!tiInfo.find(c => c.name === 'name_vi')) {
+    db.exec("ALTER TABLE template_items ADD COLUMN name_vi TEXT DEFAULT ''")
+    console.log('Added template_items.name_vi')
+  }
+  if (!tiInfo.find(c => c.name === 'standard_vi')) {
+    db.exec("ALTER TABLE template_items ADD COLUMN standard_vi TEXT DEFAULT ''")
+    console.log('Added template_items.standard_vi')
+  }
+
+  const ufiInfo = db.prepare("PRAGMA table_info(user_form_items)").all()
+  if (!ufiInfo.find(c => c.name === 'item_name_vi')) {
+    db.exec("ALTER TABLE user_form_items ADD COLUMN item_name_vi TEXT DEFAULT ''")
+    console.log('Added user_form_items.item_name_vi')
+  }
+  if (!ufiInfo.find(c => c.name === 'check_standard_vi')) {
+    db.exec("ALTER TABLE user_form_items ADD COLUMN check_standard_vi TEXT DEFAULT ''")
+    console.log('Added user_form_items.check_standard_vi')
+  }
+
+  const irInfo3 = db.prepare("PRAGMA table_info(inspection_results)").all()
+  if (!irInfo3.find(c => c.name === 'custom_item_name_vi')) {
+    db.exec("ALTER TABLE inspection_results ADD COLUMN custom_item_name_vi TEXT DEFAULT ''")
+    console.log('Added inspection_results.custom_item_name_vi')
+  }
+  if (!irInfo3.find(c => c.name === 'custom_standard_vi')) {
+    db.exec("ALTER TABLE inspection_results ADD COLUMN custom_standard_vi TEXT DEFAULT ''")
+    console.log('Added inspection_results.custom_standard_vi')
+  }
+
   // Add project config columns
   const pInfo = db.prepare("PRAGMA table_info(projects)").all()
   if (!pInfo.find(c => c.name === 'land_area')) {
@@ -201,7 +232,9 @@ export function initDB() {
       template_id INTEGER NOT NULL REFERENCES inspection_templates(id) ON DELETE CASCADE,
       item_number INTEGER NOT NULL,
       item_name TEXT NOT NULL,
+      name_vi TEXT DEFAULT '',
       check_standard TEXT NOT NULL,
+      standard_vi TEXT DEFAULT '',
       sort_order INTEGER DEFAULT 0
     );
 
@@ -224,7 +257,9 @@ export function initDB() {
       form_id INTEGER NOT NULL REFERENCES user_forms(id) ON DELETE CASCADE,
       item_number INTEGER NOT NULL,
       item_name TEXT NOT NULL,
+      item_name_vi TEXT DEFAULT '',
       check_standard TEXT NOT NULL,
+      check_standard_vi TEXT DEFAULT '',
       source_item_id INTEGER,
       sort_order INTEGER DEFAULT 0
     );
@@ -317,7 +352,9 @@ export function initDB() {
       user_form_item_id INTEGER REFERENCES user_form_items(id) ON DELETE SET NULL,
       template_item_id INTEGER REFERENCES template_items(id) ON DELETE SET NULL,
       custom_item_name TEXT,
+      custom_item_name_vi TEXT DEFAULT '',
       custom_standard TEXT,
+      custom_standard_vi TEXT DEFAULT '',
       result TEXT DEFAULT 'pending' CHECK(result IN ('pending','pass','fail','skip')),
       problem_description TEXT,
       sort_order INTEGER DEFAULT 0,
