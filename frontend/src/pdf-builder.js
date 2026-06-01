@@ -3,36 +3,44 @@ import { RESULT_MAP } from './utils/translations'
 import { BOTTOM_MARGIN, COL_WIDTHS, INFO_COL_WIDTHS } from './utils/print-constants'
 
 let pdfMake = null
-let pdfFonts = null
 let fontBase64 = null
 
 async function ensurePdfMake() {
-  if (pdfMake && pdfFonts) return
-  const [pm, pf] = await Promise.all([
-    import('pdfmake/build/pdfmake'),
-    import('pdfmake/build/vfs_fonts'),
-  ])
+  if (pdfMake) return
+  // Dynamic imports: pdfmake/build/vfs_fonts has a side-effect that tries to
+  // register fonts on window.pdfMake. With Vite's ESM bundling, that side
+  // effect fires before pdfmake's default export is available on window.
+  // Load them sequentially and set up vfs + fonts manually.
+  const pm = await import('pdfmake/build/pdfmake')
   pdfMake = pm.default
-  pdfFonts = pf.default
+  const pf = await import('pdfmake/build/vfs_fonts')
+  const pdfFonts = pf.default
+  if (pdfMake.addVirtualFileSystem) {
+    pdfMake.addVirtualFileSystem(pdfFonts)
+  }
 }
 
 async function loadChineseFont() {
   if (fontBase64) return fontBase64
   const resp = await fetch('/fonts/NotoSansSC-Regular.ttf')
-  const buffer = await resp.arrayBuffer()
-  const bytes = new Uint8Array(buffer)
-  const chunks = []
-  for (let i = 0; i < bytes.length; i += 8192) {
-    chunks.push(String.fromCharCode.apply(null, bytes.subarray(i, i + 8192)))
-  }
-  fontBase64 = btoa(chunks.join(''))
+  if (!resp.ok) throw new Error('Font fetch failed: ' + resp.status)
+  const blob = await resp.blob()
+  console.log('[pdf-builder] Font blob size:', blob.size)
+  fontBase64 = await new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(reader.result.split(',')[1])
+    reader.onerror = () => reject(new Error('FileReader error'))
+    reader.readAsDataURL(blob)
+  })
+  console.log('[pdf-builder] Font base64 length:', fontBase64.length)
   return fontBase64
 }
 
 async function setupPdfMake() {
   await ensurePdfMake()
   const cjkFont = await loadChineseFont()
-  pdfMake.vfs = { ...pdfFonts, 'NotoSansSC-Regular.ttf': cjkFont }
+  // Register Chinese font directly into pdfmake's virtual file system
+  pdfMake.addVirtualFileSystem({ 'NotoSansSC-Regular.ttf': cjkFont })
   pdfMake.fonts = {
     NotoSansSC: {
       normal: 'NotoSansSC-Regular.ttf',
@@ -46,7 +54,40 @@ async function setupPdfMake() {
       italics: 'Roboto-Italic.ttf',
       bolditalics: 'Roboto-MediumItalic.ttf',
     },
+    // Fallback: register Roboto for default text
+    Roboto: {
+      normal: 'Roboto-Regular.ttf',
+      bold: 'Roboto-Medium.ttf',
+      italics: 'Roboto-Italic.ttf',
+      bolditalics: 'Roboto-MediumItalic.ttf',
+    },
   }
+}
+
+export async function testPdfMake() {
+  await ensurePdfMake()
+
+  pdfMake.fonts = {
+    Roboto: { normal: 'Roboto-Regular.ttf', bold: 'Roboto-Medium.ttf', italics: 'Roboto-Italic.ttf', bolditalics: 'Roboto-MediumItalic.ttf' },
+  }
+
+  const doc = pdfMake.createPdf({
+    pageSize: 'A4',
+    content: [{ text: 'Test', fontSize: 12 }],
+    defaultStyle: { font: 'Roboto' },
+  })
+
+  const methods = ['getDataUrl', 'getBlob', 'getBase64']
+  for (const method of methods) {
+    try {
+      const result = await new Promise((resolve, reject) => {
+        doc[method](resolve)
+        setTimeout(() => reject(new Error(method + ' timeout')), method === 'getDataUrl' ? 10000 : 5000)
+      })
+      return { ok: true, [method === 'getDataUrl' ? 'length' : 'size']: result.length || result.size || result }
+    } catch (_) {}
+  }
+  return { ok: false, error: 'All pdfmake output methods failed' }
 }
 
 const VI_LABEL = { fontSize: 8, color: '#666', italics: true, font: 'RobotoVI' }
@@ -71,7 +112,7 @@ const styles = {
   footerTD: { fontSize: 9, alignment: 'left' },
 }
 
-const LINE_LAYOUT = { hLineWidth: 0.5, vLineWidth: 0.5 }
+const LINE_LAYOUT = { hLineWidth: () => 0.5, vLineWidth: () => 0.5 }
 const DOC_CONFIG = {
   pageSize: 'A4',
   pageMargins: [28, 28, 28, BOTTOM_MARGIN],

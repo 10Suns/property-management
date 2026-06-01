@@ -1,167 +1,510 @@
 <template>
   <div>
     <div class="page-header no-print">
-      <h1 class="page-title">打印预览<span class="vi-inline">Xem trước khi in</span></h1>
+      <h1 class="page-title">打印预览<span class="vi-print-inline">Xem trước khi in</span></h1>
       <div class="flex gap-8">
-        <button class="btn" @click="printPdf">浏览器打印<span class="vi-inline">In trình duyệt</span></button>
-        <button class="btn btn-outline" @click="router.back()">返回<span class="vi-inline">Quay lại</span></button>
+        <button class="btn" @click="window.print()">浏览器打印<span class="vi-print-inline">In trình duyệt</span></button>
+        <button class="btn btn-outline" @click="router.back()">返回<span class="vi-print-inline">Quay lại</span></button>
       </div>
     </div>
 
-    <div v-if="loading" class="empty no-print">正在生成预览...<span class="vi-inline">Đang tạo bản xem trước...</span></div>
-    <div v-else-if="error" class="empty no-print" style="color:#c5221f">{{ error }}</div>
+    <div v-if="loading" class="empty no-print">加载中...</div>
 
-    <iframe
-      v-show="!loading && !error"
-      ref="pdfFrame"
-      :src="pdfUrl"
-      class="pdf-preview-frame"
-      frameborder="0"
-    ></iframe>
+    <template v-for="(doc, di) in allDocuments" :key="di">
+      <!-- Page 1 -->
+      <div class="print-document">
+        <div class="print-page">
+          <div class="print-company">{{ projectName }} 查验记录表<span class="vi-print">Phiếu kiểm tra</span></div>
+          <div v-if="doc.subtitle" class="print-form-title">{{ doc.subtitle }}</div>
+          <table class="print-info-table">
+            <colgroup><col class="col-label"><col class="col-value"><col class="col-label"><col class="col-value"></colgroup>
+            <tr><th>项目名称<span class="vi-print-th">Tên dự án</span></th><td>{{ doc.projectName }}</td><th>查验日期<span class="vi-print-th">Ngày kiểm tra</span></th><td>{{ doc.dateStr }}</td></tr>
+            <tr><th>位置<span class="vi-print-th">Vị trí</span></th><td>{{ doc.locationStr }}</td><th>查验人<span class="vi-print-th">Người kiểm tra</span></th><td>{{ doc.inspectorName }}</td></tr>
+          </table>
+          <table class="print-data-table">
+            <colgroup><col class="col-seq"><col class="col-item"><col class="col-standard"><col class="col-result"></colgroup>
+            <thead><tr><th>序号<span class="vi-print-th">STT</span></th><th>检查项目<span class="vi-print-th">Hạng mục kiểm tra</span></th><th>检查标准<span class="vi-print-th">Tiêu chuẩn kiểm tra</span></th><th>查验结果<span class="vi-print-th">Kết quả kiểm tra</span></th></tr></thead>
+            <tbody>
+              <tr v-for="(item, ii) in doc.page1" :key="ii">
+                <td class="cell-center">{{ item ? (ii + 1) : '&nbsp;' }}</td>
+                <td class="cell-top">{{ item ? item.name : '' }}<span v-if="item && item.nameVi" class="vi-print">{{ item.nameVi }}</span></td>
+                <td class="cell-top">{{ item ? item.standard : '' }}<span v-if="item && item.standardVi" class="vi-print">{{ item.standardVi }}</span></td>
+                <td class="cell-top">
+                  <template v-if="item">
+                    <span v-if="item.resultClass" :class="item.resultClass">{{ item.resultLabel }}</span>
+                    <span v-if="item.resultLabelVi" class="vi-print-inline">{{ item.resultLabelVi }}</span>
+                    <div v-if="item.problem" class="problem-desc">{{ item.problem }}</div>
+                  </template>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="print-comment">
+            <div class="comment-label">查验意见：<span class="vi-print-inline">Ý kiến kiểm tra:</span></div>
+            <div class="comment-text">{{ doc.comment || '' }}</div>
+          </div>
+          <div class="print-page-filler"></div>
+          <div class="print-footer">
+            <div class="footer-signatures">
+              <div class="sig-item">
+                <span class="sig-label">查验人签字：<span class="vi-print-inline">Người kiểm tra ký tên:</span></span>
+                <span class="sig-line"></span>
+              </div>
+              <div class="sig-item">
+                <span class="sig-label">日期：<span class="vi-print-inline">Ngày:</span></span>
+                <span class="sig-line"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Page 2 -->
+      <div v-if="doc.page2.length" class="print-document">
+        <div class="print-page">
+          <div class="print-company">{{ projectName }} 查验记录表（续）<span class="vi-print">Phiếu kiểm tra (tiếp theo)</span></div>
+          <table class="print-data-table">
+            <colgroup><col class="col-seq"><col class="col-item"><col class="col-standard"><col class="col-result"></colgroup>
+            <thead><tr><th>序号<span class="vi-print-th">STT</span></th><th>检查项目<span class="vi-print-th">Hạng mục kiểm tra</span></th><th>检查标准<span class="vi-print-th">Tiêu chuẩn kiểm tra</span></th><th>查验结果<span class="vi-print-th">Kết quả kiểm tra</span></th></tr></thead>
+            <tbody>
+              <tr v-for="(item, ii) in doc.page2" :key="ii">
+                <td class="cell-center">{{ doc.start2 + ii }}</td>
+                <td class="cell-top">{{ item.name }}<span v-if="item.nameVi" class="vi-print">{{ item.nameVi }}</span></td>
+                <td class="cell-top">{{ item.standard }}<span v-if="item.standardVi" class="vi-print">{{ item.standardVi }}</span></td>
+                <td class="cell-top">
+                  <span v-if="item.resultClass" :class="item.resultClass">{{ item.resultLabel }}</span>
+                  <span v-if="item.resultLabelVi" class="vi-print-inline">{{ item.resultLabelVi }}</span>
+                  <div v-if="item.problem" class="problem-desc">{{ item.problem }}</div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div v-if="doc.photos?.length" class="print-photo-strip">
+            <div class="photo-strip-label">照片附件：<span class="vi-print-inline">Ảnh đính kèm</span></div>
+            <div class="photo-strip-items">
+              <div v-for="(p, pi) in doc.photos.slice(0, 4)" :key="pi" class="photo-strip-item">
+                <img :src="'/uploads/' + p.filename" class="print-photo-thumb" />
+                <div class="photo-strip-name">{{ p.original_name }}</div>
+              </div>
+              <div v-if="doc.photos.length > 4" class="photo-strip-more">等{{ doc.photos.length }}张照片<span class="vi-print-inline">tổng {{ doc.photos.length }} ảnh</span></div>
+            </div>
+          </div>
+          <div class="print-comment">
+            <div class="comment-label">查验意见：<span class="vi-print-inline">Ý kiến kiểm tra:</span></div>
+            <div class="comment-text"></div>
+          </div>
+          <div class="print-page-filler"></div>
+          <div class="print-footer">
+            <div class="footer-signatures">
+              <div class="sig-item">
+                <span class="sig-label">查验人签字：<span class="vi-print-inline">Người kiểm tra ký tên:</span></span>
+                <span class="sig-line"></span>
+              </div>
+              <div class="sig-item">
+                <span class="sig-label">日期：<span class="vi-print-inline">Ngày:</span></span>
+                <span class="sig-line"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Page 3 -->
+      <div v-if="doc.page3.length" class="print-document">
+        <div class="print-page">
+          <div class="print-company">{{ projectName }} 查验记录表（续二）<span class="vi-print">Phiếu kiểm tra (tiếp theo 2)</span></div>
+          <table class="print-data-table">
+            <colgroup><col class="col-seq"><col class="col-item"><col class="col-standard"><col class="col-result"></colgroup>
+            <thead><tr><th>序号<span class="vi-print-th">STT</span></th><th>检查项目<span class="vi-print-th">Hạng mục kiểm tra</span></th><th>检查标准<span class="vi-print-th">Tiêu chuẩn kiểm tra</span></th><th>查验结果<span class="vi-print-th">Kết quả kiểm tra</span></th></tr></thead>
+            <tbody>
+              <tr v-for="(item, ii) in doc.page3" :key="ii">
+                <td class="cell-center">{{ doc.start3 + ii }}</td>
+                <td class="cell-top">{{ item.name }}<span v-if="item.nameVi" class="vi-print">{{ item.nameVi }}</span></td>
+                <td class="cell-top">{{ item.standard }}<span v-if="item.standardVi" class="vi-print">{{ item.standardVi }}</span></td>
+                <td class="cell-top">
+                  <span v-if="item.resultClass" :class="item.resultClass">{{ item.resultLabel }}</span>
+                  <span v-if="item.resultLabelVi" class="vi-print-inline">{{ item.resultLabelVi }}</span>
+                  <div v-if="item.problem" class="problem-desc">{{ item.problem }}</div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="print-comment">
+            <div class="comment-label">查验意见：<span class="vi-print-inline">Ý kiến kiểm tra:</span></div>
+            <div class="comment-text"></div>
+          </div>
+          <div class="print-page-filler"></div>
+          <div class="print-footer">
+            <div class="footer-signatures">
+              <div class="sig-item">
+                <span class="sig-label">查验人签字：<span class="vi-print-inline">Người kiểm tra ký tên:</span></span>
+                <span class="sig-line"></span>
+              </div>
+              <div class="sig-item">
+                <span class="sig-label">日期：<span class="vi-print-inline">Ngày:</span></span>
+                <span class="sig-line"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import api from '../api'
 import { cleanTitle } from '../utils/title'
+import { splitItems } from '../utils/print-constants'
 import { RESULT_MAP } from '../utils/translations'
-import { buildPreviewPdf } from '../pdf-builder'
 
+const route = useRoute()
 const router = useRouter()
+const printRecords = ref([])
+const blankTemplates = ref([])
+const projectName = ref('')
 const loading = ref(true)
-const error = ref('')
-const pdfUrl = ref('')
-const pdfFrame = ref(null)
 
 function normalizeItem(item) {
   if (!item) return null
   const r = RESULT_MAP[item.result]
   return {
-    name: item.item_name || item.custom_item_name || '',
+    name: item.item_name || item.custom_item_name,
     nameVi: item.item_name_vi || item.name_vi || item.custom_item_name_vi || '',
-    standard: item.check_standard || item.custom_standard || '',
+    standard: item.check_standard || item.custom_standard,
     standardVi: item.check_standard_vi || item.standard_vi || item.custom_standard_vi || '',
-    result: item.result,
     resultLabel: r ? r.label : '—',
     resultLabelVi: r ? r.labelVi : '—',
     resultClass: item.result ? (r ? r.cls : 'result-pending') : null,
-    problem_description: item.problem_description || null,
+    problem: item.problem_description || null,
   }
 }
 
-onMounted(async () => {
-  try {
-    const recordIds = JSON.parse(localStorage.getItem('printRecords') || '[]')
-    const blankIds = JSON.parse(localStorage.getItem('printBlankTemplates') || '[]')
-    let projectName = ''
+const allDocuments = computed(() => {
+  const docs = []
 
-    // Fetch blank templates (from templates API or forms API)
-    const blankPromises = blankIds.map(async (id) => {
-      if (id.startsWith('f_')) {
-        const { data: f } = await api.get('/forms/' + id.replace('f_', ''))
-        return { ...f, _type: 'form' }
-      }
-      const { data: t } = await api.get('/templates/' + id.replace('t_', ''))
-      return { ...t, _type: 'template' }
+  for (const tpl of blankTemplates.value) {
+    const items = (tpl.items || []).map(normalizeItem)
+    const { page1, page2, page3, start2, start3 } = splitItems(items)
+    docs.push({
+      start2, start3,
+      subtitle: cleanTitle(tpl.title),
+      projectName: projectName.value,
+      dateStr: '____年____月____日',
+      locationStr: '____栋____层____号',
+      inspectorName: '____________',
+      comment: '',
+      page1, page2, page3,
     })
-
-    // Fetch records
-    const recordPromises = recordIds.map(async (id) => {
-      const { data } = await api.get('/records/' + id)
-      return data
-    })
-
-    const [loadedBlanks, loadedRecords] = await Promise.all([
-      Promise.all(blankPromises),
-      Promise.all(recordPromises),
-    ])
-
-    // Build documents array for pdf-builder
-    const documents = []
-
-    for (const b of loadedBlanks) {
-      const items = (b.items || []).map(normalizeItem).filter(Boolean)
-      documents.push({
-        title: b.title || b.form_id || '',
-        dateStr: '____年____月____日',
-        locationStr: '____栋____层____号',
-        inspectorName: '____________',
-        items,
-        hasResults: false,
-      })
-      if (b.projectId && !projectName) {
-        try {
-          const { data: p } = await api.get('/projects/' + b.projectId)
-          projectName = p.name
-        } catch (_) {}
-      }
-    }
-
-    for (const rec of loadedRecords) {
-      const items = (rec.results || rec.printItems || []).map(normalizeItem).filter(Boolean)
-      documents.push({
-        title: rec.template_title || '',
-        dateStr: rec.updated_at?.slice(0, 10) || '____年____月____日',
-        locationStr: [rec.building_name, rec.house_number, rec.location_info].filter(Boolean).join(' ') || ' ',
-        inspectorName: rec.creator_name || '____________',
-        items,
-        hasResults: true,
-        photos: rec.photos || null,
-        comment: rec.inspector_comment || '',
-      })
-      if (!projectName && rec.project_id) {
-        try {
-          const { data: p } = await api.get('/projects/' + rec.project_id)
-          projectName = p.name
-        } catch (_) {}
-      }
-    }
-
-    // Fallback: try loading any project
-    if (!projectName) {
-      try {
-        const { data: projects } = await api.get('/projects')
-        if (projects.length > 0) projectName = projects[0].name
-      } catch (_) {}
-    }
-    if (!projectName) projectName = '____________'
-
-    // Generate PDF via pdfmake (handles pagination, fonts, bilingual, repeating footer)
-    const pdfDoc = await buildPreviewPdf(documents, projectName)
-    const blob = await new Promise((resolve) => pdfDoc.getBlob(resolve))
-    pdfUrl.value = URL.createObjectURL(blob)
-  } catch (e) {
-    console.error('Print preview error:', e)
-    error.value = '生成预览失败: ' + (e.message || '未知错误')
-  } finally {
-    loading.value = false
   }
+
+  for (const rec of printRecords.value) {
+    const items = (rec.printItems || rec.results || []).map(normalizeItem)
+    const { page1, page2, page3, start2, start3 } = splitItems(items)
+    docs.push({
+      start2, start3,
+      subtitle: cleanTitle(rec.template_title),
+      projectName: projectName.value,
+      dateStr: rec.updated_at?.slice(0, 10) || '____年____月____日',
+      locationStr: [rec.building_name, rec.house_number, rec.location_info].filter(Boolean).join(' ') || ' ',
+      inspectorName: rec.creator_name || '____________',
+      comment: rec.inspector_comment || '',
+      photos: rec.photos,
+      page1, page2, page3,
+    })
+  }
+
+  return docs
 })
 
-function printPdf() {
-  if (pdfFrame.value) {
-    pdfFrame.value.contentWindow?.print()
+onMounted(async () => {
+  const recordIds = JSON.parse(localStorage.getItem('printRecords') || '[]')
+  const blankIds = JSON.parse(localStorage.getItem('printBlankTemplates') || '[]')
+
+  const blankPromises = blankIds.map(async (id) => {
+    if (id.startsWith('f_')) {
+      const { data: f } = await api.get('/forms/' + id.replace('f_', ''))
+      return { form_id: f.form_id || f.template_form_id || '', title: f.title, items: f.items || [], projectId: f.project_id, type: 'form' }
+    }
+    const { data: t } = await api.get('/templates/' + id.replace('t_', ''))
+    return { ...t, type: 'template' }
+  })
+
+  const recordPromises = recordIds.map(async (id) => {
+    const { data } = await api.get('/records/' + id)
+    return { ...data, printItems: data.results || [], projectId: data.project_id, template_form_id: data.form_id || '' }
+  })
+
+  const [loadedBlanks, loadedRecords] = await Promise.all([
+    Promise.all(blankPromises),
+    Promise.all(recordPromises)
+  ])
+
+  // Resolve project name: try blanks in parallel first, then records, then list fallback
+  if (!projectName.value) {
+    const blankProjectIds = [...new Set(loadedBlanks.map(b => b.projectId).filter(Boolean))]
+    const results = await Promise.allSettled(blankProjectIds.map(id => api.get('/projects/' + id)))
+    const found = results.find(r => r.status === 'fulfilled')
+    if (found) projectName.value = found.value.data.name
   }
-}
+
+  if (!projectName.value && loadedRecords.length > 0) {
+    try {
+      const { data: p } = await api.get('/projects/' + loadedRecords[0].project_id)
+      projectName.value = p.name
+    } catch (_) {}
+  }
+
+  if (!projectName.value) {
+    try {
+      const { data: projects } = await api.get('/projects')
+      if (projects.length > 0) projectName.value = projects[0].name
+    } catch (_) {}
+  }
+
+  if (!projectName.value) projectName.value = '____________'
+
+  // Assign once to avoid multiple computed recomputations
+  blankTemplates.value = loadedBlanks.map(b => {
+    const { type, projectId, ...rest } = b
+    return rest
+  })
+  printRecords.value = loadedRecords
+  loading.value = false
+})
 </script>
 
 <style scoped>
-.pdf-preview-frame {
+.print-document {
+  margin-bottom: 24px;
+}
+
+.print-page {
+  width: 210mm;
+  height: 297mm;
+  margin: 0 auto 16px;
+  background: #fff;
+  border: 1px solid #ccc;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.print-company {
+  text-align: center;
+  font-size: 15pt;
+  font-weight: 700;
+  padding: 6px 0;
+  background: #f0f0f0;
+  letter-spacing: 2px;
+  flex-shrink: 0;
+}
+
+.print-form-title {
+  text-align: center;
+  font-size: 10pt;
+  padding: 3px 0;
+  background: #f8f8f8;
+  color: #555;
+  flex-shrink: 0;
+}
+
+.print-info-table {
   width: 100%;
-  height: calc(100vh - 80px);
-  border: none;
-  background: #525659;
+  table-layout: fixed;
+  border-collapse: collapse;
+  flex-shrink: 0;
+}
+
+.print-info-table th,
+.print-info-table td {
+  border: 1px solid #999;
+  padding: 4px 6px;
+  font-size: 9.5pt;
+  line-height: 1.3;
+}
+
+.print-info-table th {
+  background: #f5f5f5;
+  font-weight: 600;
+  font-size: 9.5pt;
+  text-align: center;
+}
+
+.col-label { width: 18%; }
+.col-value { width: 32%; }
+
+.print-data-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  flex-shrink: 0;
+}
+
+.print-data-table th,
+.print-data-table td {
+  border: 1px solid #999;
+  padding: 4px 5px;
+  font-size: 9pt;
+  line-height: 1.35;
+  vertical-align: top;
+}
+
+.print-data-table thead th {
+  background: #f5f5f5;
+  font-weight: 600;
+  font-size: 9pt;
+  text-align: center;
+}
+
+.print-page-filler {
+  flex: 1;
+  min-height: 0;
+}
+
+.col-seq { width: 4%; }
+.col-item { width: 22%; }
+.col-standard { width: 40%; }
+.col-result { width: 34%; }
+
+.cell-center { text-align: center; vertical-align: middle; }
+.cell-top { vertical-align: top; text-align: left; }
+
+.result-pass { font-weight: 600; color: #188038; }
+.result-fail { font-weight: 600; color: #c5221f; }
+.result-skip { font-weight: 600; color: var(--text-light); }
+.result-pending { color: #999; }
+.problem-desc { font-size: 8.5pt; color: #c5221f; margin-top: 2px; line-height: 1.3; font-weight: normal; }
+
+.vi-print { display: block; font-size: 0.78em; color: #777; font-style: italic; line-height: 1.25; }
+.vi-print-inline { font-size: 0.78em; color: #777; font-style: italic; }
+.vi-print-th { display: block; font-size: 0.72em; color: #888; font-style: italic; font-weight: normal; }
+
+.print-comment {
+  flex-shrink: 0;
+  padding: 6px 14px 4px;
+}
+
+.comment-label {
+  font-size: 10pt;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.comment-text {
+  min-height: 28px;
+  font-size: 9.5pt;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  color: #333;
+}
+
+.print-footer {
+  flex-shrink: 0;
+  padding: 0 14px 10px;
+}
+
+.footer-signatures {
+  display: flex;
+  gap: 40px;
+}
+
+.sig-item {
+  flex: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.sig-label {
+  font-size: 10pt;
+  white-space: nowrap;
+}
+
+.sig-line {
+  flex: 1;
+  border-bottom: 1px solid #333;
+  min-width: 80px;
+}
+
+.print-photo-strip {
+  flex-shrink: 0;
+  padding: 6px 8px;
+  border-top: 1px solid #ccc;
+}
+
+.photo-strip-label {
+  font-size: 9pt;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #555;
+}
+
+.photo-strip-items {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.photo-strip-item {
+  text-align: center;
+  max-width: 80px;
+}
+
+.print-photo-thumb {
+  width: 72px;
+  height: 54px;
+  object-fit: cover;
+  border: 1px solid #ddd;
+  display: block;
+}
+
+.photo-strip-name {
+  font-size: 7.5pt;
+  color: #888;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 72px;
+}
+
+.photo-strip-more {
+  font-size: 8pt;
+  color: #999;
+  display: flex;
+  align-items: center;
 }
 
 @media print {
   .no-print { display: none; }
-  .pdf-preview-frame {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100vw;
-    height: 100vh;
+  html, body {
+    margin: 0;
+    padding: 0;
+  }
+  .print-document {
+    margin: 0;
+    padding: 0;
+    break-inside: avoid;
+  }
+  .print-document + .print-document {
+    break-before: page;
+    page-break-before: always;
+  }
+  .print-page {
+    width: 210mm;
+    height: 297mm;
+    margin: 0;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: none;
+  }
+  @page {
+    margin: 0;
+    size: A4;
   }
 }
 </style>
