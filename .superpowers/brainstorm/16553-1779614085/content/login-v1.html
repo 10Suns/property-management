@@ -1,0 +1,114 @@
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f5f4f1; }
+  h2 { font-size: 22px; font-weight: 600; margin-bottom: 6px; }
+  .subtitle { color: #888; font-size: 13px; margin-bottom: 24px; }
+  .section { margin-bottom: 28px; }
+  h3 { font-size: 15px; font-weight: 600; margin-bottom: 12px; color: #333; }
+  h4 { font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+  .pros-cons { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .pros, .cons { background: #fff; border: 1px solid #e0ddd6; border-radius: 10px; padding: 16px 18px; }
+  .pros { border-left: 4px solid #2d6a1e; }
+  .cons { border-right: 4px solid #d97706; }
+  .pros h4 { color: #2d6a1e; }
+  .cons h4 { color: #d97706; }
+  ul { padding-left: 18px; font-size: 13px; color: #555; line-height: 1.8; }
+  .mockup { background: #fff; border: 1px solid #e0ddd6; border-radius: 12px; overflow: hidden; }
+  .mockup-header { background: #f9f8f6; padding: 8px 14px; font-size: 11px; color: #999; border-bottom: 1px solid #e0ddd6; display: flex; gap: 6px; }
+  .mockup-header span { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .mockup-body { padding: 24px; display: flex; align-items: center; justify-content: center; min-height: 360px; background: #f5f4f1; }
+
+  /* Login card */
+  .login-card {
+    background: #fff; border-radius: 10px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+    padding: 44px 36px; width: 320px;
+    border: 1px solid #e0ddd6;
+  }
+  .login-brand { text-align: center; margin-bottom: 32px; }
+  .login-brand h1 {
+    font-family: 'Noto Serif SC', 'Songti SC', serif;
+    font-size: 24px; font-weight: 600; letter-spacing: 1.5px;
+    color: #333; margin-bottom: 6px;
+  }
+  .login-subtitle {
+    font-size: 10px; color: #aaa;
+    text-transform: uppercase; letter-spacing: 0.8px;
+  }
+  .field-group { margin-bottom: 16px; }
+  .field-label { font-size: 12px; color: #888; margin-bottom: 4px; display: block; }
+  .underline-input {
+    width: 100%; padding: 10px 0; border: none;
+    border-bottom: 1px solid #e0ddd6;
+    font-size: 14px; color: #333; background: transparent; outline: none;
+  }
+  .login-btn2 {
+    width: 100%; padding: 10px; border: none; border-radius: 6px;
+    background: #2c3e50; color: #fff; font-size: 14px; cursor: pointer;
+    margin-top: 8px; font-family: inherit;
+  }
+
+  .option-row { display: flex; gap: 16px; }
+  .option-card {
+    flex: 1; background: #fff; border: 1px solid #e0ddd6; border-radius: 10px;
+    padding: 16px; cursor: pointer; transition: border-color 0.2s;
+  }
+  .option-card:hover { border-color: #2c3e50; }
+  .option-card .letter { display: inline-block; width: 22px; height: 22px; border-radius: 50%; background: #2c3e50; color: #fff; text-align: center; line-height: 22px; font-size: 12px; font-weight: 600; margin-right: 8px; }
+  .option-card .title { font-weight: 600; font-size: 14px; display: inline; }
+  .option-card .desc { font-size: 12px; color: #888; margin-top: 6px; }
+</style>
+
+<h2>1. 登录页</h2>
+<p class="subtitle">Login.vue</p>
+
+<div class="section">
+  <h3>当前设计预览</h3>
+  <div class="mockup">
+    <div class="mockup-header">
+      <span style="background:#ee5a5a;"></span>
+      <span style="background:#f5bd4f;"></span>
+      <span style="background:#61c454;"></span>
+      登录页
+    </div>
+    <div class="mockup-body">
+      <div class="login-card">
+        <div class="login-brand">
+          <h1>物业承接查验</h1>
+          <p class="login-subtitle">Property Inspection System</p>
+        </div>
+        <div class="field-group">
+          <label class="field-label">用户名</label>
+          <input class="underline-input" placeholder="请输入用户名" />
+        </div>
+        <div class="field-group">
+          <label class="field-label">密码</label>
+          <input class="underline-input" type="password" placeholder="请输入密码" />
+        </div>
+        <button class="login-btn2">登录</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>确认要点</h3>
+  <div class="pros-cons">
+    <div class="pros"><h4>当前设计</h4>
+      <ul>
+        <li>极简居中卡片，底部线输入框</li>
+        <li>中文品牌名 + 英文副标题</li>
+        <li>深色登录按钮，圆角 6px</li>
+        <li>无背景图，纯色底色</li>
+      </ul>
+    </div>
+    <div class="cons"><h4>可调整的</h4>
+      <ul>
+        <li>品牌区域是否需要 Logo 图标？</li>
+        <li>是否需要背景图片或渐变色？</li>
+        <li>输入框风格是否改用边框式？</li>
+        <li>是否需要"记住密码"功能？</li>
+      </ul>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,151 @@
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f5f4f1; color: #333; }
+  h2 { font-size: 22px; font-weight: 600; margin-bottom: 6px; }
+  .subtitle { color: #888; font-size: 13px; margin-bottom: 24px; }
+  .section { margin-bottom: 24px; }
+  h3 { font-size: 15px; font-weight: 600; margin-bottom: 10px; color: #333; }
+  .pros-cons { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .pros, .cons { background: #fff; border: 1px solid #e0ddd6; border-radius: 10px; padding: 16px 18px; }
+  .pros { border-left: 4px solid #2d6a1e; }
+  .cons { border-right: 4px solid #d97706; }
+  .pros h4 { color: #2d6a1e; font-size: 13px; margin-bottom: 8px; }
+  .cons h4 { color: #d97706; font-size: 13px; margin-bottom: 8px; }
+  ul { padding-left: 18px; font-size: 13px; color: #555; line-height: 1.8; }
+
+  .mockup { background: #fff; border: 1px solid #e0ddd6; border-radius: 12px; overflow: hidden; }
+  .mockup-header { background: #f9f8f6; padding: 7px 12px; font-size: 10px; color: #999; border-bottom: 1px solid #e0ddd6; display: flex; gap: 5px; align-items: center; }
+  .mockup-header span { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .mockup-body { padding: 20px; background: #f5f4f1; }
+
+  .page-title { font-size: 18px; font-weight: 600; margin-bottom: 16px; }
+
+  .filter-bar { background: #fff; border: 1px solid #e0ddd6; border-radius: 8px; padding: 10px 16px; margin-bottom: 14px; display: flex; gap: 10px; align-items: center; font-size: 12px; flex-wrap: wrap; }
+  .filter-bar select { padding: 4px 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 12px; font-family: inherit; }
+  .filter-bar button { padding: 5px 12px; border: 1px solid #ddd; border-radius: 5px; background: #fff; font-size: 11px; cursor: pointer; font-family: inherit; }
+  .filter-bar button.active { background: #2c3e50; color: #fff; border-color: #2c3e50; }
+
+  .stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 14px; }
+  .stat-card { background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,.05); padding: 18px 20px; text-align: center; border: 1px solid #e0ddd6; }
+  .stat-value { font-family: 'Noto Serif SC', serif; font-size: 28px; font-weight: 600; color: #2c3e50; }
+  .stat-label { font-size: 11px; color: #aaa; margin-top: 4px; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .card2 { background: #fff; border: 1px solid #e0ddd6; border-radius: 8px; padding: 14px 16px; }
+  .card-title { font-size: 13px; font-weight: 600; margin-bottom: 10px; }
+  table { width: 100%; font-size: 11px; border-collapse: collapse; }
+  th { text-align: left; padding: 6px 8px; border-bottom: 1px solid #e0ddd6; color: #999; font-weight: 500; }
+  td { padding: 6px 8px; border-bottom: 1px solid #f0efe9; }
+  .text-center { text-align: center; }
+
+  .chart-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .chart-label { width: 50px; font-size: 10px; color: #999; text-align: right; }
+  .chart-bars { flex:1; display:flex; height:16px; border-radius:2px; overflow:hidden; background:#ede9e0; }
+  .chart-bar-done { background:#2c3e50; }
+  .chart-bar-pending { background:#c0392b; }
+  .chart-num { width:22px; font-size:10px; color:#999; }
+  .chart-legend { display:flex; gap:14px; margin-top:6px; font-size:10px; color:#999; }
+  .chart-dot { display:inline-block; width:8px; height:8px; border-radius:2px; margin-right:3px; }
+
+  .list-item { display:flex; align-items:center; padding:8px 0; border-bottom:1px solid #f0efe9; cursor:pointer; font-size:12px; }
+  .list-item:last-child { border-bottom:none; }
+  .badge { display:inline-block; padding:2px 8px; border-radius:4px; font-size:10px; font-weight:500; }
+  .badge-green { background:#d4edda; color:#2d6a1e; }
+  .badge-red { background:#fdd; color:#b32d2d; }
+  .badge-blue { background:#d6eaf8; color:#1a5276; }
+  .badge-gray { background:#eae8e2; color:#7d7a6e; }
+  .badge-navy { background:#576574; color:#fff; border-radius:4px; padding:2px 8px; font-size:10px; }
+
+  .option-row { display:flex; gap:12px; }
+  .option-card { flex:1; background:#fff; border:1px solid #e0ddd6; border-radius:10px; padding:14px; cursor:pointer; }
+  .option-card:hover { border-color:#2c3e50; }
+  .option-card .letter { display:inline-block; width:22px; height:22px; border-radius:50%; background:#2c3e50; color:#fff; text-align:center; line-height:22px; font-size:12px; font-weight:600; margin-right:8px; }
+  .option-card .title { font-weight:600; font-size:14px; display:inline; }
+  .option-card .desc { font-size:12px; color:#888; margin-top:6px; }
+</style>
+
+<h2>2. 工作台 Dashboard</h2>
+<p class="subtitle">ProjectDetail.vue 仪表盘标签页</p>
+
+<div class="section">
+  <h3>当前设计预览</h3>
+  <div class="mockup">
+    <div class="mockup-header"><span style="background:#ee5a5a;"></span><span style="background:#f5bd4f;"></span><span style="background:#61c454;"></span>项目仪表盘</div>
+    <div class="mockup-body">
+      <div class="page-title">项目仪表盘</div>
+
+      <div class="filter-bar">
+        <span>统计范围：</span>
+        <select><option>2026年5月</option></select>
+        <span>至</span>
+        <select><option>2026年5月</option></select>
+        <button>近3月</button>
+        <button>近6月</button>
+        <button class="active">近1年</button>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-value">42</div><div class="stat-label">总记录数</div></div>
+        <div class="stat-card"><div class="stat-value" style="color:#c0392b;">8</div><div class="stat-label">不合格项</div></div>
+        <div class="stat-card"><div class="stat-value" style="color:#2d6a1e;">30</div><div class="stat-label">已完成</div></div>
+        <div class="stat-card"><div class="stat-value">12</div><div class="stat-label">待处理</div></div>
+      </div>
+
+      <div class="card2" style="margin-bottom:14px;">
+        <div class="card-title">月度趋势</div>
+        <div class="chart-row"><span class="chart-label">2026-01</span><div class="chart-bars"><div class="chart-bar-done" style="width:60%"></div><div class="chart-bar-pending" style="width:20%"></div></div><span class="chart-num">8</span></div>
+        <div class="chart-row"><span class="chart-label">2026-02</span><div class="chart-bars"><div class="chart-bar-done" style="width:40%"></div><div class="chart-bar-pending" style="width:15%"></div></div><span class="chart-num">5</span></div>
+        <div class="chart-row"><span class="chart-label">2026-03</span><div class="chart-bars"><div class="chart-bar-done" style="width:70%"></div><div class="chart-bar-pending" style="width:30%"></div></div><span class="chart-num">10</span></div>
+        <div class="chart-row"><span class="chart-label">2026-04</span><div class="chart-bars"><div class="chart-bar-done" style="width:50%"></div><div class="chart-bar-pending" style="width:20%"></div></div><span class="chart-num">7</span></div>
+        <div class="chart-row"><span class="chart-label">2026-05</span><div class="chart-bars"><div class="chart-bar-done" style="width:80%"></div><div class="chart-bar-pending" style="width:40%"></div></div><span class="chart-num">12</span></div>
+        <div class="chart-legend"><span><span class="chart-dot" style="background:#2c3e50"></span>已完成</span><span><span class="chart-dot" style="background:#c0392b"></span>待处理</span></div>
+      </div>
+
+      <div class="two-col">
+        <div class="card2">
+          <div class="card-title">按模板统计</div>
+          <table><thead><tr><th>模板</th><th class="text-center">总数</th><th class="text-center">已完成</th><th class="text-center">完成率</th></tr></thead>
+          <tbody><tr><td>变配电室查验单</td><td class="text-center">12</td><td class="text-center">8</td><td class="text-center">67%</td></tr>
+          <tr><td>消防设施验收单</td><td class="text-center">8</td><td class="text-center">6</td><td class="text-center">75%</td></tr>
+          <tr><td>电梯验收单</td><td class="text-center">5</td><td class="text-center">5</td><td class="text-center">100%</td></tr></tbody></table>
+        </div>
+        <div class="card2">
+          <div class="card-title">按员工统计</div>
+          <table><thead><tr><th>员工</th><th class="text-center">总数</th><th class="text-center">已完成</th><th class="text-center">完成率</th></tr></thead>
+          <tbody><tr><td>张三 (zhangsan)</td><td class="text-center">18</td><td class="text-center">14</td><td class="text-center">78%</td></tr>
+          <tr><td>李四 (lisi)</td><td class="text-center">12</td><td class="text-center">10</td><td class="text-center">83%</td></tr>
+          <tr><td>王五 (wangwu)</td><td class="text-center">8</td><td class="text-center">5</td><td class="text-center">63%</td></tr></tbody></table>
+        </div>
+      </div>
+
+      <div class="card2">
+        <div class="card-title">最近提交的记录</div>
+        <div class="list-item"><span style="flex:1;font-weight:500;">变配电室查验单</span><span style="color:#999;font-size:11px;">张三 · 1#配电房 · 2026-05-20</span><span class="badge badge-green">已完成</span></div>
+        <div class="list-item"><span style="flex:1;font-weight:500;">消防设施验收单</span><span style="color:#999;font-size:11px;">李四 · 2#楼 · 2026-05-19</span><span class="badge badge-blue">查验中</span></div>
+        <div class="list-item"><span style="flex:1;font-weight:500;">电梯验收单</span><span style="color:#999;font-size:11px;">王五 · 3#楼 · 2026-05-17</span><span class="badge badge-gray">待查验</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>确认要点</h3>
+  <div class="pros-cons">
+    <div class="pros"><h4>当前设计</h4>
+      <ul>
+        <li>4 张统计卡片 + 月度柱状图</li>
+        <li>左右双表格（按模板 / 按员工）</li>
+        <li>最近记录列表</li>
+        <li>时间范围选择器</li>
+      </ul>
+    </div>
+    <div class="cons"><h4>可调整的</h4>
+      <ul>
+        <li>标题"项目仪表盘"是否改名？</li>
+        <li>统计卡是否增加图标？</li>
+        <li>是否需要饼图或其他图表？</li>
+        <li>布局是否调整？</li>
+      </ul>
+    </div>
+  </div>
+</div>

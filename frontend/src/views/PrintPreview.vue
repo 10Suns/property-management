@@ -11,6 +11,15 @@
     <div v-if="loading" class="empty no-print">加载中...</div>
 
     <template v-for="(doc, di) in allDocuments" :key="di">
+      <!-- Overflow warning (screen only, hidden in print) -->
+      <div v-if="doc.overflowPages?.length" class="overflow-warning no-print">
+        <span class="warning-icon">⚠</span>
+        以下页面内容可能超出打印区域：
+        <span v-for="(op, oi) in doc.overflowPages" :key="oi">
+          第{{ op.page }}页（估算 {{ op.estimated }}mm / 可用 {{ op.available }}mm，超出 {{ op.overflow }}mm）
+        </span>
+      </div>
+
       <!-- Page 1 -->
       <div class="print-document">
         <div class="print-page">
@@ -157,7 +166,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import api from '../api'
 import { cleanTitle } from '../utils/title'
-import { splitItems } from '../utils/print-constants'
+import { splitItems, PAGE_HEIGHTS_MM } from '../utils/print-constants'
 import { RESULT_MAP } from '../utils/translations'
 
 const route = useRoute()
@@ -182,12 +191,24 @@ function normalizeItem(item) {
   }
 }
 
+function detectOverflow(pageHeights) {
+  const overflows = []
+  pageHeights.forEach((h, i) => {
+    const maxH = PAGE_HEIGHTS_MM[i]
+    if (h > maxH) {
+      overflows.push({ page: i + 1, estimated: Math.round(h), available: maxH, overflow: Math.round(h - maxH) })
+    }
+  })
+  return overflows
+}
+
 const allDocuments = computed(() => {
   const docs = []
 
   for (const tpl of blankTemplates.value) {
     const items = (tpl.items || []).map(normalizeItem)
-    const { page1, page2, page3, start2, start3 } = splitItems(items)
+    const { page1, page2, page3, start2, start3, pageHeights } = splitItems(items)
+    const overflowPages = detectOverflow(pageHeights)
     docs.push({
       start2, start3,
       subtitle: cleanTitle(tpl.title),
@@ -197,12 +218,14 @@ const allDocuments = computed(() => {
       inspectorName: '____________',
       comment: '',
       page1, page2, page3,
+      overflowPages,
     })
   }
 
   for (const rec of printRecords.value) {
     const items = (rec.printItems || rec.results || []).map(normalizeItem)
-    const { page1, page2, page3, start2, start3 } = splitItems(items)
+    const { page1, page2, page3, start2, start3, pageHeights } = splitItems(items)
+    const overflowPages = detectOverflow(pageHeights)
     docs.push({
       start2, start3,
       subtitle: cleanTitle(rec.template_title),
@@ -213,6 +236,7 @@ const allDocuments = computed(() => {
       comment: rec.inspector_comment || '',
       photos: rec.photos,
       page1, page2, page3,
+      overflowPages,
     })
   }
 
@@ -475,6 +499,24 @@ onMounted(async () => {
   color: #999;
   display: flex;
   align-items: center;
+}
+
+.overflow-warning {
+  width: 210mm;
+  margin: 0 auto 8px;
+  padding: 8px 14px;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 4px;
+  font-size: 9pt;
+  color: #856404;
+  line-height: 1.5;
+}
+
+.warning-icon {
+  font-size: 12pt;
+  margin-right: 4px;
+  vertical-align: middle;
 }
 
 @media print {

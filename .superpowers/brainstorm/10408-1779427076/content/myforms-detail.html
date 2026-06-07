@@ -1,0 +1,82 @@
+<h2>页面 1：我的表单</h2>
+<p class="subtitle">已有表单列表 · 创建空白表单 · 三项操作</p>
+
+<style>
+.pg { background:#f5f7fa;padding:20px;border-radius:12px;border:1px solid #dadce0 }
+.pg-head { display:flex;justify-content:space-between;align-items:center;margin-bottom:6px }
+.pg-desc { font-size:12px;color:#80868b;margin-bottom:20px }
+.pg-card { background:#fff;border-radius:8px;padding:16px 20px;margin-bottom:8px;border:1px solid #dadce0;display:flex;justify-content:space-between;align-items:center }
+.pg-card:hover { border-color:#1a73e8 }
+.pg-empty { border:1px dashed #dadce0;border-radius:8px;padding:40px;text-align:center;color:#80868b }
+</style>
+
+<div class="pg">
+  <div class="pg-head">
+    <span style="font-weight:600;font-size:18px">📋 我的表单</span>
+    <span style="background:#1a73e8;color:#fff;padding:7px 16px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer">+ 创建空白表单</span>
+  </div>
+  <div class="pg-desc">从左侧「📁 参考表单」选择模板一键创建，或点击右上角创建空白表单。完成后打印空白表带去现场。</div>
+
+  <!-- Has forms state -->
+  <div class="pg-card">
+    <div style="flex:1;min-width:0">
+      <div style="font-weight:600;font-size:14px;margin-bottom:3px">变配电室查验单 - admin</div>
+      <div style="display:flex;gap:12px;font-size:11px;color:#5f6368">
+        <span style="background:#e6f4ea;color:#137333;padding:1px 7px;border-radius:10px;font-size:10px;font-weight:600">A1</span>
+        <span>13 项</span>
+        <span>2025-06-15</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;flex-shrink:0;margin-left:16px">
+      <span style="background:#1a73e8;color:#fff;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer">🖨 打印空白表</span>
+      <span style="color:#1a73e8;border:1px solid #1a73e8;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer">编辑</span>
+      <span style="color:#d93025;border:1px solid #d93025;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer">删除</span>
+    </div>
+  </div>
+
+  <div class="pg-card">
+    <div style="flex:1;min-width:0">
+      <div style="font-weight:600;font-size:14px;margin-bottom:3px">发电机房查验单 - admin</div>
+      <div style="display:flex;gap:12px;font-size:11px;color:#5f6368">
+        <span style="background:#e6f4ea;color:#137333;padding:1px 7px;border-radius:10px;font-size:10px;font-weight:600">A2</span>
+        <span>12 项</span>
+        <span>2025-06-16</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;flex-shrink:0;margin-left:16px">
+      <span style="background:#1a73e8;color:#fff;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer">🖨 打印空白表</span>
+      <span style="color:#1a73e8;border:1px solid #1a73e8;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer">编辑</span>
+      <span style="color:#d93025;border:1px solid #d93025;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer">删除</span>
+    </div>
+  </div>
+
+  <!-- Empty state -->
+  <div style="margin-top:20px;font-size:13px;font-weight:600;color:#5f6368;margin-bottom:8px">空状态</div>
+  <div class="pg-empty">
+    <div style="font-size:40px;margin-bottom:12px">📋</div>
+    <div style="font-weight:600;font-size:14px;margin-bottom:6px">还没有表单</div>
+    <div style="font-size:12px;line-height:1.8">去左侧「📁 参考表单」浏览 28 套系统模板<br>选择需要的模板，一键创建为你的表单<br>或点击右上角「+ 创建空白表单」从零开始</div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:20px">
+  <h3>确认要点</h3>
+  <div class="pros-cons">
+    <div class="pros"><h4>设计</h4>
+      <ul>
+        <li>顶部标题 + 创建空白表单按钮</li>
+        <li>引导说明：去参考表单选模板</li>
+        <li>表单卡片：标题、编号标签、项数、日期</li>
+        <li>三个操作：打印空白表 / 编辑 / 删除</li>
+        <li>空状态：引导用户去参考表单</li>
+      </ul>
+    </div>
+    <div class="cons"><h4>需要确认</h4>
+      <ul>
+        <li>卡片信息够不够？（需要显示更多字段吗）</li>
+        <li>三个操作按钮顺序和样式 OK？</li>
+        <li>删除需要二次确认弹窗吗？</li>
+      </ul>
+    </div>
+  </div>
+</div>

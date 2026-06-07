@@ -1,0 +1,93 @@
+<h2>关于「我的表单」页面职责的确认</h2>
+<p class="subtitle">你决定：所有信息录入统一从「检查记录」进入</p>
+
+<div class="split">
+  <div class="mockup">
+    <div class="mockup-header">📋 我的表单 (ProjectDetail) — 只做表 & 打印</div>
+    <div class="mockup-body" style="font-size:14px;line-height:2.2">
+      <div style="background:#d4edda;padding:8px 12px;border-radius:6px;margin-bottom:8px">
+        ✅ 从参考表单创建<br>
+        <span style="font-size:12px;color:#666">点「+ 创建」→ 自动变为我的表单</span>
+      </div>
+      <div style="background:#d4edda;padding:8px 12px;border-radius:6px;margin-bottom:8px">
+        ✅ 创建空白表单<br>
+        <span style="font-size:12px;color:#666">从零自定义检查项</span>
+      </div>
+      <div style="background:#d4edda;padding:8px 12px;border-radius:6px;margin-bottom:8px">
+        ✅ 编辑表单<br>
+        <span style="font-size:12px;color:#666">增删改检查项</span>
+      </div>
+      <div style="background:#d4edda;padding:8px 12px;border-radius:6px;margin-bottom:8px">
+        ✅ 打印空白表<br>
+        <span style="font-size:12px;color:#666">带去现场检查</span>
+      </div>
+      <div style="background:#f8d7da;padding:8px 12px;border-radius:6px">
+        ❌ 不提供「信息录入」入口<br>
+        <span style="font-size:12px;color:#721c24">录入统一走左侧「检查记录」</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup">
+    <div class="mockup-header">✅ 检查记录 (RecordList) — 统一录入入口</div>
+    <div class="mockup-body" style="font-size:14px;line-height:2.2">
+      <div style="background:#d4edda;padding:8px 12px;border-radius:6px;margin-bottom:8px">
+        ✅ 「+ 新增记录」→ 弹窗列出「我的表单」<br>
+        <span style="font-size:12px;color:#666">只能从已保存的表单中选</span>
+      </div>
+      <div style="background:#d4edda;padding:8px 12px;border-radius:6px;margin-bottom:8px">
+        ✅ 选表单 → 直接进入录入模式<br>
+        <span style="font-size:12px;color:#666">不重复创建表单，检查项锁定</span>
+      </div>
+      <div style="background:#d4edda;padding:8px 12px;border-radius:6px;margin-bottom:8px">
+        ✅ 点击已有记录 → 继续录入<br>
+        <span style="font-size:12px;color:#666">之前没做完的接着做</span>
+      </div>
+      <div style="background:#d4edda;padding:8px 12px;border-radius:6px">
+        ✅ 录入完成后 → 勾选打印<br>
+        <span style="font-size:12px;color:#666">打印存档</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h2>还需要确认 2 个问题</h2>
+
+  <div class="options">
+    <div class="option" data-choice="remove_info_entry_btn" onclick="toggleSelect(this)">
+      <div class="letter">A</div>
+      <div class="content">
+        <h3>FormEditor 里的「信息录入」按钮应该移除</h3>
+        <p>既然所有录入都从「检查记录」进，表单编辑页就不需要「信息录入」按钮了，只保留「打印空白表」</p>
+      </div>
+    </div>
+    <div class="option" data-choice="keep_both" onclick="toggleSelect(this)">
+      <div class="letter">B</div>
+      <div class="content">
+        <h3>保留「信息录入」按钮作为快捷入口</h3>
+        <p>编辑完表单后可以直接开始检查，不用跳回检查记录页再选</p>
+      </div>
+    </div>
+  </div>
+
+  <h2 style="margin-top:24px">关于「我的表单」已有记录怎么办？</h2>
+  <p class="subtitle">如果用户之前已经有了一些检查记录，表单和记录的关系怎么处理？</p>
+
+  <div class="options">
+    <div class="option" data-choice="no_break" onclick="toggleSelect(this)">
+      <div class="letter">C</div>
+      <div class="content">
+        <h3>不影响已有记录，只改后续入口</h3>
+        <p>老记录保持不变，只是从现在开始，新建记录必须从「检查记录」页进</p>
+      </div>
+    </div>
+    <div class="option" data-choice="migrate" onclick="toggleSelect(this)">
+      <div class="letter">D</div>
+      <div class="content">
+        <h3>需要考虑数据迁移</h3>
+        <p>对遗留数据有特殊处理要求</p>
+      </div>
+    </div>
+  </div>
+</div>

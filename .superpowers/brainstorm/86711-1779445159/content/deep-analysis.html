@@ -1,0 +1,140 @@
+<h2>深入分析：业务逻辑的线性与冲突</h2>
+<p class="subtitle">检查后端数据模型后发现 3 个潜在问题</p>
+
+<div class="section">
+  <h3>数据关系：一个表单 → 多条记录</h3>
+  <div style="background:#e8f0fe;padding:16px;border-radius:8px;margin-bottom:16px">
+    <pre style="margin:0;font-size:13px;line-height:1.8">
+表单 D001（电梯查验）
+  ├─ 记录 #1：1栋 101室  2024-01-15  ✅ 合格
+  ├─ 记录 #2：1栋 102室  2024-01-15  ⚠️ 2项不合格
+  ├─ 记录 #3：2栋 201室  2024-01-16  ✅ 合格
+  └─ 记录 #4：1栋 101室  2024-02-01  ✅ 复验合格  ← 和记录#1同一位置!
+    </pre>
+  </div>
+  <p style="font-size:13px;color:#666">一个表单检查多处位置是正常的。但<u>同一位置被同一表单检查多次</u>（如记录#1和#4），目前系统<b>没有任何拦截</b>，会无限制创建重复记录。</p>
+</div>
+
+<div class="section">
+  <h3>🔴 问题 A：无重复记录拦截</h3>
+  <div style="background:#fff3cd;padding:12px;border-radius:8px;border-left:4px solid #ffc107">
+    <p style="margin:0;font-size:13px"><b>数据库层面：</b>inspection_records 表<b>没有唯一约束</b>。同一个 form + 同一个 building + 同一个 house 可以创建无限条记录。</p>
+    <p style="margin:0;font-size:13px;margin-top:8px"><b>风险：</b>用户可能不小心对同一位置重复录入，数据混乱。</p>
+  </div>
+</div>
+
+<div class="section">
+  <h3>🔴 问题 B：修改表单会影响已有记录的显示</h3>
+  <div style="background:#fff3cd;padding:12px;border-radius:8px;border-left:4px solid #ffc107">
+    <p style="margin:0;font-size:13px"><b>当前机制：</b>记录的检查项名称是通过外键 JOIN 到表单实时查询的，<b>不是快照</b>。</p>
+    <p style="margin:0;font-size:13px;margin-top:8px"><b>举例：</b></p>
+    <div style="background:#f8d7da;padding:8px;border-radius:4px;margin-top:8px;font-size:12px">
+      1. 表单 D001 第5项叫「电梯门锁装置」→ 创建记录，录入结果<br>
+      2. 后来编辑表单，把第5项改成「电梯门锁安全装置」<br>
+      3. 回看老记录 → 显示的是「电梯门锁安全装置」（因为实时JOIN查询）<br>
+      <b>→ 历史记录被改了！不符合审计要求</b>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>🔴 问题 C：复验场景怎么处理？</h3>
+  <div style="background:#fff3cd;padding:12px;border-radius:8px;border-left:4px solid #ffc107">
+    <p style="margin:0;font-size:13px">如果第一次检查发现不合格项，维修后需要复验：</p>
+    <ul style="font-size:13px;margin:8px 0 0 0">
+      <li>方案1：在原记录上修改结果（覆盖历史，不符合审计）</li>
+      <li>方案2：新建一条记录（目前可行，但没有标记"这是复验"）</li>
+      <li>方案3：在原记录上追加复验结果（需要新功能）</li>
+    </ul>
+  </div>
+</div>
+
+<hr style="border-color:#ddd;margin:20px 0">
+
+<div class="section">
+  <h2>需要你决策的 3 个问题</h2>
+</div>
+
+<div class="section">
+  <h3 style="margin-bottom:4px">Q1：同一位置能否用同一表单多次检查？</h3>
+  <p class="subtitle" style="margin-top:0">比如 1栋101室 + D001电梯表单，检查了一次后还能不能再建？</p>
+  <div class="options">
+    <div class="option" data-choice="allow_dup" onclick="toggleSelect(this)">
+      <div class="letter">A</div>
+      <div class="content">
+        <h3>允许重复，不拦截</h3>
+        <p>复验场景需要新建记录，由操作人员自己判断。保持灵活性。</p>
+      </div>
+    </div>
+    <div class="option" data-choice="warn_dup" onclick="toggleSelect(this)">
+      <div class="letter">B</div>
+      <div class="content">
+        <h3>弹窗提示，但允许继续</h3>
+        <p>"该位置已有检查记录（2024-01-15，查验人张三），是否创建新记录？"</p>
+      </div>
+    </div>
+    <div class="option" data-choice="block_dup" onclick="toggleSelect(this)">
+      <div class="letter">C</div>
+      <div class="content">
+        <h3>禁止重复，强制在原记录上修改</h3>
+        <p>同一表单+同一位置只能有一条记录，复验直接改原记录</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3 style="margin-bottom:4px">Q2：编辑表单后，已有记录显示什么？</h3>
+  <p class="subtitle" style="margin-top:0">改了表单的检查项名称或增删项目，老记录怎么显示？</p>
+  <div class="options">
+    <div class="option" data-choice="snapshot" onclick="toggleSelect(this)">
+      <div class="letter">A</div>
+      <div class="content">
+        <h3>记录创建时保存快照，不受后续表单修改影响</h3>
+        <p>记录创建时把检查项名称固化，之后改表单不影响老记录（推荐，符合审计）</p>
+      </div>
+    </div>
+    <div class="option" data-choice="keep_ref" onclick="toggleSelect(this)">
+      <div class="letter">B</div>
+      <div class="content">
+        <h3>保持现状，实时引用表单最新值</h3>
+        <p>改表单后老记录跟着变。不推荐，但实现简单。</p>
+      </div>
+    </div>
+    <div class="option" data-choice="lock_form" onclick="toggleSelect(this)">
+      <div class="letter">C</div>
+      <div class="content">
+        <h3>一旦有记录产生，表单锁定不可编辑</h3>
+        <p>只要有用这个表单创建的记录，表单就不能再改。想改得复制一份新表单。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3 style="margin-bottom:4px">Q3：复验（不合格项整改后重新检查）怎么处理？</h3>
+  <p class="subtitle" style="margin-top:0">第一次检查2项不合格 → 维修 → 再次检查这2项</p>
+  <div class="options">
+    <div class="option" data-choice="new_record" onclick="toggleSelect(this)">
+      <div class="letter">A</div>
+      <div class="content">
+        <h3>新建整条记录</h3>
+        <p>重新检查全部项目，生成新记录。旧记录保留作为历史。</p>
+      </div>
+    </div>
+    <div class="option" data-choice="update_existing" onclick="toggleSelect(this)">
+      <div class="letter">B</div>
+      <div class="content">
+        <h3>在原记录上追加复验结果</h3>
+        <p>不新建记录，在原记录的不合格项上加"复验结果"字段。（改动大）</p>
+      </div>
+    </div>
+    <div class="option" data-choice="simple_now" onclick="toggleSelect(this)">
+      <div class="letter">C</div>
+      <div class="content">
+        <h3>先保持简单，直接修改原记录</h3>
+        <p>现阶段不需要复验流程，检查员直接改结果就行。后续再考虑。</p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,36 @@
+{
+  "timestamp": "2026-05-31T14:04:58.559Z",
+  "scenario": "bilingual",
+  "targetForms": [
+    "B6",
+    "D1"
+  ],
+  "forms": [
+    {
+      "form": "B6",
+      "title": "给排水外网及消防管网查验单",
+      "itemCount": 11,
+      "status": "PASS",
+      "pages": 2,
+      "totalRows": 11,
+      "seqOk": true,
+      "hasOverflow": false,
+      "hasMissingFooter": false,
+      "hasViContent": true,
+      "issues": []
+    },
+    {
+      "form": "D1",
+      "title": "技术资料移交清单",
+      "itemCount": 33,
+      "status": "PASS",
+      "pages": 3,
+      "totalRows": 33,
+      "seqOk": true,
+      "hasOverflow": false,
+      "hasMissingFooter": false,
+      "hasViContent": true,
+      "issues": []
+    }
+  ]
+}

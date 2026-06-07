@@ -1,0 +1,70 @@
+<h2>当前系统架构</h2>
+<p class="subtitle">物业承接查验系统 — 本地单机运行</p>
+
+<div class="section">
+  <h3>现状</h3>
+  <div class="mockup">
+    <div class="mockup-header">当前技术栈</div>
+    <div class="mockup-body" style="font-size:13px;line-height:1.8">
+      <div style="display:flex;gap:16px;margin-bottom:12px">
+        <div style="flex:1;background:#f0f4ff;padding:12px;border-radius:8px">
+          <strong>🖥 前端</strong><br>
+          Vue 3 + Vite<br>
+          Hash 路由<br>
+          SPA 单页应用<br>
+          端口 5173 (dev)
+        </div>
+        <div style="flex:1;background:#f5f0ff;padding:12px;border-radius:8px">
+          <strong>⚙️ 后端</strong><br>
+          Express.js<br>
+          better-sqlite3<br>
+          JWT 认证<br>
+          端口 3002
+        </div>
+        <div style="flex:1;background:#f0fff4;padding:12px;border-radius:8px">
+          <strong>💾 数据库</strong><br>
+          SQLite 单文件<br>
+          data.db (~500KB)<br>
+          无需外部服务<br>
+        </div>
+      </div>
+      <div style="text-align:center;color:var(--text-secondary);padding:8px;background:#fff3cd;border-radius:6px">
+        ⚠️ 目前只能本机 localhost 访问，其他人无法使用
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>我们要讨论的两个方向</h3>
+  <div class="split">
+    <div class="mockup">
+      <div class="mockup-header">🚀 方向一：上云</div>
+      <div class="mockup-body" style="font-size:13px;line-height:1.8">
+        <strong>目标：</strong>部署到腾讯云，其他人可以通过公网访问和测试<br><br>
+        <strong>关键问题：</strong><br>
+        • 选什么云产品？（轻量服务器 / CVM / 云函数）<br>
+        • SQLite 怎么处理？（继续保持 / 换 MySQL）<br>
+        • 域名和 HTTPS 怎么配？<br>
+        • 前后端怎么部署？<br>
+        • 大概花多少钱？
+      </div>
+    </div>
+    <div class="mockup">
+      <div class="mockup-header">📱 方向二：小程序</div>
+      <div class="mockup-body" style="font-size:13px;line-height:1.8">
+        <strong>目标：</strong>未来做成微信小程序，手机端便捷使用<br><br>
+        <strong>关键问题：</strong><br>
+        • 小程序只能用 HTTPS API，不能直连 SQLite<br>
+        • 后端需要先上云才能对接小程序<br>
+        • 前端需要重写（Vue → 小程序框架）<br>
+        • 哪些功能适合放小程序里？<br>
+        • 小程序审核要注意什么？
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="text-align:center;padding:16px;background:#f8f9fa;border-radius:8px">
+  <p style="margin:0;font-size:14px">👆 打开浏览器查看架构图，然后在终端回复你的想法</p>
+</div>

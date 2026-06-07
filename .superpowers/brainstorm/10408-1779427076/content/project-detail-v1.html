@@ -1,0 +1,103 @@
+<h2>第 3 步：项目工作台（登录后主界面）</h2>
+<p class="subtitle">三个标签页 · 默认显示"我的表单" · 所有操作在一个页面</p>
+
+<style>
+.wb-preview { max-width:800px;margin:0 auto;background:#f5f7fa;padding:16px;border-radius:12px;font-family:-apple-system,BlinkMacSystemFont,sans-serif }
+.wb-header { display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px }
+.wb-card { background:#fff;border-radius:8px;padding:16px 20px;margin-bottom:12px;border:1px solid #dadce0;box-shadow:0 1px 3px rgba(0,0,0,0.08) }
+.wb-tabs { display:flex;gap:0;border-bottom:1px solid #dadce0;margin-bottom:16px }
+.wb-tab { padding:10px 18px;font-size:14px;font-weight:500;color:#5f6368;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px }
+.wb-tab.on { color:#1a73e8;border-bottom-color:#1a73e8 }
+.wb-btn { padding:5px 12px;border-radius:6px;font-size:12px;border:1px solid #1a73e8;background:#1a73e8;color:#fff;cursor:pointer;font-weight:500 }
+.wb-btn-ol { background:transparent;color:#1a73e8 }
+.wb-btn-red { background:transparent;color:#d93025;border-color:#d93025 }
+.wb-badge { padding:2px 8px;border-radius:12px;font-size:11px;font-weight:500 }
+.row2 { display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px;color:#5f6368 }
+</style>
+
+<div class="wb-preview">
+  <!-- Header -->
+  <div class="wb-header">
+    <span style="font-size:20px;font-weight:600">GVIP嘉平二工业区</span>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      <span class="wb-btn wb-btn-ol">仪表盘</span>
+      <span class="wb-btn wb-btn-ol">配置</span>
+      <span class="wb-btn">打印</span>
+      <span class="wb-btn wb-btn-ol">编辑</span>
+    </div>
+  </div>
+
+  <!-- Info card -->
+  <div class="wb-card">
+    <div style="font-weight:600;font-size:14px;margin-bottom:8px;color:#5f6368">基本信息</div>
+    <div class="row2">
+      <div>类型：工业</div><div>地址：深圳市龙华区</div>
+      <div>面积：50,000㎡</div><div>开发商：瑞界集团</div>
+      <div>交接日期：2025-01-15</div><div>物业经理：张经理 13800138000</div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="wb-tabs">
+    <div class="wb-tab on">我的表单</div>
+    <div class="wb-tab">参考表单</div>
+    <div class="wb-tab">设备档案</div>
+  </div>
+
+  <!-- My forms tab content -->
+  <div style="display:flex;gap:8px;margin-bottom:12px">
+    <span class="wb-btn">+ 创建空白表单</span>
+  </div>
+
+  <div class="wb-card">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:600;font-size:14px">变配电室查验单 - admin</div>
+        <div style="font-size:12px;color:#5f6368;margin-top:2px">A1 · admin · 13 项</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0;margin-left:8px">
+        <span class="wb-btn">打印空白表</span>
+        <span class="wb-btn">信息录入</span>
+        <span class="wb-btn wb-btn-ol">编辑</span>
+        <span class="wb-btn wb-btn-red">删除</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="wb-card">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:600;font-size:14px">发电机房查验单 - admin</div>
+        <div style="font-size:12px;color:#5f6368;margin-top:2px">A2 · admin · 12 项</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0;margin-left:8px">
+        <span class="wb-btn">打印空白表</span>
+        <span class="wb-btn">信息录入</span>
+        <span class="wb-btn wb-btn-ol">编辑</span>
+        <span class="wb-btn wb-btn-red">删除</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:24px">
+  <h3>确认要点</h3>
+  <div class="pros-cons">
+    <div class="pros"><h4>当前设计</h4>
+      <ul>
+        <li>默认打开"我的表单"标签</li>
+        <li>基本信息卡片可折叠/收起</li>
+        <li>每张表单：标题 + 编号 + 4个操作按钮</li>
+        <li>按钮：打印空白表 / 信息录入 / 编辑 / 删除</li>
+      </ul>
+    </div>
+    <div class="cons"><h4>可调整的</h4>
+      <ul>
+        <li>基本信息卡片是否需要默认收起？</li>
+        <li>标签页顺序（我的表单 / 参考表单 / 设备档案）？</li>
+        <li>按钮是否太多，是否可以简化？</li>
+        <li>顶部操作按钮（仪表盘/配置/打印/编辑）是否需要调整？</li>
+      </ul>
+    </div>
+  </div>
+</div>

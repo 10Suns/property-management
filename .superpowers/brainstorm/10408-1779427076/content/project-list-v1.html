@@ -1,0 +1,65 @@
+<h2>第 2 步：项目列表页</h2>
+<p class="subtitle">登录后首页 · 列出所有可访问项目 · 点击进入项目</p>
+
+<style>
+.li-preview { max-width:800px;margin:0 auto;background:#f5f7fa;padding:16px;border-radius:12px }
+.li-header { display:flex;justify-content:space-between;align-items:center;margin-bottom:16px }
+.li-card { background:#fff;border-radius:8px;padding:20px;margin-bottom:12px;border:1px solid #dadce0;box-shadow:0 1px 3px rgba(0,0,0,0.08);cursor:pointer;transition:box-shadow .2s }
+.li-card:hover { box-shadow:0 2px 8px rgba(0,0,0,0.12);transform:translateY(-1px) }
+.li-card-head { display:flex;justify-content:space-between;align-items:center;margin-bottom:8px }
+.li-badge { padding:2px 10px;border-radius:12px;font-size:11px;font-weight:500 }
+.li-badge-admin { background:#e6f4ea;color:#137333 }
+.li-badge-member { background:#f1f3f4;color:#3c4043 }
+</style>
+
+<div class="li-preview">
+  <div class="li-header">
+    <span style="font-size:20px;font-weight:600">项目列表</span>
+    <span style="background:#1a73e8;color:#fff;padding:8px 18px;border-radius:6px;font-size:13px;font-weight:500">+ 新建项目</span>
+  </div>
+
+  <div class="li-card">
+    <div class="li-card-head">
+      <span style="font-weight:600;font-size:15px">GVIP嘉平二工业区</span>
+      <span class="li-badge li-badge-admin">管理员</span>
+    </div>
+    <span style="font-size:12px;color:#5f6368">深圳市龙华区 · 3 栋 · 45 户 · 工业</span>
+  </div>
+
+  <div class="li-card">
+    <div class="li-card-head">
+      <span style="font-weight:600;font-size:15px">瑞界科技园一期</span>
+      <span class="li-badge li-badge-member">成员</span>
+    </div>
+    <span style="font-size:12px;color:#5f6368">广州市天河区 · 5 栋 · 120 户 · 商业</span>
+  </div>
+
+  <div class="li-card">
+    <div class="li-card-head">
+      <span style="font-weight:600;font-size:15px">阳光花园小区</span>
+      <span class="li-badge li-badge-member">成员</span>
+    </div>
+    <span style="font-size:12px;color:#5f6368">深圳市南山区 · 8 栋 · 320 户 · 住宅</span>
+  </div>
+</div>
+
+<div class="section" style="margin-top:24px">
+  <h3>确认要点</h3>
+  <div class="pros-cons">
+    <div class="pros"><h4>当前设计</h4>
+      <ul>
+        <li>卡片式列表，hover 上浮</li>
+        <li>角色标签：管理员绿色 / 成员灰色</li>
+        <li>信息行：地址 · 栋数 · 户数 · 类型</li>
+        <li>右上角"新建项目"按钮</li>
+      </ul>
+    </div>
+    <div class="cons"><h4>可调整的</h4>
+      <ul>
+        <li>卡片是否需要显示更多信息（日期/经理）？</li>
+        <li>是否需要搜索/筛选？</li>
+        <li>卡片密度是否合适？</li>
+      </ul>
+    </div>
+  </div>
+</div>

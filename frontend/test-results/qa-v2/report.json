@@ -1,0 +1,110 @@
+{
+  "timestamp": "2026-05-31T06:44:16.766Z",
+  "scenario": "bilingual",
+  "targetForms": [
+    "A1",
+    "B1",
+    "B2",
+    "B5",
+    "B9",
+    "C1",
+    "D1"
+  ],
+  "forms": [
+    {
+      "form": "A1",
+      "title": "变配电室查验单",
+      "itemCount": 13,
+      "status": "PASS",
+      "pages": 2,
+      "totalRows": 13,
+      "seqOk": true,
+      "hasOverflow": false,
+      "hasMissingFooter": false,
+      "hasViContent": true,
+      "issues": []
+    },
+    {
+      "form": "B1",
+      "title": "监控室及安防系统查验单",
+      "itemCount": 10,
+      "status": "PASS",
+      "pages": 1,
+      "totalRows": 10,
+      "seqOk": true,
+      "hasOverflow": false,
+      "hasMissingFooter": false,
+      "hasViContent": true,
+      "issues": []
+    },
+    {
+      "form": "B2",
+      "title": "园区道路及停车场查验单",
+      "itemCount": 8,
+      "status": "PASS",
+      "pages": 1,
+      "totalRows": 8,
+      "seqOk": true,
+      "hasOverflow": false,
+      "hasMissingFooter": false,
+      "hasViContent": true,
+      "issues": []
+    },
+    {
+      "form": "B5",
+      "title": "物业用房查验单",
+      "itemCount": 10,
+      "status": "PASS",
+      "pages": 1,
+      "totalRows": 10,
+      "seqOk": true,
+      "hasOverflow": false,
+      "hasMissingFooter": false,
+      "hasViContent": true,
+      "issues": []
+    },
+    {
+      "form": "B9",
+      "title": "室外基础设施及环卫工程查验单",
+      "itemCount": 8,
+      "status": "FAIL",
+      "pages": 1,
+      "totalRows": 8,
+      "seqOk": true,
+      "hasOverflow": true,
+      "hasMissingFooter": false,
+      "hasViContent": true,
+      "issues": [
+        "1 page(s) overflow"
+      ]
+    },
+    {
+      "form": "C1",
+      "title": "室内土建部分查验单",
+      "itemCount": 10,
+      "status": "PASS",
+      "pages": 1,
+      "totalRows": 10,
+      "seqOk": true,
+      "hasOverflow": false,
+      "hasMissingFooter": false,
+      "hasViContent": true,
+      "issues": []
+    },
+    {
+      "form": "D1",
+      "title": "技术资料移交清单",
+      "itemCount": 33,
+      "status": "FAIL",
+      "pages": 2,
+      "totalRows": 33,
+      "seqOk": true,
+      "hasOverflow": true,
+      "hasMissingFooter": false,
+      "hasViContent": true,
+      "issues": [
+        "1 page(s) overflow"
+      ]
+    }
+  ]
+}

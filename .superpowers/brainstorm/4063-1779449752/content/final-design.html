@@ -1,0 +1,66 @@
+<h2>最终设计确认</h2>
+<p class="subtitle">全部决策汇总，确认后开始实施</p>
+
+<div class="section">
+  <h3>一、页面职责</h3>
+  <table style="width:100%;border-collapse:collapse;font-size:13px">
+    <tr style="background:#f5f5f5"><th style="padding:8px;text-align:left;border:1px solid #ddd">页面</th><th style="padding:8px;text-align:left;border:1px solid #ddd">职责</th><th style="padding:8px;text-align:left;border:1px solid #ddd">不负责</th></tr>
+    <tr><td style="padding:8px;border:1px solid #ddd">📋 我的表单</td><td style="padding:8px;border:1px solid #ddd">建表、编辑检查项、打印空白表</td><td style="padding:8px;border:1px solid #ddd;color:#c5221f">信息录入</td></tr>
+    <tr><td style="padding:8px;border:1px solid #ddd">📁 参考表单</td><td style="padding:8px;border:1px solid #ddd">浏览28套模板，一键创建为我的表单</td><td style="padding:8px;border:1px solid #ddd;color:#c5221f">—</td></tr>
+    <tr><td style="padding:8px;border:1px solid #ddd">✅ 检查记录</td><td style="padding:8px;border:1px solid #ddd"><b>统一录入入口</b>、新建/继续记录</td><td style="padding:8px;border:1px solid #ddd;color:#c5221f">列出参考表单</td></tr>
+    <tr><td style="padding:8px;border:1px solid #ddd">📝 FormEditor(编辑)</td><td style="padding:8px;border:1px solid #ddd">增删改检查项、打印空白表</td><td style="padding:8px;border:1px solid #ddd;color:#c5221f">信息录入</td></tr>
+    <tr><td style="padding:8px;border:1px solid #ddd">📝 FormEditor(录入)</td><td style="padding:8px;border:1px solid #ddd">选结果、拍照、写意见（检查项锁定）</td><td style="padding:8px;border:1px solid #ddd;color:#c5221f">修改检查项</td></tr>
+  </table>
+</div>
+
+<div class="section">
+  <h3>二、数据规则</h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <div style="background:#d4edda;padding:12px;border-radius:8px">
+      <b>✅ 表单 → 记录：一对多</b><br>
+      <span style="font-size:12px">一个表单可以检查多个位置，正常</span>
+    </div>
+    <div style="background:#d4edda;padding:12px;border-radius:8px">
+      <b>✅ 同一位置可多次检查</b><br>
+      <span style="font-size:12px">不拦截重复，复验场景允许新建记录</span>
+    </div>
+    <div style="background:#d4edda;padding:12px;border-radius:8px">
+      <b>✅ 记录保存时固化检查项名称</b><br>
+      <span style="font-size:12px">创建记录时把item_name/check_standard写入结果行，后续改表单不影响历史记录</span>
+    </div>
+    <div style="background:#d4edda;padding:12px;border-radius:8px">
+      <b>✅ 复验 = 新建记录</b><br>
+      <span style="font-size:12px">整改后重新检查，创建新记录，旧记录保留</span>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>三、改动范围</h3>
+  <table style="width:100%;border-collapse:collapse;font-size:13px">
+    <tr style="background:#f5f5f5"><th style="padding:8px;text-align:left;border:1px solid #ddd">文件</th><th style="padding:8px;text-align:left;border:1px solid #ddd">改动</th></tr>
+    <tr><td style="padding:8px;border:1px solid #ddd"><code>RecordList.vue</code></td><td style="padding:8px;border:1px solid #ddd">① 弹窗数据源 /templates → /forms?project_id= ② createRecord() 不再 POST /forms，直接跳转</td></tr>
+    <tr><td style="padding:8px;border:1px solid #ddd"><code>FormEditor.vue</code></td><td style="padding:8px;border:1px solid #ddd">① 移除编辑模式的「信息录入」按钮 ② 录入模式加「查验录入」标识</td></tr>
+    <tr><td style="padding:8px;border:1px solid #ddd"><code>records.js (backend)</code></td><td style="padding:8px;border:1px solid #ddd">创建记录时把 user_form_items 的 item_name/check_standard 写入 inspection_results 的 custom_item_name/custom_standard</td></tr>
+    </table>
+</div>
+
+<div class="section">
+  <h2>确认？</h2>
+  <div class="options">
+    <div class="option" data-choice="approve" onclick="toggleSelect(this)">
+      <div class="letter">✅</div>
+      <div class="content">
+        <h3>确认，开始实施</h3>
+        <p>按上述设计执行</p>
+      </div>
+    </div>
+    <div class="option" data-choice="revise" onclick="toggleSelect(this)">
+      <div class="letter">📝</div>
+      <div class="content">
+        <h3>需要调整</h3>
+        <p>有些地方要修改</p>
+      </div>
+    </div>
+  </div>
+</div>

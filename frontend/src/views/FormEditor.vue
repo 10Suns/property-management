@@ -557,7 +557,19 @@ async function saveRecordMeta() {
 
 async function submitRecord() {
   if (!record.value) return
-  if (!confirm('提交后记录将锁定，无法再修改或删除，确认提交？')) return
+  // Validate: at least one result must have a non-pending status
+  const total = items.value.length
+  const pending = items.value.filter(it => !it.result || it.result === 'pending').length
+  if (pending === total && total > 0) {
+    alert('请至少填写一项查验结果后再提交')
+    return
+  }
+  // Warn if some results are still pending
+  if (pending > 0) {
+    if (!confirm(`还有 ${pending}/${total} 项未填写查验结果，提交后将无法修改。确认提交？`)) return
+  } else {
+    if (!confirm('提交后记录将锁定，无法再修改或删除，确认提交？')) return
+  }
   submitting.value = true
   try {
     // Save first

@@ -1,0 +1,77 @@
+<h2>布局确认 — 侧边栏最终结构</h2>
+<p class="subtitle">三个工作模块 + 一个资源库</p>
+
+<style>
+.c-preview { border:1px solid #dadce0;border-radius:10px;overflow:hidden;max-width:1100px;margin:0 auto }
+.c-topbar { background:#1a73e8;color:#fff;padding:10px 20px;display:flex;align-items:center;justify-content:space-between;font-size:13px }
+.c-body { display:flex;min-height:420px }
+.c-side { width:180px;background:#f8f9fa;border-right:1px solid #dadce0;padding:12px;display:flex;flex-direction:column;gap:2px;flex-shrink:0 }
+.c-side-item { padding:10px 14px;font-size:14px;color:#5f6368;border-radius:6px;cursor:pointer;font-weight:500 }
+.c-side-item.on { color:#1a73e8;background:#e8f0fe }
+.c-side-section { font-size:10px;color:#80868b;text-transform:uppercase;letter-spacing:.05em;padding:16px 14px 4px }
+.c-main { flex:1;padding:20px;background:#f5f7fa }
+.c-card { background:#fff;border-radius:8px;padding:16px 20px;margin-bottom:10px;border:1px solid #dadce0;box-shadow:0 1px 2px rgba(0,0,0,.06) }
+</style>
+
+<div class="c-preview">
+  <div class="c-topbar">
+    <span style="font-weight:600;font-size:15px">GVIP嘉平二工业区</span>
+    <div style="display:flex;align-items:center;gap:12px">
+      <span style="opacity:.8;font-size:12px">配置</span>
+      <span style="opacity:.8;font-size:12px">仪表盘</span>
+      <span style="opacity:.8;font-size:12px">admin ▾</span>
+    </div>
+  </div>
+  <div class="c-body">
+    <div class="c-side">
+      <div class="c-side-section">工作台</div>
+      <div class="c-side-item on">📋 我的表单</div>
+      <div class="c-side-item">✅ 检查记录</div>
+      <div class="c-side-item">🔧 设备档案</div>
+      <div class="c-side-section">资源</div>
+      <div class="c-side-item">📁 参考表单</div>
+    </div>
+    <div class="c-main" style="display:flex;align-items:center;justify-content:center;text-align:center">
+      <div>
+        <div style="font-size:40px;margin-bottom:12px">📋</div>
+        <div style="font-weight:600;font-size:16px;margin-bottom:4px">我的表单</div>
+        <div style="font-size:13px;color:#5f6368">编辑模板 · 打印空白表 · 带去现场检查</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px;max-width:1100px;margin-left:auto;margin-right:auto">
+  <div style="background:#fff;border:1px solid #dadce0;border-radius:8px;padding:14px;text-align:center">
+    <div style="font-size:24px;margin-bottom:4px">📋</div>
+    <div style="font-weight:600;font-size:13px;margin-bottom:4px">我的表单</div>
+    <div style="font-size:11px;color:#5f6368;line-height:1.5">选模板<br>编辑检查项<br>打印空白表</div>
+  </div>
+  <div style="background:#fff;border:1px solid #dadce0;border-radius:8px;padding:14px;text-align:center">
+    <div style="font-size:24px;margin-bottom:4px">✅</div>
+    <div style="font-weight:600;font-size:13px;margin-bottom:4px">检查记录</div>
+    <div style="font-size:11px;color:#5f6368;line-height:1.5">新增记录<br>填结果+照片<br>编辑/删除</div>
+  </div>
+  <div style="background:#fff;border:1px solid #dadce0;border-radius:8px;padding:14px;text-align:center">
+    <div style="font-size:24px;margin-bottom:4px">🔧</div>
+    <div style="font-weight:600;font-size:13px;margin-bottom:4px">设备档案</div>
+    <div style="font-size:11px;color:#5f6368;line-height:1.5">设备台账<br>分类/筛选<br>增删改</div>
+  </div>
+  <div style="background:#fff;border:1px solid #dadce0;border-radius:8px;padding:14px;text-align:center">
+    <div style="font-size:24px;margin-bottom:4px">📁</div>
+    <div style="font-weight:600;font-size:13px;margin-bottom:4px">参考表单</div>
+    <div style="font-size:11px;color:#5f6368;line-height:1.5">系统模板库<br>A/B/C/D 四类<br>28套模板</div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:20px">
+  <h3>侧边栏确认</h3>
+  <table>
+    <tr><th>分组</th><th>模块</th><th>职责</th></tr>
+    <tr><td rowspan="3">工作台</td><td>📋 我的表单</td><td>模板管理、编辑检查项、打印空白表</td></tr>
+    <tr><td>✅ 检查记录</td><td>填报检查结果、上传照片、增删改记录</td></tr>
+    <tr><td>🔧 设备档案</td><td>设备台账维护、分类筛选</td></tr>
+    <tr><td>资源</td><td>📁 参考表单</td><td>系统模板库（A/B/C/D 四类28套）</td></tr>
+  </table>
+  <p style="margin-top:12px;font-size:13px;color:#5f6368">这个结构可以定下来了吗？</p>
+</div>

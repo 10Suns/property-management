@@ -1,0 +1,120 @@
+{
+  "timestamp": "2026-05-31T05:41:39.912Z",
+  "scenario": "bilingual",
+  "targetForms": [
+    "A9",
+    "A10",
+    "C2",
+    "C3",
+    "C4",
+    "D2",
+    "D3",
+    "D4"
+  ],
+  "forms": [
+    {
+      "form": "A10",
+      "title": "电梯轿厢及井道查验单",
+      "itemCount": 10,
+      "status": "PASS",
+      "pages": 1,
+      "totalRows": 10,
+      "seqOk": true,
+      "hasOverflow": false,
+      "hasMissingFooter": false,
+      "hasViContent": true,
+      "issues": []
+    },
+    {
+      "form": "A9",
+      "title": "消防报警及联动系统查验单",
+      "itemCount": 10,
+      "status": "PASS",
+      "pages": 1,
+      "totalRows": 10,
+      "seqOk": true,
+      "hasOverflow": false,
+      "hasMissingFooter": false,
+      "hasViContent": true,
+      "issues": []
+    },
+    {
+      "form": "C2",
+      "title": "室内给排水设施查验单",
+      "itemCount": 11,
+      "status": "PASS",
+      "pages": 2,
+      "totalRows": 11,
+      "seqOk": true,
+      "hasOverflow": false,
+      "hasMissingFooter": false,
+      "hasViContent": true,
+      "issues": []
+    },
+    {
+      "form": "C3",
+      "title": "室内电气设施查验单",
+      "itemCount": 10,
+      "status": "PASS",
+      "pages": 2,
+      "totalRows": 10,
+      "seqOk": true,
+      "hasOverflow": false,
+      "hasMissingFooter": false,
+      "hasViContent": true,
+      "issues": []
+    },
+    {
+      "form": "C4",
+      "title": "可租房源（厂房/办公）查验单",
+      "itemCount": 18,
+      "status": "PASS",
+      "pages": 3,
+      "totalRows": 18,
+      "seqOk": true,
+      "hasOverflow": false,
+      "hasMissingFooter": false,
+      "hasViContent": true,
+      "issues": []
+    },
+    {
+      "form": "D2",
+      "title": "钥匙及门禁移交清单",
+      "itemCount": 15,
+      "status": "PASS",
+      "pages": 2,
+      "totalRows": 15,
+      "seqOk": true,
+      "hasOverflow": false,
+      "hasMissingFooter": false,
+      "hasViContent": true,
+      "issues": []
+    },
+    {
+      "form": "D3",
+      "title": "设施设备台账（汇总）",
+      "itemCount": 20,
+      "status": "PASS",
+      "pages": 2,
+      "totalRows": 20,
+      "seqOk": true,
+      "hasOverflow": false,
+      "hasMissingFooter": false,
+      "hasViContent": true,
+      "issues": []
+    },
+    {
+      "form": "D4",
+      "title": "问题汇总及整改跟踪表",
+      "itemCount": 7,
+      "status": "PASS",
+      "pages": 1,
+      "totalRows": 7,
+      "seqOk": true,
+      "hasOverflow": false,
+      "hasMissingFooter": false,
+      "hasViContent": true,
+      "issues": []
+    }
+  ]
+}

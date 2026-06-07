@@ -1,0 +1,57 @@
+<h2>"我的表单" — 创建表单的方式</h2>
+<p class="subtitle">需要两个入口：从模板创建 + 新建空白</p>
+
+<style>
+.f-preview { max-width:900px;margin:0 auto;background:#f5f7fa;padding:20px;border-radius:12px;border:1px solid #dadce0 }
+.f-header { display:flex;justify-content:space-between;align-items:center;margin-bottom:16px }
+.f-card { background:#fff;border-radius:8px;padding:16px 20px;margin-bottom:10px;border:1px solid #dadce0 }
+</style>
+
+<div class="f-preview">
+  <div class="f-header">
+    <span style="font-weight:600;font-size:16px">📋 我的表单</span>
+    <div style="display:flex;gap:6px">
+      <span style="background:#1a73e8;color:#fff;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:500">📁 从模板创建</span>
+      <span style="color:#1a73e8;border:1px solid #1a73e8;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:500">+ 创建空白表单</span>
+    </div>
+  </div>
+
+  <div style="font-size:12px;color:#5f6368;margin-bottom:16px">从系统模板快速创建，或从零开始自定义表单。编辑完成后打印空白表带去现场。</div>
+
+  <div class="f-card">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:600;font-size:14px">变配电室查验单 - admin</div>
+        <div style="font-size:12px;color:#5f6368;margin-top:2px">A1 · 13 项 · 2025-06-15</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0;margin-left:12px">
+        <span style="background:#1a73e8;color:#fff;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:500">🖨 打印空白表</span>
+        <span style="color:#1a73e8;border:1px solid #1a73e8;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:500">编辑</span>
+        <span style="color:#d93025;border:1px solid #d93025;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:500">删除</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:24px">
+  <h3>问题：侧边栏还需要"参考表单"吗？</h3>
+
+  <div class="options">
+    <div class="option" data-choice="keep" onclick="toggleSelect(this)">
+      <div class="letter">A</div>
+      <div class="content">
+        <h3>保留"参考表单"</h3>
+        <p>侧边栏 4 项。参考表单可完整浏览 28 套模板（A/B/C/D分类）。我的表单里"从模板创建"按钮弹出快速选择窗。</p>
+        <p style="color:#5f6368;font-size:12px;margin-top:4px">侧边栏：我的表单 | 检查记录 | 设备档案 | 参考表单</p>
+      </div>
+    </div>
+    <div class="option" data-choice="remove" onclick="toggleSelect(this)">
+      <div class="letter">B</div>
+      <div class="content">
+        <h3>去掉"参考表单"，合并到我的表单</h3>
+        <p>侧边栏 3 项。"我的表单"内置模板浏览区，"从模板创建"点击后展开模板列表选择即可。</p>
+        <p style="color:#5f6368;font-size:12px;margin-top:4px">侧边栏：我的表单 | 检查记录 | 设备档案</p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,16 @@
+{
+  "timestamp": "2026-05-31T05:07:41.496Z",
+  "scenario": "bilingual",
+  "targetForms": [
+    "D1"
+  ],
+  "forms": [
+    {
+      "form": "D1",
+      "title": "技术资料移交清单",
+      "itemCount": 33,
+      "status": "FAIL",
+      "error": "iframe timeout"
+    }
+  ]
+}

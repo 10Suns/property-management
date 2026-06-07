@@ -1,0 +1,114 @@
+<h2>"我的表单"页面设计</h2>
+<p class="subtitle">上半部分：模板库（可折叠） · 下半部分：已有表单列表</p>
+
+<style>
+.mf { max-width:900px;margin:0 auto;background:#f5f7fa;padding:20px;border-radius:12px;border:1px solid #dadce0 }
+.mf-header { display:flex;justify-content:space-between;align-items:center;margin-bottom:16px }
+.mf-section-title { font-size:13px;font-weight:600;color:#5f6368;margin-bottom:10px;display:flex;align-items:center;gap:6px;cursor:pointer }
+.mf-card { background:#fff;border-radius:8px;padding:14px 18px;margin-bottom:8px;border:1px solid #dadce0 }
+.mf-cat { font-size:11px;font-weight:600;color:#80868b;text-transform:uppercase;margin:12px 0 6px }
+.mf-btn { padding:5px 10px;border-radius:6px;font-size:11px;font-weight:500 }
+.mf-btn-blue { background:#1a73e8;color:#fff;border:none }
+.mf-btn-ol { background:transparent;color:#1a73e8;border:1px solid #1a73e8 }
+.mf-btn-red { background:transparent;color:#d93025;border:1px solid #d93025 }
+.mf-template-grid { display:grid;grid-template-columns:1fr 1fr;gap:8px }
+</style>
+
+<div class="mf">
+  <div class="mf-header">
+    <span style="font-weight:600;font-size:18px">📋 我的表单</span>
+    <div style="display:flex;gap:6px">
+      <span class="mf-btn mf-btn-blue" style="padding:7px 14px;font-size:12px">+ 创建空白表单</span>
+    </div>
+  </div>
+
+  <!-- Template library section -->
+  <div style="background:#f0f4ff;border:1px solid #cbdffc;border-radius:8px;padding:14px 18px;margin-bottom:20px">
+    <div class="mf-section-title" style="color:#1a73e8">
+      📁 从模板创建新表单 <span style="font-size:11px;font-weight:400;color:#5f6368">— 28套系统模板</span>
+    </div>
+    <div class="mf-cat">A. 设备用房</div>
+    <div class="mf-template-grid">
+      <div class="mf-card" style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;margin-bottom:4px">
+        <div>
+          <span style="background:#e6f4ea;color:#137333;padding:1px 6px;border-radius:10px;font-size:10px;font-weight:600;margin-right:6px">A1</span>
+          <span style="font-size:13px;font-weight:500">变配电室查验单</span>
+          <span style="font-size:11px;color:#80868b;margin-left:6px">13项</span>
+        </div>
+        <span style="font-size:11px;color:#1a73e8;font-weight:500">+ 创建</span>
+      </div>
+      <div class="mf-card" style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;margin-bottom:4px">
+        <div>
+          <span style="background:#e6f4ea;color:#137333;padding:1px 6px;border-radius:10px;font-size:10px;font-weight:600;margin-right:6px">A2</span>
+          <span style="font-size:13px;font-weight:500">发电机房查验单</span>
+          <span style="font-size:11px;color:#80868b;margin-left:6px">12项</span>
+        </div>
+        <span style="font-size:11px;color:#1a73e8;font-weight:500">+ 创建</span>
+      </div>
+    </div>
+    <div class="mf-cat">B. 公共部位</div>
+    <div class="mf-template-grid">
+      <div class="mf-card" style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;margin-bottom:4px">
+        <div>
+          <span style="background:#e6f4ea;color:#137333;padding:1px 6px;border-radius:10px;font-size:10px;font-weight:600;margin-right:6px">B1</span>
+          <span style="font-size:13px;font-weight:500">监控室及安防系统查验单</span>
+          <span style="font-size:11px;color:#80868b;margin-left:6px">10项</span>
+        </div>
+        <span style="font-size:11px;color:#1a73e8;font-weight:500">+ 创建</span>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:6px">
+      <span style="font-size:11px;color:#1a73e8;cursor:pointer;font-weight:500">展开全部模板 (A/B/C/D 共28套) ▾</span>
+    </div>
+  </div>
+
+  <!-- My existing forms -->
+  <div class="mf-section-title" style="margin-bottom:12px">
+    💾 已有表单 <span style="font-size:11px;font-weight:400">（2个）</span>
+  </div>
+
+  <div class="mf-card" style="display:flex;justify-content:space-between;align-items:center">
+    <div style="flex:1;min-width:0">
+      <div style="font-weight:600;font-size:14px">变配电室查验单 - admin</div>
+      <div style="font-size:11px;color:#5f6368;margin-top:2px">A1 · 13 项 · 创建于 2025-06-15</div>
+    </div>
+    <div style="display:flex;gap:6px;flex-shrink:0;margin-left:12px">
+      <span class="mf-btn mf-btn-blue">🖨 打印空白表</span>
+      <span class="mf-btn mf-btn-ol">编辑</span>
+      <span class="mf-btn mf-btn-red">删除</span>
+    </div>
+  </div>
+
+  <div class="mf-card" style="display:flex;justify-content:space-between;align-items:center">
+    <div style="flex:1;min-width:0">
+      <div style="font-weight:600;font-size:14px">发电机房查验单 - admin</div>
+      <div style="font-size:11px;color:#5f6368;margin-top:2px">A2 · 12 项 · 创建于 2025-06-16</div>
+    </div>
+    <div style="display:flex;gap:6px;flex-shrink:0;margin-left:12px">
+      <span class="mf-btn mf-btn-blue">🖨 打印空白表</span>
+      <span class="mf-btn mf-btn-ol">编辑</span>
+      <span class="mf-btn mf-btn-red">删除</span>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:24px">
+  <h3>确认要点</h3>
+  <div class="pros-cons">
+    <div class="pros"><h4>设计</h4>
+      <ul>
+        <li>上部：蓝色底色模板库，按 A/B/C/D 分类</li>
+        <li>模板双列网格，点击"+ 创建"一键生成</li>
+        <li>默认折叠，展开显示全部 28 套</li>
+        <li>下部：已有表单列表，三个操作按钮</li>
+      </ul>
+    </div>
+    <div class="cons"><h4>需要确认</h4>
+      <ul>
+        <li>模板库默认折叠还是展开？</li>
+        <li>双列网格密度是否合适？</li>
+        <li>已有表单操作按钮是否够用？</li>
+      </ul>
+    </div>
+  </div>
+</div>

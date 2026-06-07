@@ -1,0 +1,70 @@
+<h2>当前流程 vs 期望流程</h2>
+<p class="subtitle">关键差异：「新增检查记录」时选的是模板库还是我的表单？</p>
+
+<div class="split">
+  <div class="mockup">
+    <div class="mockup-header">❌ 当前流程（有问题）</div>
+    <div class="mockup-body" style="font-size:14px;line-height:2">
+      <div style="background:#fff3cd;padding:8px 12px;border-radius:6px;margin-bottom:12px">
+        <b>1. 参考表单页</b> → 点模板 → 自动创建表单 → 进入编辑页<br>
+        <span style="color:#856404;font-size:12px">✅ 这一步是对的</span>
+      </div>
+      <div style="background:#fff3cd;padding:8px 12px;border-radius:6px;margin-bottom:12px">
+        <b>2. 编辑页</b> → 「保存为我的表单」 → 存在"我的表单"<br>
+        <span style="color:#856404;font-size:12px">✅ 这一步也是对的</span>
+      </div>
+      <div style="background:#f8d7da;padding:8px 12px;border-radius:6px;margin-bottom:12px">
+        <b>3. 检查记录页</b> → 「+ 新增记录」→ 弹窗列出<b>全部系统模板</b><br>
+        <span style="color:#721c24;font-size:12px">❌ 问题：选了模板后又自动创建一份新表单，绕过了"我的表单"</span>
+      </div>
+      <div style="background:#f8d7da;padding:8px 12px;border-radius:6px">
+        <b>4. 录入界面</b> → 可以<b>新增/删除检查项</b><br>
+        <span style="color:#721c24;font-size:12px">❌ 问题：录入时仍可修改表单结构</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup">
+    <div class="mockup-header">✅ 期望流程（你的要求）</div>
+    <div class="mockup-body" style="font-size:14px;line-height:2">
+      <div style="background:#d4edda;padding:8px 12px;border-radius:6px;margin-bottom:12px">
+        <b>1. 参考表单页</b> → 点模板 → 自动创建表单 → 进入编辑页<br>
+        <span style="color:#155724;font-size:12px">✅ 不变，直接创建并跳转</span>
+      </div>
+      <div style="background:#d4edda;padding:8px 12px;border-radius:6px;margin-bottom:12px">
+        <b>2. 编辑页</b> → 调整检查项（增删改）→ 「保存为我的表单」<br>
+        <span style="color:#155724;font-size:12px">✅ 这里是唯一可以修改表单结构的地方</span>
+      </div>
+      <div style="background:#d4edda;padding:8px 12px;border-radius:6px;margin-bottom:12px">
+        <b>3. 检查记录页</b> → 「+ 新增记录」→ 弹窗列出<b>只显示"我的表单"</b><br>
+        <span style="color:#155724;font-size:12px">✅ 从已保存的表单中选，不重复创建</span>
+      </div>
+      <div style="background:#d4edda;padding:8px 12px;border-radius:6px">
+        <b>4. 录入界面</b> → <b>锁定检查项</b>，只能选择合格/不合格/免检<br>
+        <span style="color:#155724;font-size:12px">✅ 不能增删改检查项，只能录入结果</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h2>需要确认的第一个问题</h2>
+  <p class="subtitle">上面期望流程的 4 个步骤，是否准确反映了你的想法？</p>
+
+  <div class="options">
+    <div class="option" data-choice="a" onclick="toggleSelect(this)">
+      <div class="letter">A</div>
+      <div class="content">
+        <h3>基本正确，细节再调整</h3>
+        <p>4 步流程符合预期，但有些细节需要补充或修改</p>
+      </div>
+    </div>
+    <div class="option" data-choice="b" onclick="toggleSelect(this)">
+      <div class="letter">B</div>
+      <div class="content">
+        <h3>完全正确，就这样改</h3>
+        <p>不需要再讨论，直接按这个方案实施</p>
+      </div>
+    </div>
+  </div>
+</div>

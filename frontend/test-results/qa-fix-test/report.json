@@ -1,0 +1,50 @@
+{
+  "timestamp": "2026-05-31T05:39:30.809Z",
+  "scenario": "bilingual",
+  "targetForms": [
+    "A1",
+    "D1",
+    "B4"
+  ],
+  "forms": [
+    {
+      "form": "A1",
+      "title": "变配电室查验单",
+      "itemCount": 13,
+      "status": "PASS",
+      "pages": 2,
+      "totalRows": 13,
+      "seqOk": true,
+      "hasOverflow": false,
+      "hasMissingFooter": false,
+      "hasViContent": true,
+      "issues": []
+    },
+    {
+      "form": "B4",
+      "title": "围墙及大门查验单",
+      "itemCount": 6,
+      "status": "PASS",
+      "pages": 1,
+      "totalRows": 6,
+      "seqOk": true,
+      "hasOverflow": false,
+      "hasMissingFooter": false,
+      "hasViContent": true,
+      "issues": []
+    },
+    {
+      "form": "D1",
+      "title": "技术资料移交清单",
+      "itemCount": 33,
+      "status": "PASS",
+      "pages": 3,
+      "totalRows": 33,
+      "seqOk": true,
+      "hasOverflow": false,
+      "hasMissingFooter": false,
+      "hasViContent": true,
+      "issues": []
+    }
+  ]
+}

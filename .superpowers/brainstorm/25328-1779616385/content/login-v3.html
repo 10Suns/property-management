@@ -1,0 +1,80 @@
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f5f4f1; }
+  h2 { font-size: 22px; font-weight: 600; margin-bottom: 6px; }
+  .subtitle { color: #888; font-size: 13px; margin-bottom: 24px; }
+  .section { margin-bottom: 24px; }
+  h3 { font-size: 15px; font-weight: 600; margin-bottom: 10px; color: #333; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+  .mockup { background: #fff; border: 1px solid #e0ddd6; border-radius: 12px; overflow: hidden; }
+  .mockup-header { background: #f9f8f6; padding: 7px 12px; font-size: 10px; color: #999; border-bottom: 1px solid #e0ddd6; display: flex; gap: 5px; align-items: center; }
+  .mockup-header span { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .mockup-body { height: 320px; position: relative; background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; }
+  .mockup-body::before { content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.35); }
+
+  .login-card {
+    position: relative; z-index: 1;
+    background: rgba(255,255,255,0.93); border-radius: 8px;
+    box-shadow: 0 3px 18px rgba(0,0,0,0.18);
+    padding: 32px 26px; width: 260px;
+  }
+  .login-brand { text-align: center; margin-bottom: 22px; }
+  .login-brand h1 { font-family: 'Noto Serif SC', 'Songti SC', serif; font-size: 19px; font-weight: 600; letter-spacing: 1.2px; color: #333; margin-bottom: 3px; }
+  .login-subtitle { font-size: 9px; color: #aaa; text-transform: uppercase; letter-spacing: 0.7px; }
+  .field-group { margin-bottom: 11px; }
+  .field-label { font-size: 10px; color: #999; margin-bottom: 2px; display: block; }
+  .underline-input { width: 100%; padding: 7px 0; border: none; border-bottom: 1px solid #e0e0e0; font-size: 11px; color: #333; background: transparent; outline: none; }
+  .login-btn2 { width: 100%; padding: 7px; border: none; border-radius: 5px; background: #2c3e50; color: #fff; font-size: 11px; cursor: pointer; margin-top: 4px; font-family: inherit; }
+  .pick-btn { display: block; margin: 10px auto 0; padding: 6px 20px; border: 1.5px solid #2c3e50; border-radius: 6px; background: #fff; color: #2c3e50; font-size: 12px; cursor: pointer; font-family: inherit; font-weight: 500; }
+  .pick-btn:hover { background: #2c3e50; color: #fff; }
+</style>
+
+<h2>1. 登录页 — 明亮风格背景图</h2>
+<p class="subtitle">阳光、绿地、现代工业 · 三个方案</p>
+
+<div class="section">
+  <h3>选出你喜欢的背景</h3>
+  <div class="grid-3">
+    <div class="mockup">
+      <div class="mockup-header"><span style="background:#ee5a5a;"></span><span style="background:#f5bd4f;"></span><span style="background:#61c454;"></span>A — 水塔与绿地</div>
+      <div class="mockup-body" style="background-image:url(https://images.unsplash.com/photo-1760783319941-c0ade1d564c0?w=600&q=70);">
+        <div class="login-card">
+          <div class="login-brand"><h1>物业承接查验</h1><p class="login-subtitle">Property Inspection System</p></div>
+          <div class="field-group"><label class="field-label">用户名</label><input class="underline-input" placeholder="请输入用户名" /></div>
+          <div class="field-group"><label class="field-label">密码</label><input class="underline-input" type="password" placeholder="请输入密码" /></div>
+          <button class="login-btn2">登录</button>
+        </div>
+      </div>
+    </div>
+    <div class="mockup">
+      <div class="mockup-header"><span style="background:#ee5a5a;"></span><span style="background:#f5bd4f;"></span><span style="background:#61c454;"></span>B — 现代办公园区</div>
+      <div class="mockup-body" style="background-image:url(https://images.unsplash.com/photo-1758304481667-71d545c91241?w=600&q=70);">
+        <div class="login-card">
+          <div class="login-brand"><h1>物业承接查验</h1><p class="login-subtitle">Property Inspection System</p></div>
+          <div class="field-group"><label class="field-label">用户名</label><input class="underline-input" placeholder="请输入用户名" /></div>
+          <div class="field-group"><label class="field-label">密码</label><input class="underline-input" type="password" placeholder="请输入密码" /></div>
+          <button class="login-btn2">登录</button>
+        </div>
+      </div>
+    </div>
+    <div class="mockup">
+      <div class="mockup-header"><span style="background:#ee5a5a;"></span><span style="background:#f5bd4f;"></span><span style="background:#61c454;"></span>C — 工业烟囱与绿园</div>
+      <div class="mockup-body" style="background-image:url(https://images.unsplash.com/photo-1776633578496-0059d04d1c6f?w=600&q=70);">
+        <div class="login-card">
+          <div class="login-brand"><h1>物业承接查验</h1><p class="login-subtitle">Property Inspection System</p></div>
+          <div class="field-group"><label class="field-label">用户名</label><input class="underline-input" placeholder="请输入用户名" /></div>
+          <div class="field-group"><label class="field-label">密码</label><input class="underline-input" type="password" placeholder="请输入密码" /></div>
+          <button class="login-btn2">登录</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <p style="color:#888;font-size:13px;">
+    <strong>A：</strong>工业建筑 + 开阔草地 + 蓝天白云，最贴近工业厂房场景<br>
+    <strong>B：</strong>现代办公园区鸟瞰，整洁有序，偏商务科技感<br>
+    <strong>C：</strong>工业烟囱 + 绿色公园形成对比，有意境
+  </p>
+</div>

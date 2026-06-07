@@ -1,0 +1,92 @@
+<h2>布局 C 细化 — 顶栏 + 左侧标签 + 右侧内容</h2>
+<p class="subtitle">确认整体框架的细节</p>
+
+<style>
+.c-preview { border:1px solid #dadce0;border-radius:10px;overflow:hidden;max-width:1100px;margin:0 auto }
+.c-topbar { background:#1a73e8;color:#fff;padding:10px 20px;display:flex;align-items:center;justify-content:space-between;font-size:13px }
+.c-body { display:flex;min-height:400px }
+.c-side { width:180px;background:#f8f9fa;border-right:1px solid #dadce0;padding:12px;display:flex;flex-direction:column;gap:2px;flex-shrink:0 }
+.c-side-item { padding:10px 14px;font-size:14px;color:#5f6368;border-radius:6px;cursor:pointer;font-weight:500 }
+.c-side-item.on { color:#1a73e8;background:#e8f0fe }
+.c-side-divider { height:1px;background:#dadce0;margin:8px 0 }
+.c-main { flex:1;padding:20px;background:#f5f7fa }
+.c-card { background:#fff;border-radius:8px;padding:16px 20px;margin-bottom:10px;border:1px solid #dadce0;box-shadow:0 1px 2px rgba(0,0,0,.06) }
+</style>
+
+<div class="c-preview">
+  <div class="c-topbar">
+    <span style="font-weight:600;font-size:15px">GVIP嘉平二工业区</span>
+    <div style="display:flex;align-items:center;gap:12px">
+      <span style="opacity:.8;font-size:12px">仪表盘</span>
+      <span style="opacity:.8;font-size:12px">配置</span>
+      <span style="opacity:.8;font-size:12px">打印</span>
+      <span style="opacity:.8;font-size:12px">admin ▾</span>
+    </div>
+  </div>
+  <div class="c-body">
+    <div class="c-side">
+      <div class="c-side-item on">我的表单</div>
+      <div class="c-side-item">参考表单</div>
+      <div class="c-side-item">设备档案</div>
+      <div class="c-side-divider"></div>
+      <div class="c-side-item">查验记录</div>
+      <div class="c-side-item">打印表单</div>
+    </div>
+    <div class="c-main">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <span style="font-weight:600;font-size:15px">我的表单</span>
+        <span style="background:#1a73e8;color:#fff;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:500">+ 创建空白表单</span>
+      </div>
+      <div class="c-card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:600;font-size:14px">变配电室查验单 - admin</div>
+            <div style="font-size:12px;color:#5f6368;margin-top:2px">A1 · 13 项</div>
+          </div>
+          <div style="display:flex;gap:6px;flex-shrink:0;margin-left:12px">
+            <span style="background:#1a73e8;color:#fff;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:500">打印空白表</span>
+            <span style="background:#1a73e8;color:#fff;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:500">信息录入</span>
+            <span style="color:#1a73e8;border:1px solid #1a73e8;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:500">编辑</span>
+            <span style="color:#d93025;border:1px solid #d93025;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:500">删除</span>
+          </div>
+        </div>
+      </div>
+      <div class="c-card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:600;font-size:14px">发电机房查验单 - admin</div>
+            <div style="font-size:12px;color:#5f6368;margin-top:2px">A2 · 12 项</div>
+          </div>
+          <div style="display:flex;gap:6px;flex-shrink:0;margin-left:12px">
+            <span style="background:#1a73e8;color:#fff;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:500">打印空白表</span>
+            <span style="background:#1a73e8;color:#fff;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:500">信息录入</span>
+            <span style="color:#1a73e8;border:1px solid #1a73e8;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:500">编辑</span>
+            <span style="color:#d93025;border:1px solid #d93025;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:500">删除</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:24px">
+  <h3>确认要点</h3>
+  <div class="pros-cons">
+    <div class="pros"><h4>当前方案</h4>
+      <ul>
+        <li>顶栏：项目名（左） + 操作按钮 + 用户名（右）</li>
+        <li>左侧 180px：导航标签 + 分隔区</li>
+        <li>右侧内容区：全宽，背景浅灰</li>
+        <li>表单卡片：一行四个操作按钮</li>
+      </ul>
+    </div>
+    <div class="cons"><h4>需要确认的</h4>
+      <ul>
+        <li>侧边栏宽度：180px 够吗？还是 200/220？</li>
+        <li>侧边栏导航项：需要哪些？顺序？</li>
+        <li>顶栏操作按钮：放哪些？是否需要移到侧边栏？</li>
+        <li>右侧内容区需要限制最大宽度吗？</li>
+      </ul>
+    </div>
+  </div>
+</div>

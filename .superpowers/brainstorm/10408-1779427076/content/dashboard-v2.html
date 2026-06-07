@@ -1,0 +1,110 @@
+<h2>仪表盘 v2 — 按月查看</h2>
+<p class="subtitle">月份切换 · 交接阶段 + 月度巡检一目了然</p>
+
+<style>
+.db { background:#f5f7fa;padding:20px;border-radius:12px;border:1px solid #dadce0 }
+.db-month { display:flex;align-items:center;gap:10px;margin-bottom:20px;background:#fff;padding:10px 16px;border-radius:8px;border:1px solid #dadce0 }
+.db-month-nav { width:32px;height:32px;border-radius:50%;border:1px solid #dadce0;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;color:#5f6368 }
+.db-stats { display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px }
+.db-stat-card { background:#fff;border-radius:8px;padding:16px;text-align:center;border:1px solid #dadce0 }
+.db-stat-num { font-size:28px;font-weight:700 }
+.db-stat-label { font-size:11px;color:#80868b;margin-top:4px }
+.db-grid { display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px }
+.db-card { background:#fff;border-radius:8px;padding:16px;border:1px solid #dadce0 }
+.db-row { display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f0f0f0;font-size:13px }
+</style>
+
+<div class="db">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+    <span style="font-weight:600;font-size:18px">📊 仪表盘</span>
+    <span style="font-size:12px;color:#80868b">GVIP嘉平二工业区</span>
+  </div>
+
+  <!-- Month selector -->
+  <div class="db-month">
+    <div class="db-month-nav">◂</div>
+    <span style="font-weight:600;font-size:16px;flex:1;text-align:center">2025年 6月</span>
+    <div class="db-month-nav">▸</div>
+    <span style="color:#1a73e8;font-size:12px;font-weight:500;cursor:pointer;margin-left:8px">本月</span>
+  </div>
+
+  <div class="db-stats">
+    <div class="db-stat-card">
+      <div class="db-stat-num" style="color:#1a73e8">12</div>
+      <div class="db-stat-label">本月检查记录</div>
+    </div>
+    <div class="db-stat-card">
+      <div class="db-stat-num" style="color:#d93025">5</div>
+      <div class="db-stat-label">不合格项</div>
+    </div>
+    <div class="db-stat-card">
+      <div class="db-stat-num" style="color:#188038">8</div>
+      <div class="db-stat-label">已完成</div>
+    </div>
+    <div class="db-stat-card">
+      <div class="db-stat-num" style="color:#f9ab00">4</div>
+      <div class="db-stat-label">查验中/待处理</div>
+    </div>
+  </div>
+
+  <div class="db-grid">
+    <!-- By template this month -->
+    <div class="db-card">
+      <div style="font-weight:600;font-size:13px;margin-bottom:10px;color:#5f6368">本月按模板统计</div>
+      <table style="width:100%;font-size:12px;border-collapse:collapse">
+        <tr style="border-bottom:1px solid #dadce0"><td style="padding:6px 0">变配电室查验单</td><td style="text-align:right;font-weight:600;color:#1a73e8">3 条</td></tr>
+        <tr style="border-bottom:1px solid #dadce0"><td style="padding:6px 0">发电机房查验单</td><td style="text-align:right;font-weight:600;color:#1a73e8">2 条</td></tr>
+        <tr style="border-bottom:1px solid #dadce0"><td style="padding:6px 0">消防控制室查验单</td><td style="text-align:right;font-weight:600;color:#1a73e8">2 条</td></tr>
+        <tr style="border-bottom:1px solid #dadce0"><td style="padding:6px 0">监控室及安防系统</td><td style="text-align:right;font-weight:600;color:#1a73e8">1 条</td></tr>
+        <tr><td style="padding:6px 0">水泵房查验单</td><td style="text-align:right;font-weight:600;color:#1a73e8">4 条</td></tr>
+      </table>
+    </div>
+
+    <!-- By person this month -->
+    <div class="db-card">
+      <div style="font-weight:600;font-size:13px;margin-bottom:10px;color:#5f6368">本月按员工统计</div>
+      <table style="width:100%;font-size:12px;border-collapse:collapse">
+        <tr style="border-bottom:1px solid #dadce0"><td style="padding:6px 0">👤 admin</td><td style="text-align:right;font-weight:600;color:#1a73e8">5 条</td><td style="text-align:right;font-size:10px;color:#80868b">完成 5</td></tr>
+        <tr style="border-bottom:1px solid #dadce0"><td style="padding:6px 0">👤 张三</td><td style="text-align:right;font-weight:600;color:#1a73e8">4 条</td><td style="text-align:right;font-size:10px;color:#80868b">完成 2</td></tr>
+        <tr><td style="padding:6px 0">👤 李四</td><td style="text-align:right;font-weight:600;color:#1a73e8">3 条</td><td style="text-align:right;font-size:10px;color:#80868b">完成 1</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Monthly trend -->
+  <div class="db-card" style="margin-bottom:16px">
+    <div style="font-weight:600;font-size:13px;margin-bottom:10px;color:#5f6368">近6个月记录趋势</div>
+    <div style="display:flex;align-items:flex-end;gap:8px;height:100px">
+      <div style="flex:1;text-align:center"><div style="background:#e8f0fe;height:30px;border-radius:4px;margin-bottom:4px"></div><span style="font-size:10px;color:#80868b">1月</span></div>
+      <div style="flex:1;text-align:center"><div style="background:#e8f0fe;height:50px;border-radius:4px;margin-bottom:4px"></div><span style="font-size:10px;color:#80868b">2月</span></div>
+      <div style="flex:1;text-align:center"><div style="background:#e8f0fe;height:40px;border-radius:4px;margin-bottom:4px"></div><span style="font-size:10px;color:#80868b">3月</span></div>
+      <div style="flex:1;text-align:center"><div style="background:#e8f0fe;height:70px;border-radius:4px;margin-bottom:4px"></div><span style="font-size:10px;color:#80868b">4月</span></div>
+      <div style="flex:1;text-align:center"><div style="background:#e8f0fe;height:85px;border-radius:4px;margin-bottom:4px"></div><span style="font-size:10px;color:#80868b">5月</span></div>
+      <div style="flex:1;text-align:center"><div style="background:#1a73e8;height:95px;border-radius:4px;margin-bottom:4px;position:relative"><span style="position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:600;color:#1a73e8">12</span></div><span style="font-size:10px;font-weight:600;color:#1a73e8">6月</span></div>
+    </div>
+  </div>
+
+  <!-- Recent records this month -->
+  <div class="db-card">
+    <div style="font-weight:600;font-size:13px;margin-bottom:10px;color:#5f6368">本月最近记录</div>
+    <div class="db-row">
+      <div style="flex:1"><span style="font-weight:500">变配电室查验单</span><span style="color:#80868b;margin-left:8px;font-size:11px">admin · 1栋101 · 6/18</span></div>
+      <span style="background:#e8f0fe;color:#1a73e8;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:500">查验中</span>
+    </div>
+    <div class="db-row">
+      <div style="flex:1"><span style="font-weight:500">发电机房查验单</span><span style="color:#80868b;margin-left:8px;font-size:11px">admin · 2栋B1 · 6/19</span></div>
+      <span style="background:#e6f4ea;color:#137333;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:500">已完成</span>
+    </div>
+    <div class="db-row">
+      <div style="flex:1"><span style="font-weight:500">水泵房查验单</span><span style="color:#80868b;margin-left:8px;font-size:11px">张三 · 1栋B1 · 6/20</span></div>
+      <span style="background:#e6f4ea;color:#137333;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:500">已完成</span>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:20px">
+  <h3>确认</h3>
+  <p>核心新增：<strong>月份选择器</strong>（◂ 2025年6月 ▸）+ <strong>近6个月趋势图</strong>。所有统计数据按所选月份过滤。</p>
+  <p style="margin-top:8px;font-size:13px">员工统计新增完成数/待完成数，一目了然谁还没做完。</p>
+  <p style="margin-top:12px;color:#5f6368">这个方案 OK 吗？</p>
+</div>

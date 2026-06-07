@@ -1,0 +1,141 @@
+<h2>页面 3：检查录入界面</h2>
+<p class="subtitle">核心填报 — 逐项填写检查结果、上传照片、保存记录</p>
+
+<style>
+.in { background:#f5f7fa;padding:20px;border-radius:12px;border:1px solid #dadce0 }
+.in-head { display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px }
+.in-card { background:#fff;border-radius:8px;padding:16px 20px;margin-bottom:16px;border:1px solid #dadce0 }
+.in-label { font-size:12px;color:#5f6368;font-weight:500;margin-bottom:4px }
+.in-row { display:grid;grid-template-columns:1fr 1fr;gap:12px }
+.in-table { width:100%;border-collapse:collapse;font-size:13px }
+.in-table th { background:#f8f9fa;font-size:10px;text-transform:uppercase;letter-spacing:.03em;padding:10px 8px;text-align:left;border-bottom:2px solid #dadce0;color:#5f6368;font-weight:600 }
+.in-table td { padding:10px 8px;border-bottom:1px solid #dadce0;vertical-align:top }
+.in-radio { display:inline-flex;gap:2px }
+.in-radio-btn { padding:4px 10px;border:1px solid #dadce0;border-radius:16px;font-size:11px;cursor:pointer;font-weight:500 }
+.in-radio-btn.chk { border-color:#1a73e8;background:#e8f0fe;color:#1a73e8 }
+.in-radio-btn.fail { border-color:#d93025;background:#fce8e6;color:#d93025 }
+.in-footer { border:2px solid #333;display:grid;grid-template-columns:14% 1fr }
+.in-footer-label { background:#f5f5f5;font-weight:600;font-size:12px;text-align:center;padding:12px;border-right:1px solid #999;display:flex;align-items:center;justify-content:center }
+</style>
+
+<div class="in">
+  <!-- Header -->
+  <div class="in-head">
+    <div>
+      <div style="font-size:12px;color:#1a73e8;font-weight:600;margin-bottom:2px">A1 · 设备用房</div>
+      <div style="font-weight:600;font-size:17px">变配电室查验单 - admin</div>
+    </div>
+    <div style="display:flex;gap:6px">
+      <span style="background:#1a73e8;color:#fff;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer">💾 保存记录</span>
+      <span style="color:#1a73e8;border:1px solid #1a73e8;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer">🖨 打印</span>
+      <span style="color:#5f6368;border:1px solid #dadce0;padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer">← 返回</span>
+    </div>
+  </div>
+
+  <!-- Location -->
+  <div class="in-card">
+    <div style="font-weight:600;font-size:14px;margin-bottom:12px">📍 查验位置</div>
+    <div class="in-row" style="margin-bottom:12px">
+      <div><div class="in-label">楼栋</div><select style="width:100%;padding:8px;border:1px solid #dadce0;border-radius:6px;font-size:13px;background:#fff"><option>不选择</option><option selected>1栋</option><option>2栋</option></select></div>
+      <div><div class="in-label">房源</div><select style="width:100%;padding:8px;border:1px solid #dadce0;border-radius:6px;font-size:13px;background:#fff"><option>不选择</option><option selected>101室</option><option>102室</option></select></div>
+    </div>
+    <div><div class="in-label">具体位置</div><input placeholder="如：地下室东侧配电间" value="1层配电间" style="width:100%;padding:8px;border:1px solid #dadce0;border-radius:6px;font-size:13px" /></div>
+  </div>
+
+  <!-- Items table -->
+  <div class="in-card" style="padding:0;overflow:hidden">
+    <div style="padding:14px 20px;border-bottom:1px solid #dadce0;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-weight:600;font-size:14px">检查项目（13项）</span>
+      <span style="color:#1a73e8;border:1px solid #1a73e8;padding:4px 12px;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer">+ 添加条目</span>
+    </div>
+    <div style="overflow-x:auto">
+      <table class="in-table">
+        <thead>
+          <tr><th style="width:32px">#</th><th style="width:28%">检查项目</th><th style="width:28%">检查标准</th><th style="min-width:200px">查验结果</th><th style="width:52px">照片</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="text-align:center;color:#80868b;font-size:11px">1</td>
+            <td style="font-size:13px">变压器运行状态</td>
+            <td style="font-size:12px;color:#5f6368">运行正常，无异常声响和过热现象</td>
+            <td>
+              <div class="in-radio">
+                <span class="in-radio-btn chk">合格</span>
+                <span class="in-radio-btn">不合格</span>
+                <span class="in-radio-btn">免检</span>
+              </div>
+            </td>
+            <td style="text-align:center"><span style="color:#1a73e8;border:1px solid #1a73e8;padding:2px 6px;border-radius:4px;font-size:10px;cursor:pointer">📷0</span></td>
+          </tr>
+          <tr>
+            <td style="text-align:center;color:#80868b;font-size:11px">2</td>
+            <td style="font-size:13px">配电柜检查</td>
+            <td style="font-size:12px;color:#5f6368">接线牢固，开关动作正常，无异常气味</td>
+            <td>
+              <div class="in-radio">
+                <span class="in-radio-btn">合格</span>
+                <span class="in-radio-btn fail">不合格</span>
+                <span class="in-radio-btn">免检</span>
+              </div>
+              <input placeholder="问题描述..." value="3号配电柜接线松动" style="width:100%;margin-top:4px;padding:5px 8px;border:1px solid #d93025;border-radius:4px;font-size:11px;background:#fff" />
+            </td>
+            <td style="text-align:center"><span style="background:#1a73e8;color:#fff;padding:2px 6px;border-radius:10px;font-size:10px;cursor:pointer">📷3</span></td>
+          </tr>
+          <tr>
+            <td style="text-align:center;color:#80868b;font-size:11px">3</td>
+            <td style="font-size:13px">电缆沟检查</td>
+            <td style="font-size:12px;color:#5f6368">沟内无积水，盖板完好，电缆排列整齐</td>
+            <td>
+              <div class="in-radio">
+                <span class="in-radio-btn">合格</span>
+                <span class="in-radio-btn">不合格</span>
+                <span class="in-radio-btn chk">免检</span>
+              </div>
+            </td>
+            <td style="text-align:center"><span style="color:#1a73e8;border:1px solid #1a73e8;padding:2px 6px;border-radius:4px;font-size:10px;cursor:pointer">📷0</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Comment footer -->
+  <div class="in-footer">
+    <div class="in-footer-label">查验<br>意见</div>
+    <div style="padding:12px">
+      <textarea placeholder="整体查验意见..." style="width:100%;min-height:80px;border:none;border-radius:0;resize:vertical;font-size:13px;padding:8px">整体运行正常，3号配电柜需安排维修</textarea>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
+        <span style="font-size:12px;color:#5f6368;font-weight:500">状态：</span>
+        <select style="padding:6px 12px;border:1px solid #dadce0;border-radius:6px;font-size:13px">
+          <option>待查验</option>
+          <option selected>查验中</option>
+          <option>已完成</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:24px">
+  <h3>确认要点</h3>
+  <div class="pros-cons">
+    <div class="pros"><h4>当前设计</h4>
+      <ul>
+        <li>顶部：编号+表单名 + 保存/打印/返回</li>
+        <li>位置卡片：楼栋、房源、具体位置</li>
+        <li>表格：序号 | 检查项目 | 检查标准 | 查验结果 | 照片</li>
+        <li>不合格时：红色边框输入框 + 问题描述</li>
+        <li>照片按钮：有照片时蓝色实心显示数量</li>
+        <li>底部：查验意见 + 状态选择</li>
+      </ul>
+    </div>
+    <div class="cons"><h4>需要确认</h4>
+      <ul>
+        <li>表格列宽比例 OK？（28% + 28% + 200px）</li>
+        <li>自动保存 vs 手动点"保存记录"按钮？</li>
+        <li>照片上传交互：点击弹出模态框？</li>
+        <li>底部查验意见区：是否需要改样式？</li>
+      </ul>
+    </div>
+  </div>
+</div>

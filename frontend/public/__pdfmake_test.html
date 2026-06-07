@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"></head><body>
+<div id="status">Loading...</div>
+<script>
+  window.onerror = function(msg) {
+    document.getElementById('status').textContent = 'Error: ' + msg;
+  };
+</script>
+<script type="module">
+  import pdfMake from '/node_modules/pdfmake/build/pdfmake.js';
+  import pdfFonts from '/node_modules/pdfmake/build/vfs_fonts.js';
+  
+  document.getElementById('status').textContent = 'pdfMake: ' + typeof pdfMake;
+  
+  if (document.querySelector) {
+    pdfMake.addVirtualFileSystem(pdfFonts);
+    pdfMake.fonts = {
+      Roboto: { normal: 'Roboto-Regular.ttf', bold: 'Roboto-Medium.ttf', italics: 'Roboto-Italic.ttf', bolditalics: 'Roboto-MediumItalic.ttf' },
+    };
+    const doc = pdfMake.createPdf({ content: [{ text: 'Hello' }] });
+    doc.getBlob(function(blob) {
+      document.getElementById('status').textContent = 'SUCCESS: ' + blob.size + ' bytes';
+    });
+  }
+</script>
+</body></html>

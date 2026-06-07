@@ -1,0 +1,89 @@
+<h2>全宽布局 — 4 项侧边栏</h2>
+<p class="subtitle">左右撑满屏幕 · 侧边栏始终可见 · 参考表单独立</p>
+
+<style>
+.fw { border:1px solid #dadce0;border-radius:10px;overflow:hidden;margin:0 auto }
+.fw-top { background:#1a73e8;color:#fff;padding:10px 24px;display:flex;align-items:center;justify-content:space-between;font-size:13px }
+.fw-body { display:flex;min-height:460px }
+.fw-side { width:200px;background:#f8f9fa;border-right:1px solid #dadce0;padding:16px 12px;display:flex;flex-direction:column;gap:2px;flex-shrink:0 }
+.fw-side-label { font-size:10px;color:#80868b;text-transform:uppercase;letter-spacing:.06em;padding:12px 14px 4px;font-weight:600 }
+.fw-side-item { padding:10px 14px;font-size:14px;color:#5f6368;border-radius:6px;cursor:pointer;font-weight:500;display:flex;align-items:center;gap:8px }
+.fw-side-item.on { color:#1a73e8;background:#e8f0fe }
+.fw-side-badge { margin-left:auto;background:#dadce0;color:#5f6368;padding:1px 7px;border-radius:10px;font-size:10px;font-weight:600 }
+.fw-main { flex:1;padding:24px;background:#f5f7fa;overflow-y:auto }
+.fw-card { background:#fff;border-radius:8px;padding:16px 20px;margin-bottom:8px;border:1px solid #dadce0 }
+.fw-section { font-size:12px;font-weight:600;color:#5f6368;margin-bottom:12px;display:flex;align-items:center;gap:6px }
+</style>
+
+<div class="fw">
+  <div class="fw-top">
+    <span style="font-weight:600;font-size:15px">GVIP嘉平二工业区</span>
+    <div style="display:flex;align-items:center;gap:16px">
+      <span style="opacity:.85;font-size:12px;cursor:pointer">仪表盘</span>
+      <span style="opacity:.85;font-size:12px;cursor:pointer">配置</span>
+      <span style="opacity:.85;font-size:12px;cursor:pointer">admin ▾</span>
+    </div>
+  </div>
+  <div class="fw-body">
+    <div class="fw-side">
+      <div class="fw-side-label">工作台</div>
+      <div class="fw-side-item on">📋 我的表单</div>
+      <div class="fw-side-item">✅ 检查记录</div>
+      <div class="fw-side-item">🔧 设备档案</div>
+      <div class="fw-side-label">资源</div>
+      <div class="fw-side-item">📁 参考表单<span class="fw-side-badge">28</span></div>
+    </div>
+    <div class="fw-main">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <span style="font-weight:600;font-size:16px">我的表单</span>
+        <span style="background:#1a73e8;color:#fff;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer">+ 创建空白表单</span>
+      </div>
+      <div style="font-size:12px;color:#80868b;margin-bottom:20px">从"参考表单"中选择模板创建，或直接创建空白表单。编辑完成后打印空白表带去现场检查。</div>
+
+      <div class="fw-card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:600;font-size:14px">变配电室查验单 - admin</div>
+            <div style="font-size:11px;color:#5f6368;margin-top:3px">A1 · 13 项 · 创建于 2025-06-15</div>
+          </div>
+          <div style="display:flex;gap:6px;flex-shrink:0;margin-left:16px">
+            <span style="background:#1a73e8;color:#fff;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer">🖨 打印空白表</span>
+            <span style="color:#1a73e8;border:1px solid #1a73e8;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer">编辑</span>
+            <span style="color:#d93025;border:1px solid #d93025;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer">删除</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="fw-card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:600;font-size:14px">发电机房查验单 - admin</div>
+            <div style="font-size:11px;color:#5f6368;margin-top:3px">A2 · 12 项 · 创建于 2025-06-16</div>
+          </div>
+          <div style="display:flex;gap:6px;flex-shrink:0;margin-left:16px">
+            <span style="background:#1a73e8;color:#fff;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer">🖨 打印空白表</span>
+            <span style="color:#1a73e8;border:1px solid #1a73e8;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer">编辑</span>
+            <span style="color:#d93025;border:1px solid #d93025;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer">删除</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:#fff;border:1px dashed #dadce0;border-radius:8px;padding:32px;text-align:center;color:#80868b;margin-top:16px">
+        <div style="font-size:28px;margin-bottom:8px">📋</div>
+        <div style="font-size:13px">还没有表单？去左侧 <strong>📁 参考表单</strong> 选择模板创建</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:24px">
+  <h3>确认</h3>
+  <table>
+    <tr><th>分组</th><th>模块</th><th>职责</th></tr>
+    <tr><td rowspan="3">工作台</td><td>📋 我的表单</td><td>已有表单管理、打印空白表、编辑、删除</td></tr>
+    <tr><td>✅ 检查记录</td><td>新增/编辑/删除记录、填结果、上传照片</td></tr>
+    <tr><td>🔧 设备档案</td><td>设备台账维护</td></tr>
+    <tr><td>资源</td><td>📁 参考表单</td><td>28套系统模板，浏览和创建</td></tr>
+  </table>
+  <p style="margin-top:12px;font-size:13px">这个结构和布局可以定下来吗？</p>
+</div>

@@ -108,6 +108,11 @@ function runMigrations() {
     db.exec("ALTER TABLE inspection_records ADD COLUMN submitted INTEGER DEFAULT 0")
     console.log('Added inspection_records.submitted')
   }
+  // Add submitted_at timestamp
+  if (!irInfo2.find(c => c.name === 'submitted_at')) {
+    db.exec("ALTER TABLE inspection_records ADD COLUMN submitted_at TEXT")
+    console.log('Added inspection_records.submitted_at')
+  }
   const mrInfo2 = db.prepare("PRAGMA table_info(maintenance_records)").all()
   if (!mrInfo2.find(c => c.name === 'submitted')) {
     db.exec("ALTER TABLE maintenance_records ADD COLUMN submitted INTEGER DEFAULT 0")
@@ -343,7 +348,8 @@ export function initDB() {
       created_by INTEGER NOT NULL REFERENCES users(id),
       created_at TEXT DEFAULT (datetime('now')),
       updated_at TEXT DEFAULT (datetime('now')),
-      submitted INTEGER DEFAULT 0
+      submitted INTEGER DEFAULT 0,
+      submitted_at TEXT
     );
 
     CREATE TABLE IF NOT EXISTS inspection_results (

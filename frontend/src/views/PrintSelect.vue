@@ -72,6 +72,7 @@ import api from '../api'
 const route = useRoute()
 const router = useRouter()
 const projectId = route.params.id
+const recordType = route.query.record_type || null
 const records = ref([])
 const myForms = ref([])
 const allTemplates = ref([])
@@ -81,8 +82,10 @@ const loading = ref(true)
 const filterTemplate = ref(null)
 
 onMounted(async () => {
+  let recordUrl = '/records?project_id=' + projectId
+  if (recordType) recordUrl += '&record_type=' + recordType
   const [{ data: r }, { data: f }, { data: t }] = await Promise.all([
-    api.get('/records?project_id=' + projectId),
+    api.get(recordUrl),
     api.get('/forms?project_id=' + projectId),
     api.get('/templates')
   ])
@@ -95,6 +98,7 @@ onMounted(async () => {
 async function loadRecords() {
   loading.value = true
   let url = '/records?project_id=' + projectId
+  if (recordType) url += '&record_type=' + recordType
   if (filterTemplate.value) url += '&template_id=' + filterTemplate.value
   const { data } = await api.get(url)
   records.value = data

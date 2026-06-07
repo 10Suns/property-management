@@ -1,0 +1,48 @@
+<h2>第 1 步：登录页</h2>
+<p class="subtitle">三个角色共用同一个登录入口 · 桌面端居中卡片</p>
+
+<style>
+.login-preview { display:flex;justify-content:center;align-items:center;min-height:400px;background:#f5f7fa;border-radius:12px;padding:40px }
+.login-card { width:420px;background:#fff;border-radius:12px;padding:40px 36px;box-shadow:0 2px 12px rgba(0,0,0,0.08),0 0 0 1px rgba(0,0,0,0.04); }
+.login-title { font-size:28px;font-weight:700;text-align:center;margin-bottom:4px;color:#202124 }
+.login-sub { font-size:14px;color:#5f6368;text-align:center;margin-bottom:32px }
+.login-input { width:100%;padding:12px 14px;border:1px solid #dadce0;border-radius:8px;font-size:15px;margin-bottom:14px;transition:border-color .15s }
+.login-input:focus { outline:none;border-color:#1a73e8;box-shadow:0 0 0 3px rgba(26,115,232,0.12) }
+.login-btn { width:100%;padding:12px;background:#1a73e8;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:500;cursor:pointer;margin-top:8px }
+.login-btn:hover { background:#1557b0 }
+.login-hint { font-size:12px;color:#80868b;text-align:center;margin-top:20px }
+</style>
+
+<div class="login-preview">
+  <div class="login-card">
+    <div class="login-title">物业承接查验</div>
+    <div class="login-sub">请登录以继续</div>
+    <input class="login-input" type="text" placeholder="用户名" value="admin" />
+    <input class="login-input" type="password" placeholder="密码" value="••••••••" />
+    <button class="login-btn">登 录</button>
+    <div class="login-hint">物业承接查验系统 V1.0</div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:24px">
+  <h3>确认要点</h3>
+  <div class="pros-cons">
+    <div class="pros"><h4>当前设计</h4>
+      <ul>
+        <li>白色卡片 420px，居中</li>
+        <li>标题 28px，加粗</li>
+        <li>圆角 12px，柔和阴影</li>
+        <li>输入框焦点蓝色光环</li>
+        <li>按钮全宽 #1a73e8</li>
+      </ul>
+    </div>
+    <div class="cons"><h4>可调整的</h4>
+      <ul>
+        <li>是否需要系统 Logo？</li>
+        <li>背景是否要更丰富（渐变/图片）？</li>
+        <li>卡片大小是否合适？</li>
+        <li>颜色方案是否满意？</li>
+      </ul>
+    </div>
+  </div>
+</div>

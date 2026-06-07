@@ -1,0 +1,63 @@
+<h2>页面 5：设备档案</h2>
+<p class="subtitle">设备台账 · 分类筛选 · 增删改</p>
+
+<style>
+.eq { background:#f5f7fa;padding:20px;border-radius:12px;border:1px solid #dadce0 }
+.eq-head { display:flex;justify-content:space-between;align-items:center;margin-bottom:16px }
+.eq-bar { display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap }
+.eq-card { background:#fff;border-radius:8px;padding:14px 18px;margin-bottom:8px;border:1px solid #dadce0 }
+.eq-card:hover { border-color:#1a73e8 }
+.eq-grid { display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:12px;color:#5f6368 }
+</style>
+
+<div class="eq">
+  <div class="eq-head">
+    <span style="font-weight:600;font-size:18px">🔧 设备档案</span>
+    <span style="background:#1a73e8;color:#fff;padding:7px 16px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer">+ 添加设备</span>
+  </div>
+
+  <div class="eq-bar">
+    <select style="padding:6px 10px;border:1px solid #dadce0;border-radius:6px;font-size:12px;background:#fff"><option>全部分类</option><option>配电</option><option>消防</option><option>电梯</option><option>给排水</option><option>暖通</option><option>弱电</option><option>其他</option></select>
+    <select style="padding:6px 10px;border:1px solid #dadce0;border-radius:6px;font-size:12px;background:#fff"><option>全部状态</option><option>正常</option><option>保养中</option><option>待修</option><option>已报废</option></select>
+  </div>
+
+  <div class="eq-card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start">
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:600;font-size:14px;margin-bottom:6px">1号变压器</div>
+        <div class="eq-grid">
+          <div>分类：配电</div><div>型号：S11-M-800/10</div><div>编号：PD-001</div>
+          <div>安装日期：2024-06-15</div><div>位置：1栋 配电间</div><div>备注：—</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-shrink:0;margin-left:12px">
+        <span style="background:#e6f4ea;color:#137333;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:500">正常</span>
+        <span style="color:#1a73e8;border:1px solid #1a73e8;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer">编辑</span>
+        <span style="color:#d93025;border:1px solid #d93025;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer">删除</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="eq-card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start">
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:600;font-size:14px;margin-bottom:6px">消防水泵</div>
+        <div class="eq-grid">
+          <div>分类：消防</div><div>型号：XBD6/40-150</div><div>编号：XF-003</div>
+          <div>安装日期：2024-08-20</div><div>位置：1栋 B1层</div><div>备注：备用泵</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-shrink:0;margin-left:12px">
+        <span style="background:#e8f0fe;color:#1a73e8;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:500">保养中</span>
+        <span style="color:#1a73e8;border:1px solid #1a73e8;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer">编辑</span>
+        <span style="color:#d93025;border:1px solid #d93025;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer">删除</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:20px">
+  <h3>确认</h3>
+  <p>设备卡片：名称 + 三列信息网格 + 状态标签 + 编辑/删除。筛选栏：分类 + 状态。</p>
+  <p style="margin-top:8px;font-size:13px;color:#80868b">这个页面 OK 吗？</p>
+</div>

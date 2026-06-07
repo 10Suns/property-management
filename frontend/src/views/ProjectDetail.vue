@@ -89,7 +89,7 @@ function printBlank(f) {
 }
 
 async function deleteForm(f) {
-  if (!confirm(`确定删除表单"${f.title}"吗？\n\n该表单关联的所有查验记录也将被永久删除，此操作不可撤销。`)) return
+  if (!confirm(`确定删除表单"${f.title}"吗？\n\n该表单及其关联的查验记录将被删除。如存在已提交记录则无法删除此表单。`)) return
   try {
     await api.delete('/forms/' + f.id)
     myForms.value = myForms.value.filter(x => x.id !== f.id)

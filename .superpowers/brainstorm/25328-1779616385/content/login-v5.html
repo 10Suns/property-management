@@ -1,0 +1,66 @@
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f5f4f1; }
+  h2 { font-size: 22px; font-weight: 600; margin-bottom: 6px; }
+  .subtitle { color: #888; font-size: 13px; margin-bottom: 24px; }
+  .section { margin-bottom: 24px; }
+  h3 { font-size: 15px; font-weight: 600; margin-bottom: 10px; color: #333; }
+  .mockup { background: #fff; border: 1px solid #e0ddd6; border-radius: 12px; overflow: hidden; max-width: 480px; margin: 0 auto; }
+  .mockup-header { background: #f9f8f6; padding: 7px 12px; font-size: 10px; color: #999; border-bottom: 1px solid #e0ddd6; display: flex; gap: 5px; align-items: center; }
+  .mockup-header span { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .mockup-body { height: 500px; position: relative; background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; background-image:url(https://images.unsplash.com/photo-1722537273909-a41f4f44ad6c?w=1000&q=75); }
+  .mockup-body::before { content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.3); }
+
+  .login-card {
+    position: relative; z-index: 1;
+    background: rgba(255,255,255,0.93); border-radius: 10px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+    padding: 40px 32px; width: 300px;
+  }
+  .login-brand { text-align: center; margin-bottom: 28px; }
+  .login-brand h1 { font-family: 'Noto Serif SC', 'Songti SC', serif; font-size: 22px; font-weight: 600; letter-spacing: 2px; color: #333; margin-bottom: 4px; }
+  .login-subtitle { font-size: 10px; color: #aaa; text-transform: uppercase; letter-spacing: 0.8px; }
+  .field-group { margin-bottom: 14px; }
+  .field-label { font-size: 11px; color: #999; margin-bottom: 3px; display: block; }
+  .underline-input { width: 100%; padding: 9px 0; border: none; border-bottom: 1px solid #e0e0e0; font-size: 13px; color: #333; background: transparent; outline: none; }
+  .underline-input:focus { border-bottom-color: #2c3e50; }
+  .login-btn2 { width: 100%; padding: 10px; border: none; border-radius: 6px; background: #2c3e50; color: #fff; font-size: 13px; cursor: pointer; margin-top: 8px; font-family: inherit; }
+  .summary { background: #f9f8f6; border: 1px solid #e0ddd6; border-radius: 10px; padding: 14px 18px; }
+  .summary ul { padding-left: 18px; font-size: 13px; color: #555; line-height: 1.8; }
+</style>
+
+<h2>1. 登录页 — 最终方案</h2>
+<p class="subtitle">✅ 已确认</p>
+
+<div class="section">
+  <h3>效果预览</h3>
+  <div class="mockup">
+    <div class="mockup-header"><span style="background:#ee5a5a;"></span><span style="background:#f5bd4f;"></span><span style="background:#61c454;"></span>登录页</div>
+    <div class="mockup-body">
+      <div class="login-card">
+        <div class="login-brand"><h1>瑞界物业</h1><p class="login-subtitle">Ruijie Property</p></div>
+        <div class="field-group"><label class="field-label">用户名</label><input class="underline-input" placeholder="请输入用户名" /></div>
+        <div class="field-group"><label class="field-label">密码</label><input class="underline-input" type="password" placeholder="请输入密码" /></div>
+        <button class="login-btn2">登录</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="summary">
+    <h3 style="margin-bottom:6px;">登录页确认清单</h3>
+    <ul>
+      <li>品牌名：<strong>瑞界物业</strong></li>
+      <li>英文副标题：Ruijie Property</li>
+      <li>背景：Apple Park 绿树环绕（Unsplash）</li>
+      <li>无 Logo 图标</li>
+      <li>输入框：下划线风格</li>
+      <li>登录卡片：白色半透明 + 圆角阴影</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section">
+  <p style="color:#888;font-size:13px;">登录页确认完毕。是否正确？确认后进入下一页：工作台 Dashboard。</p>
+</div>

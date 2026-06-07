@@ -1,0 +1,201 @@
+<h2>系统全部流程 & 逻辑问题分析</h2>
+<p class="subtitle">6 个页面 · 8 条操作路径 · 4 个逻辑问题</p>
+
+<div class="section">
+  <h3>页面关系 & 用户操作路径图</h3>
+
+  <div style="background:#1e1e1e;color:#d4d4d4;padding:20px;border-radius:12px;font-family:monospace;font-size:13px;line-height:2;overflow-x:auto">
+<pre style="margin:0;color:#d4d4d4">
+                          ┌──────────────────────┐
+                          │    项目列表 ProjectList │
+                          │    (登录后着陆页)       │
+                          └────────┬─────────────┘
+                                   │ 点击项目
+                                   ▼
+                          ┌──────────────────────┐
+                          │  📋 我的表单 ProjectDetail │
+                          │  显示用户已创建的表单     │
+                          │  [+ 创建空白表单]        │
+                          │  [编辑] [打印空白表] [删除] │
+                          └──┬──────────┬──────────┘
+                             │          │
+              点击「编辑」    │          │  点击侧边栏
+                             │          │  「📁 参考表单」
+                             ▼          ▼
+              ┌──────────────────┐  ┌──────────────────┐
+              │  📝 FormEditor   │  │ 📁 ReferenceForms│
+              │  (form edit mode)│◄─│ 28套系统模板      │
+              │                  │  │ 点击 [+ 创建]     │
+              │ [信息录入]       │──┼──► 自动POST /forms │
+              │ [打印空白表]     │  │ 跳转FormEditor     │
+              │ [保存为我的表单] │  └──────────────────┘
+              └──────┬───────────┘
+                     │
+    点击「信息录入」   │  侧边栏「✅ 检查记录」
+                     ▼
+              ┌──────────────────┐  ┌──────────────────────┐
+              │  📝 FormEditor   │  │  ✅ RecordList        │
+              │ (record mode)    │◄─│  显示已有检查记录      │
+              │                  │  │  [+ 新增记录] 按钮     │
+              │ 检查项锁定        │  │        │              │
+              │ 只能选合格/不合格  │  │        ▼              │
+              │ 拍照片/写意见     │  │  ┌─────────────┐     │
+              └──────────────────┘  │  │ Modal弹窗    │     │
+                                    │  │ 列出模板!!!  │ ← BUG │
+                                    │  │ 选模板→创建  │     │
+                                    │  │ 新表单+记录  │     │
+                                    │  └─────────────┘     │
+                                    └──────────────────────┘
+</pre>
+  </div>
+</div>
+
+<div class="section">
+  <h3>8 条操作路径逐一检查</h3>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+
+  <div style="background:#d4edda;padding:12px;border-radius:8px;border-left:4px solid #28a745">
+    <b>路径1 ✅ 从参考表单创建</b><br>
+    <span style="font-size:13px">ReferenceForms → [+ 创建] → POST/forms → FormEditor(?form=X)<br>
+    → 调整检查项 → 表单就绪</span>
+  </div>
+
+  <div style="background:#d4edda;padding:12px;border-radius:8px;border-left:4px solid #28a745">
+    <b>路径2 ✅ 创建空白表单</b><br>
+    <span style="font-size:13px">ProjectDetail → [+ 创建空白表单] → POST/forms → FormEditor(?form=X)<br>
+    → 手动添加检查项 → 表单就绪</span>
+  </div>
+
+  <div style="background:#d4edda;padding:12px;border-radius:8px;border-left:4px solid #28a745">
+    <b>路径3 ✅ 编辑已有表单</b><br>
+    <span style="font-size:13px">ProjectDetail → [编辑] → FormEditor(?form=X)<br>
+    → 增删改检查项 → 自动保存</span>
+  </div>
+
+  <div style="background:#d4edda;padding:12px;border-radius:8px;border-left:4px solid #28a745">
+    <b>路径4 ✅ 从表单开始检查</b><br>
+    <span style="font-size:13px">FormEditor(form模式) → [信息录入] → POST/records<br>
+    → FormEditor(record模式) → 检查项锁定 → 录入结果</span>
+  </div>
+
+  <div style="background:#f8d7da;padding:12px;border-radius:8px;border-left:4px solid #dc3545">
+    <b>路径5 ❌ 从RecordList新增记录</b><br>
+    <span style="font-size:13px">RecordList → [+ 新增记录] → Modal列出<u>系统模板</u><br>
+    → POST/forms(又创建一份表单!) → FormEditor(?form=&inspect=1)<br>
+    → 自动创建记录</span>
+  </div>
+
+  <div style="background:#d4edda;padding:12px;border-radius:8px;border-left:4px solid #28a745">
+    <b>路径6 ✅ 继续已有记录</b><br>
+    <span style="font-size:13px">RecordList → 点击已有记录 → FormEditor(?record=X)<br>
+    → 检查项锁定 → 继续录入</span>
+  </div>
+
+  <div style="background:#d4edda;padding:12px;border-radius:8px;border-left:4px solid #28a745">
+    <b>路径7 ✅ 打印空白表</b><br>
+    <span style="font-size:13px">ProjectDetail → [打印空白表] → PrintPreview<br>
+    或 FormEditor → [打印空白表] → PrintPreview</span>
+  </div>
+
+  <div style="background:#d4edda;padding:12px;border-radius:8px;border-left:4px solid #28a745">
+    <b>路径8 ✅ 打印已填记录</b><br>
+    <span style="font-size:13px">PrintSelect → 勾选记录 → PrintPreview → 下载PDF</span>
+  </div>
+
+</div>
+
+<hr style="border-color:#ddd;margin:20px 0">
+
+<div class="section">
+  <h3>🔴 发现的 4 个逻辑问题</h3>
+</div>
+
+<div style="background:#fff3cd;padding:16px;border-radius:8px;margin-bottom:12px;border-left:4px solid #ffc107">
+  <b>问题 1：RecordList「新增记录」弹窗列出的是系统模板，不是"我的表单"</b><br>
+  <span style="font-size:13px;color:#856404">
+  代码位置：<code>RecordList.vue:89</code> — <code>api.get('/templates')</code><br>
+  应该改为：<code>api.get('/forms?project_id=' + projectId)</code><br>
+  影响：用户已建好表单，但新增记录时看不到自己的表单，反而看到28套系统模板
+  </span>
+</div>
+
+<div style="background:#fff3cd;padding:16px;border-radius:8px;margin-bottom:12px;border-left:4px solid #ffc107">
+  <b>问题 2：RecordList.createRecord 每次都创建新表单（重复表单）</b><br>
+  <span style="font-size:13px;color:#856404">
+  代码位置：<code>RecordList.vue:135-148</code> — createRecord() 内先 POST /forms，再跳转<br>
+  后果：用户从 RecordList 新增记录时，系统自动创建一份新表单。如果用户之前在 ReferenceForms<br>
+  已经创建过同模板的表单，现在就有了两份。反复操作会积累大量重复表单。
+  </span>
+</div>
+
+<div style="background:#fff3cd;padding:16px;border-radius:8px;margin-bottom:12px;border-left:4px solid #ffc107">
+  <b>问题 3：ProjectDetail「我的表单」卡片缺少"信息录入"按钮</b><br>
+  <span style="font-size:13px;color:#856404">
+  代码位置：<code>ProjectDetail.vue:25-29</code> — 每个表单卡片只有 [打印空白表] [编辑] [删除]<br>
+  用户想开始检查，得先点「编辑」进 FormEditor，再点「信息录入」— 多一步跳转<br>
+  应该加上 [信息录入] 按钮，直接进入检查录入模式
+  </span>
+</div>
+
+<div style="background:#fff3cd;padding:16px;border-radius:8px;margin-bottom:12px;border-left:4px solid #ffc107">
+  <b>问题 4：录入检查结果时，界面和编辑表单时几乎一样</b><br>
+  <span style="font-size:13px;color:#856404">
+  代码位置：<code>FormEditor.vue</code> — form模式和record模式共用同一个页面<br>
+  虽然检查项已锁定（canEditItems=false），但页面标题、布局都没变<br>
+  用户可能不清楚自己是在"编辑表单"还是"录入结果"
+  </span>
+</div>
+
+<div class="section">
+  <h2>核心业务规则确认</h2>
+
+  <div style="background:#e8f0fe;padding:16px;border-radius:8px;margin-bottom:16px">
+    <p style="margin:0 0 8px 0;font-weight:600">你的业务规则：</p>
+    <p style="margin:0;font-size:14px;line-height:1.8">
+      <b>第1步</b> — 在「📁 参考表单」选模板 → 自动创建为「我的表单」→ 按需调整检查项<br>
+      <b>第2步</b> — 打印空白表，带去现场检查<br>
+      <b>第3步</b> — 回来后在「我的表单」→ 点「信息录入」→ <b>只能从我的表单里选</b> → 录入结果<br>
+      <b>第4步</b> — 保存记录，打印存档<br>
+      <br>
+      <b>关键约束：第3步录入时，不能看到参考表单，不能修改表单结构</b>
+    </p>
+  </div>
+</div>
+
+<div class="section">
+  <h2>确认问题</h2>
+  <p class="subtitle">请逐个确认以下修复方向</p>
+
+  <div class="options" data-multiselect>
+    <div class="option" data-choice="prob1" onclick="toggleSelect(this)">
+      <div class="letter">1</div>
+      <div class="content">
+        <h3>修复问题1：RecordList「新增记录」弹窗改为列出「我的表单」</h3>
+        <p>把 api.get('/templates') 改成 api.get('/forms?project_id=' + projectId)</p>
+      </div>
+    </div>
+    <div class="option" data-choice="prob2" onclick="toggleSelect(this)">
+      <div class="letter">2</div>
+      <div class="content">
+        <h3>修复问题2：RecordList 选表单后直接创建记录，不再重复创建表单</h3>
+        <p>选「我的表单」后直接 POST /records，不再 POST /forms</p>
+      </div>
+    </div>
+    <div class="option" data-choice="prob3" onclick="toggleSelect(this)">
+      <div class="letter">3</div>
+      <div class="content">
+        <h3>修复问题3：ProjectDetail「我的表单」卡片加「信息录入」按钮</h3>
+        <p>每个表单卡片增加直接的检查入口</p>
+      </div>
+    </div>
+    <div class="option" data-choice="prob4" onclick="toggleSelect(this)">
+      <div class="letter">4</div>
+      <div class="content">
+        <h3>修复问题4：录入模式时页面标题加「查验录入」标识</h3>
+        <p>让用户明确知道自己处于录入模式而非编辑模式</p>
+      </div>
+    </div>
+  </div>
+</div>

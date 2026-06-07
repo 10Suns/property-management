@@ -1,0 +1,94 @@
+<h2>表单编辑器 — 最重要的页面</h2>
+<p class="subtitle">用户在模板基础上：查看检查项 → 编辑修改 → 保存为自己的表单 → 打印或录入</p>
+
+<div class="mockup" style="margin-bottom:24px">
+  <div class="mockup-header">表单编辑器（查看/编辑模板）</div>
+  <div class="mockup-body" style="padding:0">
+    <!-- Header -->
+    <div style="padding:16px 20px;border-bottom:1px solid #f0f0f0;display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <span style="background:#e8f0fe;color:#1a73e8;font-size:11px;font-weight:600;padding:2px 6px;border-radius:4px">A1</span>
+          <span style="font-weight:600;font-size:17px">变配电室查验单</span>
+        </div>
+        <span style="font-size:13px;color:#888">13 个检查项</span>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="mock-button" style="background:#1a73e8;color:#fff;padding:8px 18px;border:none;border-radius:6px;font-size:13px">保存为我的表单</button>
+        <button class="mock-button" style="border:1px solid #ddd;background:#fff;padding:8px 18px;border-radius:6px;font-size:13px">批量编辑</button>
+      </div>
+    </div>
+    <!-- Table -->
+    <table style="width:100%;border-collapse:collapse;font-size:13px">
+      <thead>
+        <tr style="background:#f8f9fa;border-bottom:1px solid #e5e5e5">
+          <th style="width:40px;padding:10px 12px;text-align:center;color:#888;font-weight:500">#</th>
+          <th style="padding:10px 12px;text-align:left;color:#888;font-weight:500">检查项目</th>
+          <th style="padding:10px 12px;text-align:left;color:#888;font-weight:500">检查标准</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid #f0f0f0">
+          <td style="padding:10px 12px;text-align:center;color:#888">1</td>
+          <td style="padding:10px 12px">变压器运行状态</td>
+          <td style="padding:10px 12px;color:#555">运行正常，无异响、无过热现象</td>
+        </tr>
+        <tr style="border-bottom:1px solid #f0f0f0">
+          <td style="padding:10px 12px;text-align:center;color:#888">2</td>
+          <td style="padding:10px 12px">高压开关柜</td>
+          <td style="padding:10px 12px;color:#555">操作机构灵活，五防功能完好</td>
+        </tr>
+        <tr style="border-bottom:1px solid #f0f0f0">
+          <td style="padding:10px 12px;text-align:center;color:#888">3</td>
+          <td style="padding:10px 12px">低压配电柜</td>
+          <td style="padding:10px 12px;color:#555">各回路标识清晰，接线牢固</td>
+        </tr>
+        <tr style="border-bottom:1px solid #f0f0f0">
+          <td style="padding:10px 12px;text-align:center;color:#888">4</td>
+          <td style="padding:10px 12px">电容补偿柜</td>
+          <td style="padding:10px 12px;color:#555">电容器无鼓包、无漏液，投切正常</td>
+        </tr>
+        <tr style="border-bottom:1px solid #f0f0f0">
+          <td style="padding:10px 12px;text-align:center;color:#888">5</td>
+          <td style="padding:10px 12px">接地系统</td>
+          <td style="padding:10px 12px;color:#555">接地电阻符合规范要求，连接可靠</td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="padding:12px 20px;border-top:1px solid #f0f0f0">
+      <div style="font-size:12px;color:#999">
+        点击「批量编辑」后可直接在表格中修改检查项和标准，<br>编辑完成后点击「保存为我的表单」存入个人表单库。
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="mockup">
+  <div class="mockup-header">批量编辑模式</div>
+  <div class="mockup-body" style="padding:0">
+    <table style="width:100%;border-collapse:collapse;font-size:13px">
+      <thead>
+        <tr style="background:#fffbf0;border-bottom:1px solid #e5e5e5">
+          <th style="width:40px;padding:10px 12px;text-align:center;color:#888;font-weight:500">#</th>
+          <th style="padding:10px 12px;text-align:left;color:#888;font-weight:500">检查项目</th>
+          <th style="padding:10px 12px;text-align:left;color:#888;font-weight:500">检查标准</th>
+          <th style="width:80px;padding:10px 12px"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid #f0f0f0">
+          <td style="padding:10px 12px;text-align:center;color:#888">1</td>
+          <td style="padding:6px 8px"><input value="变压器运行状态" style="width:100%;padding:6px 8px;border:1px solid #1a73e8;border-radius:4px;font-size:13px;outline:none"></td>
+          <td style="padding:6px 8px"><input value="运行正常，无异响、无过热现象" style="width:100%;padding:6px 8px;border:1px solid #1a73e8;border-radius:4px;font-size:13px;outline:none"></td>
+          <td style="padding:6px 8px;text-align:center"><span style="color:#d93025;font-size:12px;cursor:pointer">&#10005;</span></td>
+        </tr>
+        <tr style="background:#fafafa;border-bottom:1px solid #f0f0f0">
+          <td style="padding:10px 12px;text-align:center;color:#bbb">+</td>
+          <td style="padding:6px 8px"><input placeholder="新检查项..." style="width:100%;padding:6px 8px;border:1px dashed #ccc;border-radius:4px;font-size:13px;outline:none"></td>
+          <td style="padding:6px 8px"><input placeholder="检查标准..." style="width:100%;padding:6px 8px;border:1px dashed #ccc;border-radius:4px;font-size:13px;outline:none"></td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

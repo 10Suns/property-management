@@ -1,0 +1,85 @@
+<h2>仪表盘</h2>
+<p class="subtitle">项目统计概览 · 经理和管理员可见</p>
+
+<style>
+.db { background:#f5f7fa;padding:20px;border-radius:12px;border:1px solid #dadce0 }
+.db-stats { display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px }
+.db-stat-card { background:#fff;border-radius:8px;padding:16px;text-align:center;border:1px solid #dadce0 }
+.db-stat-num { font-size:28px;font-weight:700;color:#1a73e8 }
+.db-stat-label { font-size:11px;color:#80868b;margin-top:4px }
+.db-grid { display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px }
+.db-card { background:#fff;border-radius:8px;padding:16px;border:1px solid #dadce0 }
+</style>
+
+<div class="db">
+  <div style="font-weight:600;font-size:18px;margin-bottom:16px">📊 仪表盘</div>
+
+  <div class="db-stats">
+    <div class="db-stat-card">
+      <div class="db-stat-num">8</div><div class="db-stat-label">总记录数</div>
+    </div>
+    <div class="db-stat-card">
+      <div class="db-stat-num" style="color:#d93025">3</div><div class="db-stat-label">不合格项</div>
+    </div>
+    <div class="db-stat-card">
+      <div class="db-stat-num" style="color:#188038">5</div><div class="db-stat-label">已完成记录</div>
+    </div>
+    <div class="db-stat-card">
+      <div class="db-stat-num">5</div><div class="db-stat-label">表单模板数</div>
+    </div>
+  </div>
+
+  <div class="db-grid">
+    <div class="db-card">
+      <div style="font-weight:600;font-size:13px;margin-bottom:10px;color:#5f6368">按模板统计</div>
+      <table style="width:100%;font-size:12px;border-collapse:collapse">
+        <tr style="border-bottom:1px solid #dadce0"><td style="padding:6px 0">变配电室查验单</td><td style="text-align:right;font-weight:600">3 条</td></tr>
+        <tr style="border-bottom:1px solid #dadce0"><td style="padding:6px 0">发电机房查验单</td><td style="text-align:right;font-weight:600">2 条</td></tr>
+        <tr style="border-bottom:1px solid #dadce0"><td style="padding:6px 0">水泵房查验单</td><td style="text-align:right;font-weight:600">2 条</td></tr>
+        <tr><td style="padding:6px 0">电梯机房查验单</td><td style="text-align:right;font-weight:600">1 条</td></tr>
+      </table>
+    </div>
+    <div class="db-card">
+      <div style="font-weight:600;font-size:13px;margin-bottom:10px;color:#5f6368">按员工统计</div>
+      <table style="width:100%;font-size:12px;border-collapse:collapse">
+        <tr style="border-bottom:1px solid #dadce0"><td style="padding:6px 0">👤 admin</td><td style="text-align:right;font-weight:600">5 条</td></tr>
+        <tr><td style="padding:6px 0">👤 张三</td><td style="text-align:right;font-weight:600">3 条</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="db-card">
+    <div style="font-weight:600;font-size:13px;margin-bottom:10px;color:#5f6368">最近记录</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f0f0f0;font-size:13px">
+      <div><span style="font-weight:500">变配电室查验单</span><span style="color:#80868b;margin-left:8px;font-size:11px">admin · 1栋 101室 · 2025-06-18</span></div>
+      <span style="background:#e8f0fe;color:#1a73e8;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:500">查验中</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f0f0f0;font-size:13px">
+      <div><span style="font-weight:500">发电机房查验单</span><span style="color:#80868b;margin-left:8px;font-size:11px">admin · 2栋 B1层 · 2025-06-19</span></div>
+      <span style="background:#e6f4ea;color:#137333;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:500">已完成</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;font-size:13px">
+      <div><span style="font-weight:500">水泵房查验单</span><span style="color:#80868b;margin-left:8px;font-size:11px">张三 · 1栋 B1层 · 2025-06-20</span></div>
+      <span style="background:#e6f4ea;color:#137333;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:500">已完成</span>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:20px">
+  <div class="pros-cons">
+    <div class="pros"><h4>设计</h4>
+      <ul>
+        <li>顶部 4 个统计卡片</li>
+        <li>双列表格：按模板 + 按员工</li>
+        <li>最近记录时间线</li>
+        <li>仅经理和管理员可见</li>
+      </ul>
+    </div>
+    <div class="cons"><h4>需要确认</h4>
+      <ul>
+        <li>统计指标够用吗？还需要什么数据？</li>
+        <li>布局 OK？</li>
+      </ul>
+    </div>
+  </div>
+</div>

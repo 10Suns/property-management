@@ -1,0 +1,103 @@
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f5f4f1; color: #333; }
+  h2 { font-size: 22px; font-weight: 600; margin-bottom: 6px; }
+  .subtitle { color: #888; font-size: 13px; margin-bottom: 24px; }
+  .section { margin-bottom: 24px; }
+  h3 { font-size: 15px; font-weight: 600; margin-bottom: 10px; color: #333; }
+  .pros-cons { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .pros, .cons { background: #fff; border: 1px solid #e0ddd6; border-radius: 10px; padding: 16px 18px; }
+  .pros { border-left: 4px solid #2d6a1e; }
+  .cons { border-right: 4px solid #d97706; }
+  .pros h4 { color: #2d6a1e; font-size: 13px; margin-bottom: 8px; }
+  .cons h4 { color: #d97706; font-size: 13px; margin-bottom: 8px; }
+  ul { padding-left: 18px; font-size: 13px; color: #555; line-height: 1.8; }
+
+  .mockup { background: #fff; border: 1px solid #e0ddd6; border-radius: 12px; overflow: hidden; }
+  .mockup-header { background: #f9f8f6; padding: 7px 12px; font-size: 10px; color: #999; border-bottom: 1px solid #e0ddd6; display: flex; gap: 5px; align-items: center; }
+  .mockup-header span { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .mockup-body { padding: 20px; background: #f5f4f1; min-height: 300px; }
+
+  .page-header2 { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .page-title { font-size: 18px; font-weight: 600; }
+  .btn { padding: 8px 18px; border: none; border-radius: 6px; background: #2c3e50; color: #fff; font-size: 13px; cursor: pointer; font-family: inherit; }
+
+  .data-grid { display: flex; flex-direction: column; gap: 8px; }
+  .data-item { background: #fff; border: 1px solid #e0ddd6; border-radius: 8px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+  .data-item:hover { border-color: #bbb; }
+  .item-main { flex: 1; min-width: 0; }
+  .item-title-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+  .item-title { font-weight: 500; font-size: 14px; }
+  .item-meta { font-size: 12px; color: #999; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 500; }
+  .badge-gray { background: #eae8e2; color: #7d7a6e; }
+  .badge-green { background: #d4edda; color: #2d6a1e; }
+
+  .empty-state { text-align: center; padding: 60px 20px; color: #999; }
+  .empty-icon { font-size: 28px; margin-bottom: 8px; }
+  .empty-title { font-weight: 500; font-size: 14px; margin-bottom: 4px; }
+
+  .option-row { display: flex; gap: 12px; }
+  .option-card { flex: 1; background: #fff; border: 1px solid #e0ddd6; border-radius: 10px; padding: 14px; cursor: pointer; }
+  .option-card:hover { border-color: #2c3e50; }
+  .option-card .letter { display: inline-block; width: 22px; height: 22px; border-radius: 50%; background: #2c3e50; color: #fff; text-align: center; line-height: 22px; font-size: 12px; font-weight: 600; margin-right: 8px; }
+  .option-card .title { font-weight: 600; font-size: 14px; display: inline; }
+  .option-card .desc { font-size: 12px; color: #888; margin-top: 6px; }
+</style>
+
+<h2>3. 项目列表</h2>
+<p class="subtitle">ProjectList.vue</p>
+
+<div class="section">
+  <h3>当前设计预览</h3>
+  <div class="mockup">
+    <div class="mockup-header"><span style="background:#ee5a5a;"></span><span style="background:#f5bd4f;"></span><span style="background:#61c454;"></span>项目列表</div>
+    <div class="mockup-body">
+      <div class="page-header2"><span class="page-title">项目列表</span><button class="btn">+ 新建项目</button></div>
+      <div class="data-grid">
+        <div class="data-item">
+          <div class="item-main">
+            <div class="item-title-row"><span class="badge badge-gray">GY-001</span><span class="item-title">GVIP嘉平二工业区</span></div>
+            <div class="item-meta">深圳市龙华区 · 12 栋 / 200 户 · 工业</div>
+          </div>
+          <span class="badge badge-green">管理员</span>
+        </div>
+        <div class="data-item">
+          <div class="item-main">
+            <div class="item-title-row"><span class="badge badge-gray">GY-002</span><span class="item-title">光大科技园</span></div>
+            <div class="item-meta">东莞市松山湖 · 8 栋 / 120 户 · 工业</div>
+          </div>
+          <span class="badge badge-gray">成员</span>
+        </div>
+        <div class="data-item">
+          <div class="item-main">
+            <div class="item-title-row"><span class="badge badge-gray">GY-003</span><span class="item-title">新世界花园</span></div>
+            <div class="item-meta">广州市天河区 · 20 栋 / 500 户 · 住宅</div>
+          </div>
+          <span class="badge badge-green">管理员</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>确认要点</h3>
+  <div class="pros-cons">
+    <div class="pros"><h4>当前设计</h4>
+      <ul>
+        <li>列表式卡片，显示项目编号、名称</li>
+        <li>副信息：地址 + 楼栋/户数 + 类型</li>
+        <li>新建模态框简洁明了</li>
+        <li>管理员/成员角色标签</li>
+      </ul>
+    </div>
+    <div class="cons"><h4>可调整的</h4>
+      <ul>
+        <li>是否需要搜索/筛选功能？</li>
+        <li>项目卡片是否改为网格布局？</li>
+        <li>项目卡片是否显示缩略图？</li>
+      </ul>
+    </div>
+  </div>
+</div>

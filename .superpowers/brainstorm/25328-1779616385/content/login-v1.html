@@ -1,0 +1,112 @@
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f5f4f1; }
+  h2 { font-size: 22px; font-weight: 600; margin-bottom: 6px; }
+  .subtitle { color: #888; font-size: 13px; margin-bottom: 24px; }
+  .section { margin-bottom: 28px; }
+  h3 { font-size: 15px; font-weight: 600; margin-bottom: 12px; color: #333; }
+  h4 { font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+  .pros-cons { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .pros, .cons { background: #fff; border: 1px solid #e0ddd6; border-radius: 10px; padding: 16px 18px; }
+  .pros { border-left: 4px solid #2d6a1e; }
+  .cons { border-right: 4px solid #d97706; }
+  .pros h4 { color: #2d6a1e; }
+  .cons h4 { color: #d97706; }
+  ul { padding-left: 18px; font-size: 13px; color: #555; line-height: 1.8; }
+  .mockup { background: #fff; border: 1px solid #e0ddd6; border-radius: 12px; overflow: hidden; }
+  .mockup-header { background: #f9f8f6; padding: 8px 14px; font-size: 11px; color: #999; border-bottom: 1px solid #e0ddd6; display: flex; gap: 6px; }
+  .mockup-header span { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .mockup-body { padding: 24px; display: flex; align-items: center; justify-content: center; min-height: 380px; background: #f5f4f1; }
+
+  .login-card {
+    background: #fff; border-radius: 10px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+    padding: 44px 36px; width: 320px;
+    border: 1px solid #e0ddd6;
+  }
+  .login-brand { text-align: center; margin-bottom: 32px; }
+  .login-brand h1 {
+    font-family: 'Noto Serif SC', 'Songti SC', serif;
+    font-size: 24px; font-weight: 600; letter-spacing: 1.5px;
+    color: #333; margin-bottom: 6px;
+  }
+  .login-subtitle {
+    font-size: 10px; color: #aaa;
+    text-transform: uppercase; letter-spacing: 0.8px;
+  }
+  .field-group { margin-bottom: 16px; }
+  .field-label { font-size: 12px; color: #888; margin-bottom: 4px; display: block; }
+  .underline-input {
+    width: 100%; padding: 10px 0; border: none;
+    border-bottom: 1px solid #e0ddd6;
+    font-size: 14px; color: #333; background: transparent; outline: none;
+  }
+  .login-btn2 {
+    width: 100%; padding: 10px; border: none; border-radius: 6px;
+    background: #2c3e50; color: #fff; font-size: 14px; cursor: pointer;
+    margin-top: 8px; font-family: inherit;
+  }
+
+  .option-row { display: flex; gap: 12px; }
+  .option-card {
+    flex: 1; background: #fff; border: 1px solid #e0ddd6; border-radius: 10px;
+    padding: 14px; cursor: pointer; transition: border-color 0.2s;
+  }
+  .option-card:hover { border-color: #2c3e50; }
+  .option-card .letter { display: inline-block; width: 22px; height: 22px; border-radius: 50%; background: #2c3e50; color: #fff; text-align: center; line-height: 22px; font-size: 12px; font-weight: 600; margin-right: 8px; }
+  .option-card .title { font-weight: 600; font-size: 14px; display: inline; }
+  .option-card .desc { font-size: 12px; color: #888; margin-top: 6px; }
+</style>
+
+<h2>1. 登录页 — 背景风格</h2>
+<p class="subtitle">已确认：无 Logo，纯文字品牌</p>
+
+<div class="section">
+  <h3>当前设计</h3>
+  <div class="mockup">
+    <div class="mockup-header">
+      <span style="background:#ee5a5a;"></span>
+      <span style="background:#f5bd4f;"></span>
+      <span style="background:#61c454;"></span>
+      登录页 — 纯色背景
+    </div>
+    <div class="mockup-body" style="background:#f5f4f1;">
+      <div class="login-card">
+        <div class="login-brand">
+          <h1>物业承接查验</h1>
+          <p class="login-subtitle">Property Inspection System</p>
+        </div>
+        <div class="field-group">
+          <label class="field-label">用户名</label>
+          <input class="underline-input" placeholder="请输入用户名" />
+        </div>
+        <div class="field-group">
+          <label class="field-label">密码</label>
+          <input class="underline-input" type="password" placeholder="请输入密码" />
+        </div>
+        <button class="login-btn2">登录</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>背景方案选择</h3>
+  <div class="option-row">
+    <div class="option-card">
+      <div class="letter">A</div>
+      <div class="title">保持纯色</div>
+      <div class="desc">浅灰底色 #f5f4f1，干净简洁，加载快</div>
+    </div>
+    <div class="option-card">
+      <div class="letter">B</div>
+      <div class="title">微渐变</div>
+      <div class="desc">淡蓝到白渐变，比纯色更透气</div>
+    </div>
+    <div class="option-card">
+      <div class="letter">C</div>
+      <div class="title">建筑背景图</div>
+      <div class="desc">物业相关照片 + 半透明遮罩</div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,81 @@
+<h2>查验录入页面</h2>
+<p class="subtitle">用户对每个检查项逐项判定：合格 / 不合格 / 免检，上传照片，填写意见</p>
+
+<div class="mockup">
+  <div class="mockup-header">查验录入（我的表单 → 点击「录入查验」后）</div>
+  <div class="mockup-body" style="padding:0">
+    <!-- Header -->
+    <div style="padding:16px 20px;border-bottom:1px solid #f0f0f0;display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div style="font-weight:600;font-size:17px">A1 变配电室查验单</div>
+        <div style="font-size:13px;color:#888;display:flex;gap:16px;margin-top:4px">
+          <span>1栋 101室</span>
+          <span>查验人：张三</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <select style="padding:6px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px">
+          <option>查验中</option><option>已完成</option>
+        </select>
+        <button class="mock-button" style="background:#1a73e8;color:#fff;padding:8px 18px;border:none;border-radius:6px;font-size:13px">保存</button>
+      </div>
+    </div>
+    <!-- Items -->
+    <div style="padding:12px 20px">
+      <div style="border:1px solid #e8e8e8;border-radius:8px;padding:14px 16px;margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div style="flex:1">
+            <div style="font-weight:500;font-size:14px">1. 变压器运行状态</div>
+            <div style="font-size:13px;color:#888;margin-top:2px">运行正常，无异响、无过热现象</div>
+          </div>
+          <div style="display:flex;gap:4px;flex-shrink:0;margin-left:16px">
+            <span style="padding:5px 14px;border-radius:20px;font-size:12px;border:1px solid #34a853;background:#e6f4ea;color:#137333;cursor:pointer">合格</span>
+            <span style="padding:5px 14px;border-radius:20px;font-size:12px;border:1px solid #ddd;color:#888;cursor:pointer">不合格</span>
+            <span style="padding:5px 14px;border-radius:20px;font-size:12px;border:1px solid #ddd;color:#888;cursor:pointer">免检</span>
+            <span style="padding:4px 8px;border-radius:4px;font-size:12px;border:1px solid #ddd;color:#888;cursor:pointer;background:#fafafa">&#128247; 0</span>
+          </div>
+        </div>
+      </div>
+      <div style="border:1px solid #e8e8e8;border-radius:8px;padding:14px 16px;margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div style="flex:1">
+            <div style="font-weight:500;font-size:14px">2. 高压开关柜</div>
+            <div style="font-size:13px;color:#888;margin-top:2px">操作机构灵活，五防功能完好</div>
+            <div style="margin-top:8px">
+              <input placeholder="问题描述..." style="width:100%;padding:6px 8px;border:1px solid #d93025;border-radius:4px;font-size:12px;color:#c5221f">
+            </div>
+          </div>
+          <div style="display:flex;gap:4px;flex-shrink:0;margin-left:16px">
+            <span style="padding:5px 14px;border-radius:20px;font-size:12px;border:1px solid #ddd;color:#888;cursor:pointer">合格</span>
+            <span style="padding:5px 14px;border-radius:20px;font-size:12px;border:1px solid #d93025;background:#fce8e6;color:#c5221f;cursor:pointer">不合格</span>
+            <span style="padding:5px 14px;border-radius:20px;font-size:12px;border:1px solid #ddd;color:#888;cursor:pointer">免检</span>
+            <span style="padding:4px 8px;border-radius:4px;font-size:12px;border:1px solid #ddd;color:#888;cursor:pointer;background:#fafafa">&#128247; 0</span>
+          </div>
+        </div>
+      </div>
+      <div style="border:1px solid #e8e8e8;border-radius:8px;padding:14px 16px;margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div style="flex:1">
+            <div style="font-weight:500;font-size:14px">3. 低压配电柜</div>
+            <div style="font-size:13px;color:#888;margin-top:2px">各回路标识清晰，接线牢固</div>
+          </div>
+          <div style="display:flex;gap:4px;flex-shrink:0;margin-left:16px">
+            <span style="padding:5px 14px;border-radius:20px;font-size:12px;border:1px solid #ddd;color:#888;cursor:pointer">合格</span>
+            <span style="padding:5px 14px;border-radius:20px;font-size:12px;border:1px solid #ddd;color:#888;cursor:pointer">不合格</span>
+            <span style="padding:5px 14px;border-radius:20px;font-size:12px;border:1px solid #5f6368;background:#f1f3f4;color:#3c4043;cursor:pointer">免检</span>
+            <span style="padding:4px 8px;border-radius:4px;font-size:12px;border:1px solid #ddd;color:#888;cursor:pointer;background:#fafafa">&#128247; 0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Comment footer -->
+    <div style="border-top:2px solid #333;display:flex;min-height:80px">
+      <div style="width:14%;background:#f5f5f5;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:12px;border-right:1px solid #999;flex-shrink:0">查验意见</div>
+      <textarea placeholder="整体查验意见..." style="flex:1;border:none;padding:12px;font-size:13px;resize:vertical;outline:none;min-height:80px"></textarea>
+    </div>
+    <div style="padding:12px 20px;border-top:1px solid #f0f0f0;display:flex;gap:16px;font-size:13px">
+      <span>查验人签字：___________</span>
+      <span>日期：___________</span>
+    </div>
+  </div>
+</div>

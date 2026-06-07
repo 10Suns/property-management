@@ -1,0 +1,36 @@
+{
+  "timestamp": "2026-05-31T05:40:51.948Z",
+  "scenario": "edit-items",
+  "targetForms": [
+    "A1",
+    "D1"
+  ],
+  "forms": [
+    {
+      "form": "A1",
+      "title": "变配电室查验单",
+      "itemCount": 15,
+      "status": "PASS",
+      "pages": 2,
+      "totalRows": 15,
+      "seqOk": true,
+      "hasOverflow": false,
+      "hasMissingFooter": false,
+      "hasViContent": true,
+      "issues": []
+    },
+    {
+      "form": "D1",
+      "title": "技术资料移交清单",
+      "itemCount": 35,
+      "status": "PASS",
+      "pages": 3,
+      "totalRows": 35,
+      "seqOk": true,
+      "hasOverflow": false,
+      "hasMissingFooter": false,
+      "hasViContent": true,
+      "issues": []
+    }
+  ]
+}

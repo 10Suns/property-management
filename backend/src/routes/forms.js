@@ -43,6 +43,10 @@ router.get('/:id', (req, res) => {
     WHERE uf.id=?
   `).get(req.params.id)
   if (!form) return res.status(404).json({ error: '表单不存在' })
+  // Permission: owner, admin, or manager
+  if (form.user_id !== req.user.id && req.user.role !== 'admin' && req.user.role !== 'manager') {
+    return res.status(403).json({ error: '无权查看此表单' })
+  }
   form.items = db.prepare('SELECT * FROM user_form_items WHERE form_id=? ORDER BY sort_order').all(req.params.id)
   res.json(form)
 })
@@ -51,6 +55,12 @@ router.get('/:id', (req, res) => {
 router.post('/', (req, res) => {
   const { project_id, template_id, title, items } = req.body
   if (!project_id) return res.status(400).json({ error: '项目不能为空' })
+
+  // Verify project membership
+  if (req.user.role !== 'admin') {
+    const member = db.prepare('SELECT * FROM project_members WHERE project_id=? AND user_id=?').get(project_id, req.user.id)
+    if (!member) return res.status(403).json({ error: '您不是此项目的成员' })
+  }
 
   let formId, templateName
   if (template_id) {
@@ -102,11 +112,20 @@ router.put('/:id', (req, res) => {
   res.json(db.prepare('SELECT * FROM user_forms WHERE id=?').get(req.params.id))
 })
 
-// Delete user form (owner or admin only)
+// Delete user form (owner or admin only) — blocks deletion if submitted records exist
 router.delete('/:id', (req, res) => {
   const form = db.prepare('SELECT * FROM user_forms WHERE id=?').get(req.params.id)
   if (!form) return res.status(404).json({ error: '表单不存在' })
   if (form.user_id !== req.user.id && req.user.role !== 'admin') return res.status(403).json({ error: '只能删除自己的表单，管理员可删除所有表单' })
+
+  // Check for associated submitted records
+  const submittedCount = db.prepare(
+    'SELECT COUNT(*) as cnt FROM inspection_records WHERE user_form_id=? AND submitted=1'
+  ).get(req.params.id)
+  if (submittedCount.cnt > 0) {
+    return res.status(403).json({ error: `该表单关联 ${submittedCount.cnt} 条已提交的查验记录，无法删除` })
+  }
+
   db.prepare('DELETE FROM user_forms WHERE id=?').run(req.params.id)
   res.json({ message: '已删除' })
 })

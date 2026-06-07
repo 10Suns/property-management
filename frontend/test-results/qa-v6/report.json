@@ -1,0 +1,120 @@
+{
+  "timestamp": "2026-05-31T06:50:06.225Z",
+  "scenario": "bilingual",
+  "targetForms": [
+    "B1",
+    "B6",
+    "C1",
+    "C2",
+    "C3",
+    "D2",
+    "B9",
+    "D1"
+  ],
+  "forms": [
+    {
+      "form": "B1",
+      "title": "监控室及安防系统查验单",
+      "itemCount": 10,
+      "status": "PASS",
+      "pages": 1,
+      "totalRows": 10,
+      "seqOk": true,
+      "hasOverflow": false,
+      "hasMissingFooter": false,
+      "hasViContent": true,
+      "issues": []
+    },
+    {
+      "form": "B6",
+      "title": "给排水外网及消防管网查验单",
+      "itemCount": 11,
+      "status": "PASS",
+      "pages": 2,
+      "totalRows": 11,
+      "seqOk": true,
+      "hasOverflow": false,
+      "hasMissingFooter": false,
+      "hasViContent": true,
+      "issues": []
+    },
+    {
+      "form": "B9",
+      "title": "室外基础设施及环卫工程查验单",
+      "itemCount": 8,
+      "status": "PASS",
+      "pages": 2,
+      "totalRows": 8,
+      "seqOk": true,
+      "hasOverflow": false,
+      "hasMissingFooter": false,
+      "hasViContent": true,
+      "issues": []
+    },
+    {
+      "form": "C1",
+      "title": "室内土建部分查验单",
+      "itemCount": 10,
+      "status": "PASS",
+      "pages": 2,
+      "totalRows": 10,
+      "seqOk": true,
+      "hasOverflow": false,
+      "hasMissingFooter": false,
+      "hasViContent": true,
+      "issues": []
+    },
+    {
+      "form": "C2",
+      "title": "室内给排水设施查验单",
+      "itemCount": 11,
+      "status": "PASS",
+      "pages": 2,
+      "totalRows": 11,
+      "seqOk": true,
+      "hasOverflow": false,
+      "hasMissingFooter": false,
+      "hasViContent": true,
+      "issues": []
+    },
+    {
+      "form": "C3",
+      "title": "室内电气设施查验单",
+      "itemCount": 10,
+      "status": "PASS",
+      "pages": 2,
+      "totalRows": 10,
+      "seqOk": true,
+      "hasOverflow": false,
+      "hasMissingFooter": false,
+      "hasViContent": true,
+      "issues": []
+    },
+    {
+      "form": "D1",
+      "title": "技术资料移交清单",
+      "itemCount": 33,
+      "status": "PASS",
+      "pages": 3,
+      "totalRows": 33,
+      "seqOk": true,
+      "hasOverflow": false,
+      "hasMissingFooter": false,
+      "hasViContent": true,
+      "issues": []
+    },
+    {
+      "form": "D2",
+      "title": "钥匙及门禁移交清单",
+      "itemCount": 15,
+      "status": "PASS",
+      "pages": 1,
+      "totalRows": 15,
+      "seqOk": true,
+      "hasOverflow": false,
+      "hasMissingFooter": false,
+      "hasViContent": true,
+      "issues": []
+    }
+  ]
+}

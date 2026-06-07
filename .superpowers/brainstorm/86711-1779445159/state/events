@@ -1,0 +1,3 @@
+{"type":"click","text":"A\n      \n        允许重复，不拦截\n        复验场景需要新建记录，由操作人员自己判断。保持灵活性。","choice":"allow_dup","id":null,"timestamp":1779449461895}
+{"type":"click","text":"A\n      \n        记录创建时保存快照，不受后续表单修改影响\n        记录创建时把检查项名称固化，之后改表单不影响老记录（推荐，符合审计）","choice":"snapshot","id":null,"timestamp":1779449531172}
+{"type":"click","text":"A\n      \n        新建整条记录\n        重新检查全部项目，生成新记录。旧记录保留作为历史。","choice":"new_record","id":null,"timestamp":1779449576324}

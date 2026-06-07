@@ -54,6 +54,11 @@ const routes = [
     component: () => import('../views/ReferenceForms.vue')
   },
   {
+    path: '/projects/:id/print-select',
+    name: 'PrintSelect',
+    component: () => import('../views/PrintSelect.vue')
+  },
+  {
     path: '/print-preview',
     name: 'PrintPreview',
     component: () => import('../views/PrintPreview.vue')

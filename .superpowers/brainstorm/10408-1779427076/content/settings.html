@@ -1,0 +1,59 @@
+<h2>项目配置</h2>
+<p class="subtitle">楼栋管理 · 房源管理 · 成员管理</p>
+
+<style>
+.st { background:#f5f7fa;padding:20px;border-radius:12px;border:1px solid #dadce0 }
+.st-tabs { display:flex;gap:0;border-bottom:1px solid #dadce0;margin-bottom:16px }
+.st-tab { padding:10px 20px;font-size:14px;color:#5f6368;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px }
+.st-tab.on { color:#1a73e8;border-bottom-color:#1a73e8 }
+.st-card { background:#fff;border-radius:8px;padding:14px 16px;margin-bottom:8px;border:1px solid #dadce0;display:flex;justify-content:space-between;align-items:center }
+.st-row { display:flex;gap:8px;align-items:center;margin-bottom:12px }
+</style>
+
+<div class="st">
+  <div style="font-weight:600;font-size:18px;margin-bottom:16px">⚙️ 项目配置</div>
+
+  <div class="st-tabs">
+    <div class="st-tab on">楼栋管理</div>
+    <div class="st-tab">房源管理</div>
+    <div class="st-tab">成员管理</div>
+  </div>
+
+  <!-- 楼栋管理 -->
+  <div class="st-row">
+    <input placeholder="输入楼栋名称，如 1栋、A座" style="padding:8px 12px;border:1px solid #dadce0;border-radius:6px;font-size:13px;flex:1" />
+    <span style="background:#1a73e8;color:#fff;padding:8px 16px;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer">添加</span>
+  </div>
+  <div class="st-card"><span style="font-size:14px;font-weight:500">1栋</span><span style="font-size:11px;color:#80868b">45 户</span><span style="color:#d93025;border:1px solid #d93025;padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer">删除</span></div>
+  <div class="st-card"><span style="font-size:14px;font-weight:500">2栋</span><span style="font-size:11px;color:#80868b">32 户</span><span style="color:#d93025;border:1px solid #d93025;padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer">删除</span></div>
+  <div class="st-card"><span style="font-size:14px;font-weight:500">3栋</span><span style="font-size:11px;color:#80868b">28 户</span><span style="color:#d93025;border:1px solid #d93025;padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer">删除</span></div>
+
+  <div style="margin-top:20px;color:#80868b;font-size:12px;text-align:center">切换到「房源管理」和「成员管理」标签查看其他配置项</div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px">
+  <div style="background:#fff;border:1px solid #dadce0;border-radius:8px;padding:16px">
+    <h4 style="margin-bottom:8px">🏠 房源管理</h4>
+    <ul style="font-size:12px;color:#5f6368;padding-left:18px;line-height:1.8">
+      <li>选择楼栋 → 输入房号 + 面积</li>
+      <li>按楼栋筛选房源列表</li>
+      <li>支持批量导入（预留）</li>
+      <li>删除房源（确认提示）</li>
+    </ul>
+  </div>
+  <div style="background:#fff;border:1px solid #dadce0;border-radius:8px;padding:16px">
+    <h4 style="margin-bottom:8px">👥 成员管理</h4>
+    <ul style="font-size:12px;color:#5f6368;padding-left:18px;line-height:1.8">
+      <li>添加成员：姓名 + 角色</li>
+      <li>自动生成 SG 编号和密码</li>
+      <li>弹窗显示凭据，复制保存</li>
+      <li>重置密码功能</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section" style="margin-top:20px">
+  <h3>确认</h3>
+  <p>三个标签页：楼栋管理（增删）、房源管理（按楼栋添加房号面积）、成员管理（自动生成 SG 账号）。</p>
+  <p style="margin-top:8px;font-size:13px;color:#80868b">配置页面 OK 吗？</p>
+</div>

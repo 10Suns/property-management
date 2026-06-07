@@ -46,7 +46,9 @@ router.get('/', (req, res) => {
   const { project_id, template_id, user_form_id, building_id, house_id, status, record_type } = req.query
   const base = `
     SELECT r.*, t.title as template_title, t.form_id, u.display_name as creator_name,
-      b.name as building_name, h.house_number, uf.title as user_form_title
+      b.name as building_name, h.house_number, uf.title as user_form_title,
+      (SELECT COUNT(*) FROM inspection_results WHERE record_id=r.id) as item_count,
+      (SELECT COUNT(*) FROM inspection_results WHERE record_id=r.id AND result='fail') as fail_count
     FROM inspection_records r
     JOIN inspection_templates t ON r.template_id=t.id
     JOIN users u ON r.created_by=u.id
@@ -77,6 +79,12 @@ router.post('/', (req, res) => {
   const { project_id, user_form_id, template_id, building_id, house_id, location_info, record_type } = req.body
   if (!project_id) return res.status(400).json({ error: '项目不能为空' })
   if (!user_form_id && !template_id) return res.status(400).json({ error: '表单或模板不能为空' })
+
+  // Verify project membership
+  if (req.user.role !== 'admin') {
+    const member = db.prepare('SELECT * FROM project_members WHERE project_id=? AND user_id=?').get(project_id, req.user.id)
+    if (!member) return res.status(403).json({ error: '您不是此项目的成员' })
+  }
 
   const tx = db.transaction(() => {
     // If using user_form, get the template_id from it
@@ -113,10 +121,15 @@ router.post('/', (req, res) => {
   res.json(getRecord(tx()))
 })
 
-// Get record
+// Get record (with permission check)
 router.get('/:id', (req, res) => {
   const record = getRecord(req.params.id)
   if (!record) return res.status(404).json({ error: '记录不存在' })
+  // Permission: owner, admin, manager, or project admin
+  if (req.user.role !== 'admin' && req.user.role !== 'manager' && record.created_by !== req.user.id) {
+    const isPA = db.prepare('SELECT * FROM project_members WHERE project_id=? AND user_id=? AND role=?').get(record.project_id, req.user.id, 'admin')
+    if (!isPA) return res.status(403).json({ error: '无权查看此记录' })
+  }
   res.json(record)
 })
 
@@ -168,7 +181,7 @@ router.post('/:id/submit', (req, res) => {
   if (req.user.role !== 'admin' && record.created_by !== req.user.id) {
     return res.status(403).json({ error: '只能提交自己的记录' })
   }
-  db.prepare("UPDATE inspection_records SET submitted=1, updated_at=datetime('now') WHERE id=?").run(req.params.id)
+  db.prepare("UPDATE inspection_records SET submitted=1, submitted_at=datetime('now'), updated_at=datetime('now') WHERE id=?").run(req.params.id)
   res.json(getRecord(req.params.id))
 })
 

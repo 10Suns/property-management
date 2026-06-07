@@ -1,0 +1,77 @@
+<h2>打印预览</h2>
+<p class="subtitle">A4 纸模拟 · 点击"开始打印"调起浏览器打印</p>
+
+<style>
+.pp { background:#f5f7fa;padding:24px;border-radius:12px;border:1px solid #dadce0;display:flex;flex-direction:column;align-items:center }
+.pp-toolbar { display:flex;gap:8px;align-items:center;margin-bottom:20px;background:#fff;padding:10px 16px;border-radius:8px;border:1px solid #dadce0;width:100% }
+.pp-page { width:640px;background:#fff;box-shadow:0 2px 12px rgba(0,0,0,.15);padding:40px 36px;font-size:12px;border-radius:2px }
+.pp-title { text-align:center;font-weight:700;font-size:16px;margin-bottom:4px }
+.pp-subtitle { text-align:center;font-size:11px;color:#5f6368;margin-bottom:16px }
+.pp-info { display:grid;grid-template-columns:1fr 1fr;gap:4px 24px;margin-bottom:14px;font-size:11px;padding:8px 0;border-top:1px solid #333;border-bottom:1px solid #333 }
+.pp-table { width:100%;border-collapse:collapse;margin-bottom:14px }
+.pp-table th { border:1px solid #333;padding:5px 6px;font-size:10px;background:#f5f5f5;text-align:center }
+.pp-table td { border:1px solid #333;padding:5px 6px;font-size:10px }
+.pp-footer { border-top:1px solid #333;padding-top:8px;font-size:11px }
+.pp-empty-col { width:47%;background:#fafafa }
+</style>
+
+<div class="pp">
+  <div class="pp-toolbar">
+    <span style="font-weight:600;font-size:14px;flex:1">打印预览 — 变配电室查验单 （空白表）</span>
+    <span style="background:#1a73e8;color:#fff;padding:8px 20px;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer">🖨 开始打印</span>
+    <span style="color:#5f6368;border:1px solid #dadce0;padding:8px 16px;border-radius:6px;font-size:13px;cursor:pointer">返回</span>
+  </div>
+
+  <!-- A4 preview -->
+  <div class="pp-page">
+    <div class="pp-title">瑞界物业 · 物业承接查验记录表</div>
+    <div class="pp-subtitle">A1 — 变配电室查验单</div>
+    <div class="pp-info">
+      <div>项目名称：GVIP嘉平二工业区</div><div>查验日期：____年____月____日</div>
+      <div>查验位置：________栋 ________层 ________室</div><div>查验人：____________</div>
+    </div>
+    <table class="pp-table">
+      <thead>
+        <tr><th style="width:4%">序号</th><th style="width:9%">检查项目</th><th style="width:40%">检查标准</th><th class="pp-empty-col">查验结果</th></tr>
+      </thead>
+      <tbody>
+        <tr><td style="text-align:center">1</td><td>变压器运行状态</td><td>运行正常，无异常声响和过热现象，油温在规定范围内，绝缘良好</td><td></td></tr>
+        <tr><td style="text-align:center">2</td><td>配电柜检查</td><td>接线牢固，开关动作正常，仪表指示准确，无异常气味</td><td></td></tr>
+        <tr><td style="text-align:center">3</td><td>电缆沟检查</td><td>沟内无积水，盖板完好，电缆排列整齐，防火封堵严密</td><td></td></tr>
+      </tbody>
+    </table>
+    <div class="pp-footer" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div><strong>查验意见：</strong></div>
+      <div style="text-align:right"><strong>查验人签字：</strong>____________ &nbsp;&nbsp; <strong>日期：</strong>____________</div>
+    </div>
+  </div>
+
+  <div style="margin-top:20px;font-size:12px;color:#80868b;text-align:center">预览为 A4 纸模拟。点击「开始打印」调起浏览器打印对话框，<br>纸张选 A4、边距选最小、勾选背景图形。</div>
+</div>
+
+<div style="margin-top:24px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+  <div style="background:#fff;border:1px solid #dadce0;border-radius:8px;padding:16px">
+    <h4 style="margin-bottom:8px">空白表打印（来自我的表单）</h4>
+    <ul style="font-size:12px;color:#5f6368;padding-left:18px;line-height:1.8">
+      <li>模板编号 + 检查项</li>
+      <li>查验结果列为空白</li>
+      <li>供手工填写</li>
+      <li>可直接打印多份</li>
+    </ul>
+  </div>
+  <div style="background:#fff;border:1px solid #dadce0;border-radius:8px;padding:16px">
+    <h4 style="margin-bottom:8px">已填写记录打印（来自检查记录）</h4>
+    <ul style="font-size:12px;color:#5f6368;padding-left:18px;line-height:1.8">
+      <li>检查结果已填入</li>
+      <li>不合格项标红</li>
+      <li>照片附后页</li>
+      <li>查验意见+签字</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section" style="margin-top:20px">
+  <h3>确认</h3>
+  <p>打印流程极简：表单/记录页点打印 → 进入预览 → 点"开始打印" → 浏览器打印对话框。</p>
+  <p style="margin-top:8px;font-size:13px">列宽比例：序号 4% + 检查项目 9% + 检查标准 40% + 查验结果 47%。这个 OK 吗？</p>
+</div>
