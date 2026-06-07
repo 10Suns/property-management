@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import db from '../db.js'
 import { adminRequired, managerRequired } from '../auth.js'
+import { auditLog } from '../db.js'
 
 const router = Router()
 
@@ -69,9 +70,18 @@ router.put('/:id', managerRequired, (req, res) => {
   res.json(db.prepare('SELECT * FROM projects WHERE id=?').get(req.params.id))
 })
 
-// Delete project (admin only)
+// Delete project (admin only) — checks for submitted records
 router.delete('/:id', adminRequired, (req, res) => {
+  const p = db.prepare('SELECT * FROM projects WHERE id=?').get(req.params.id)
+  if (!p) return res.status(404).json({ error: '项目不存在' })
+  const submittedCount = db.prepare(
+    'SELECT COUNT(*) as cnt FROM inspection_records WHERE project_id=? AND submitted=1'
+  ).get(req.params.id)
+  if (submittedCount.cnt > 0) {
+    return res.status(403).json({ error: `该项目关联 ${submittedCount.cnt} 条已提交的查验记录，无法删除` })
+  }
   db.prepare('DELETE FROM projects WHERE id=?').run(req.params.id)
+  auditLog(req.user.id, req.user.username, 'delete', 'project', req.params.id, `name=${p.name}`)
   res.json({ message: '已删除' })
 })
 

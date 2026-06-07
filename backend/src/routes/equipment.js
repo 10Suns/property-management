@@ -4,6 +4,8 @@ import multer from 'multer'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import db from '../db.js'
+import { auditLog } from '../db.js'
+import { imageFilter } from '../upload-utils.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const router = Router()
@@ -24,7 +26,11 @@ const photoStorage = multer.diskStorage({
     cb(null, Date.now() + '-' + Math.random().toString(36).slice(2, 8) + ext)
   }
 })
-const uploadPhotos = multer({ storage: photoStorage, limits: { fileSize: 10 * 1024 * 1024 } })
+const uploadPhotos = multer({
+  storage: photoStorage,
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: imageFilter
+})
 
 // File upload config for manuals
 const manualStorage = multer.diskStorage({
@@ -209,7 +215,8 @@ router.post('/:id/maintenance/:rid/submit', (req, res) => {
   const mr = db.prepare('SELECT * FROM maintenance_records WHERE id=? AND equipment_id=?').get(req.params.rid, req.params.id)
   if (!mr) return res.status(404).json({ error: '记录不存在' })
   if (mr.submitted) return res.status(403).json({ error: '记录已提交' })
-  db.prepare("UPDATE maintenance_records SET submitted=1, updated_at=datetime('now') WHERE id=?").run(req.params.rid)
+  db.prepare("UPDATE maintenance_records SET submitted=1, submitted_at=datetime('now'), updated_at=datetime('now') WHERE id=?").run(req.params.rid)
+  auditLog(req.user.id, req.user.username, 'submit', 'maintenance_record', req.params.rid, `equipment_id=${req.params.id}`)
   const record = db.prepare('SELECT * FROM maintenance_records WHERE id=?').get(req.params.rid)
   res.json({ ...record, photos: JSON.parse(record.photos || '[]') })
 })
@@ -265,7 +272,9 @@ router.delete('/:id/manuals/:mid', (req, res) => {
   const manual = db.prepare('SELECT * FROM equipment_manuals WHERE id=? AND equipment_id=?').get(req.params.mid, req.params.id)
   if (!manual) return res.status(404).json({ error: '说明书不存在' })
   db.prepare('DELETE FROM equipment_manuals WHERE id=?').run(req.params.mid)
-  fs.unlink(path.join(__dirname, '..', '..', 'uploads', 'manuals', manual.filename), () => {})
+  fs.unlink(path.join(__dirname, '..', '..', 'uploads', 'manuals', manual.filename), (err) => {
+    if (err) console.error('Failed to delete manual file:', err.message)
+  })
   res.json({ message: '已删除' })
 })
 

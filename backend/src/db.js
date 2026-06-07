@@ -10,9 +10,15 @@ db.pragma('journal_mode = WAL')
 db.pragma('foreign_keys = ON')
 
 function runMigrations() {
+  // Cache PRAGMA table_info results to avoid duplicate queries
+  const _tableCols = new Map()
+  const hasColumn = (table, col) => {
+    if (!_tableCols.has(table)) _tableCols.set(table, db.prepare(`PRAGMA table_info(${table})`).all())
+    return _tableCols.get(table).some(c => c.name === col)
+  }
+
   // Add code column to projects if not present
-  const codeCol = db.prepare("PRAGMA table_info(projects)").all().find(c => c.name === 'code')
-  if (!codeCol) {
+  if (!hasColumn('projects', 'code')) {
     db.exec("ALTER TABLE projects ADD COLUMN code TEXT")
     // Assign codes to existing projects ordered by id
     const rows = db.prepare("SELECT id FROM projects ORDER BY id").all()
@@ -52,17 +58,15 @@ function runMigrations() {
     console.log('Migrated users table: role constraint updated (admin/manager/employee)')
   }
 
-  const rtCol = db.prepare("PRAGMA table_info(inspection_records)").all().find(c => c.name === 'record_type')
-  if (!rtCol) {
+  if (!hasColumn('inspection_records', 'record_type')) {
     db.exec("ALTER TABLE inspection_records ADD COLUMN record_type TEXT DEFAULT 'routine' CHECK(record_type IN ('routine','acceptance'))")
     console.log('Added record_type column to inspection_records')
   }
 
   // Equipment maintenance fields
   const eqCols = ['maintenance_cycle', 'maintenance_interval_days', 'next_maintenance_date', 'last_maintenance_date', 'maintenance_hint']
-  const eqInfo = db.prepare("PRAGMA table_info(equipment)").all()
   for (const col of eqCols) {
-    if (!eqInfo.find(c => c.name === col)) {
+    if (!hasColumn('equipment', col)) {
       const type = col === 'maintenance_interval_days' ? 'INTEGER' : 'TEXT'
       db.exec(`ALTER TABLE equipment ADD COLUMN ${col} ${type}`)
       console.log('Added equipment.' + col)
@@ -70,14 +74,13 @@ function runMigrations() {
   }
 
   // Add updated_at to maintenance_records
-  const mrInfo = db.prepare("PRAGMA table_info(maintenance_records)").all()
-  if (!mrInfo.find(c => c.name === 'updated_at')) {
+  if (!hasColumn('maintenance_records', 'updated_at')) {
     db.exec("ALTER TABLE maintenance_records ADD COLUMN updated_at TEXT DEFAULT (datetime('now'))")
     console.log('Added maintenance_records.updated_at')
   }
 
   // Migrate maintenance_records: add content column + pending status
-  if (!mrInfo.find(c => c.name === 'content')) {
+  if (!hasColumn('maintenance_records', 'content')) {
     db.pragma('foreign_keys = OFF')
     db.exec(`
       CREATE TABLE maintenance_records_new (
@@ -103,64 +106,62 @@ function runMigrations() {
   }
 
   // Add submitted column to inspection_records and maintenance_records
-  const irInfo2 = db.prepare("PRAGMA table_info(inspection_records)").all()
-  if (!irInfo2.find(c => c.name === 'submitted')) {
+  if (!hasColumn('inspection_records', 'submitted')) {
     db.exec("ALTER TABLE inspection_records ADD COLUMN submitted INTEGER DEFAULT 0")
     console.log('Added inspection_records.submitted')
   }
   // Add submitted_at timestamp
-  if (!irInfo2.find(c => c.name === 'submitted_at')) {
+  if (!hasColumn('inspection_records', 'submitted_at')) {
     db.exec("ALTER TABLE inspection_records ADD COLUMN submitted_at TEXT")
     console.log('Added inspection_records.submitted_at')
   }
-  const mrInfo2 = db.prepare("PRAGMA table_info(maintenance_records)").all()
-  if (!mrInfo2.find(c => c.name === 'submitted')) {
+  if (!hasColumn('maintenance_records', 'submitted')) {
     db.exec("ALTER TABLE maintenance_records ADD COLUMN submitted INTEGER DEFAULT 0")
     console.log('Added maintenance_records.submitted')
   }
+  if (!hasColumn('maintenance_records', 'submitted_at')) {
+    db.exec("ALTER TABLE maintenance_records ADD COLUMN submitted_at TEXT")
+    console.log('Added maintenance_records.submitted_at')
+  }
 
   // Vietnamese translation columns
-  const tiInfo = db.prepare("PRAGMA table_info(template_items)").all()
-  if (!tiInfo.find(c => c.name === 'name_vi')) {
+  if (!hasColumn('template_items', 'name_vi')) {
     db.exec("ALTER TABLE template_items ADD COLUMN name_vi TEXT DEFAULT ''")
     console.log('Added template_items.name_vi')
   }
-  if (!tiInfo.find(c => c.name === 'standard_vi')) {
+  if (!hasColumn('template_items', 'standard_vi')) {
     db.exec("ALTER TABLE template_items ADD COLUMN standard_vi TEXT DEFAULT ''")
     console.log('Added template_items.standard_vi')
   }
 
-  const ufiInfo = db.prepare("PRAGMA table_info(user_form_items)").all()
-  if (!ufiInfo.find(c => c.name === 'item_name_vi')) {
+  if (!hasColumn('user_form_items', 'item_name_vi')) {
     db.exec("ALTER TABLE user_form_items ADD COLUMN item_name_vi TEXT DEFAULT ''")
     console.log('Added user_form_items.item_name_vi')
   }
-  if (!ufiInfo.find(c => c.name === 'check_standard_vi')) {
+  if (!hasColumn('user_form_items', 'check_standard_vi')) {
     db.exec("ALTER TABLE user_form_items ADD COLUMN check_standard_vi TEXT DEFAULT ''")
     console.log('Added user_form_items.check_standard_vi')
   }
 
-  const irInfo3 = db.prepare("PRAGMA table_info(inspection_results)").all()
-  if (!irInfo3.find(c => c.name === 'custom_item_name_vi')) {
+  if (!hasColumn('inspection_results', 'custom_item_name_vi')) {
     db.exec("ALTER TABLE inspection_results ADD COLUMN custom_item_name_vi TEXT DEFAULT ''")
     console.log('Added inspection_results.custom_item_name_vi')
   }
-  if (!irInfo3.find(c => c.name === 'custom_standard_vi')) {
+  if (!hasColumn('inspection_results', 'custom_standard_vi')) {
     db.exec("ALTER TABLE inspection_results ADD COLUMN custom_standard_vi TEXT DEFAULT ''")
     console.log('Added inspection_results.custom_standard_vi')
   }
 
   // Add project config columns
-  const pInfo = db.prepare("PRAGMA table_info(projects)").all()
-  if (!pInfo.find(c => c.name === 'land_area')) {
+  if (!hasColumn('projects', 'land_area')) {
     db.exec("ALTER TABLE projects ADD COLUMN land_area TEXT DEFAULT ''")
     console.log('Added projects.land_area')
   }
-  if (!pInfo.find(c => c.name === 'building_area')) {
+  if (!hasColumn('projects', 'building_area')) {
     db.exec("ALTER TABLE projects ADD COLUMN building_area TEXT DEFAULT ''")
     console.log('Added projects.building_area')
   }
-  if (!pInfo.find(c => c.name === 'email')) {
+  if (!hasColumn('projects', 'email')) {
     db.exec("ALTER TABLE projects ADD COLUMN email TEXT DEFAULT ''")
     console.log('Added projects.email')
   }
@@ -301,8 +302,25 @@ export function initDB() {
       created_by INTEGER REFERENCES users(id),
       created_at TEXT DEFAULT (datetime('now')),
       updated_at TEXT DEFAULT (datetime('now')),
-      submitted INTEGER DEFAULT 0
+      submitted INTEGER DEFAULT 0,
+      submitted_at TEXT
     );
+
+    -- Audit log for tracking critical operations
+    CREATE TABLE IF NOT EXISTS audit_logs (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER REFERENCES users(id),
+      username TEXT,
+      action TEXT NOT NULL,
+      target_type TEXT NOT NULL,
+      target_id INTEGER,
+      detail TEXT,
+      created_at TEXT DEFAULT (datetime('now'))
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_audit_logs_action ON audit_logs(action);
+    CREATE INDEX IF NOT EXISTS idx_audit_logs_target_type ON audit_logs(target_type);
+    CREATE INDEX IF NOT EXISTS idx_audit_logs_user_id ON audit_logs(user_id);
 
     -- Equipment manuals/documents
     CREATE TABLE IF NOT EXISTS equipment_manuals (
@@ -381,3 +399,14 @@ export function initDB() {
 }
 
 export default db
+
+// Audit log helper
+export function auditLog(userId, username, action, targetType, targetId, detail) {
+  try {
+    db.prepare('INSERT INTO audit_logs (user_id,username,action,target_type,target_id,detail) VALUES (?,?,?,?,?,?)')
+      .run(userId || null, username || null, action, targetType, targetId || null, detail || null)
+  } catch (e) {
+    if (process.env.NODE_ENV !== 'production') throw e
+    console.error('Audit log error:', e.message)
+  }
+}

@@ -1,6 +1,8 @@
 import { Router } from 'express'
 import db from '../db.js'
+import { auditLog } from '../db.js'
 import { buildViMap } from '../vi-helper.js'
+import { parsePagination } from '../pagination.js'
 
 const router = Router()
 
@@ -41,9 +43,9 @@ function getRecord(id) {
   return record
 }
 
-// List records
+// List records (with pagination)
 router.get('/', (req, res) => {
-  const { project_id, template_id, user_form_id, building_id, house_id, status, record_type } = req.query
+  const { project_id, template_id, user_form_id, building_id, house_id, status, record_type, page, page_size } = req.query
   const base = `
     SELECT r.*, t.title as template_title, t.form_id, u.display_name as creator_name,
       b.name as building_name, h.house_number, uf.title as user_form_title,
@@ -71,6 +73,15 @@ router.get('/', (req, res) => {
     params.push(req.user.id)
   }
   const where = conditions.length ? ' WHERE ' + conditions.join(' AND ') : ''
+
+  // Pagination (opt-in: only when page param is provided)
+  if (page) {
+    const pag = parsePagination(req.query, { defaultSize: 100, maxSize: 500 })
+    const countSql = `SELECT COUNT(*) as cnt FROM inspection_records r${where}`
+    const total = db.prepare(countSql).get(...params)?.cnt || 0
+    const rows = db.prepare(base + where + ' ORDER BY r.updated_at DESC LIMIT ? OFFSET ?').all(...params, pag.pageSize, pag.offset)
+    return res.json({ rows, total, page: pag.page, page_size: pag.pageSize })
+  }
   res.json(db.prepare(base + where + ' ORDER BY r.updated_at DESC').all(...params))
 })
 
@@ -103,12 +114,12 @@ router.post('/', (req, res) => {
     if (ufid) {
       const items = db.prepare('SELECT * FROM user_form_items WHERE form_id=? ORDER BY sort_order').all(ufid)
       const viMap = tid ? buildViMap(db, tid) : new Map()
-      const ins = db.prepare('INSERT INTO inspection_results (record_id,user_form_item_id,custom_item_name,custom_item_name_vi,custom_standard,custom_standard_vi,sort_order) VALUES (?,?,?,?,?,?,?)')
+      const ins = db.prepare('INSERT INTO inspection_results (record_id,user_form_item_id,template_item_id,custom_item_name,custom_item_name_vi,custom_standard,custom_standard_vi,sort_order) VALUES (?,?,?,?,?,?,?,?)')
       for (const item of items) {
         const ti = viMap.get(item.item_name)
         const nameVi = item.item_name_vi || (ti ? ti.name_vi : '')
         const stdVi = item.check_standard_vi || (ti ? ti.standard_vi : '')
-        ins.run(rid, item.id, item.item_name, nameVi, item.check_standard, stdVi, item.sort_order)
+        ins.run(rid, item.id, item.source_item_id || null, item.item_name, nameVi, item.check_standard, stdVi, item.sort_order)
       }
     } else {
       // Create results from template_items (legacy)
@@ -170,6 +181,7 @@ router.delete('/:id', (req, res) => {
     return res.status(403).json({ error: '只能删除自己的记录，管理员可删除所有记录' })
   }
   db.prepare('DELETE FROM inspection_records WHERE id=?').run(req.params.id)
+  auditLog(req.user.id, req.user.username, 'delete', 'inspection_record', req.params.id, `record_type=${record.record_type}, project_id=${record.project_id}`)
   res.json({ message: '已删除' })
 })
 
@@ -182,6 +194,7 @@ router.post('/:id/submit', (req, res) => {
     return res.status(403).json({ error: '只能提交自己的记录' })
   }
   db.prepare("UPDATE inspection_records SET submitted=1, submitted_at=datetime('now'), updated_at=datetime('now') WHERE id=?").run(req.params.id)
+  auditLog(req.user.id, req.user.username, 'submit', 'inspection_record', req.params.id, `record_type=${record.record_type}, project_id=${record.project_id}`)
   res.json(getRecord(req.params.id))
 })
 

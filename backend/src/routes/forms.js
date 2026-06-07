@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import db from '../db.js'
+import { auditLog } from '../db.js'
 
 const router = Router()
 
@@ -147,27 +148,51 @@ router.post('/:fid/items', (req, res) => {
   res.json(db.prepare('SELECT * FROM user_form_items WHERE id=?').get(r.lastInsertRowid))
 })
 
-// Update user form item
+// Update user form item — blocks edit if submitted records reference this form
 router.put('/items/:id', (req, res) => {
   const item = db.prepare('SELECT ufi.*, uf.user_id FROM user_form_items ufi JOIN user_forms uf ON ufi.form_id=uf.id WHERE ufi.id=?').get(req.params.id)
   if (!item) return res.status(404).json({ error: '条目不存在' })
   if (item.user_id !== req.user.id && req.user.role !== 'admin') return res.status(403).json({ error: '只能编辑自己的表单' })
 
+  // Block edit if any submitted inspection record uses this form
+  const submittedCount = db.prepare(
+    'SELECT COUNT(*) as cnt FROM inspection_records WHERE user_form_id=? AND submitted=1'
+  ).get(item.form_id)
+  if (submittedCount.cnt > 0) {
+    return res.status(403).json({ error: `该表单已关联 ${submittedCount.cnt} 条已提交的查验记录，无法修改条目` })
+  }
+
   const { item_name, item_number, check_standard, item_name_vi, check_standard_vi } = req.body
   db.prepare('UPDATE user_form_items SET item_name=?,item_name_vi=?,item_number=?,check_standard=?,check_standard_vi=? WHERE id=?')
-    .run(item_name||item.item_name, item_name_vi !== undefined ? item_name_vi : item.item_name_vi, item_number||item.item_number, check_standard||item.check_standard, check_standard_vi !== undefined ? check_standard_vi : item.check_standard_vi, req.params.id)
+    .run(
+      item_name !== undefined ? item_name : item.item_name,
+      item_name_vi !== undefined ? item_name_vi : item.item_name_vi,
+      item_number !== undefined ? item_number : item.item_number,
+      check_standard !== undefined ? check_standard : item.check_standard,
+      check_standard_vi !== undefined ? check_standard_vi : item.check_standard_vi,
+      req.params.id
+    )
   db.prepare('UPDATE user_forms SET updated_at=datetime(\'now\') WHERE id=?').run(item.form_id)
   res.json(db.prepare('SELECT * FROM user_form_items WHERE id=?').get(req.params.id))
 })
 
-// Delete user form item
+// Delete user form item — blocks delete if submitted records reference this form
 router.delete('/items/:id', (req, res) => {
   const item = db.prepare('SELECT ufi.*, uf.user_id FROM user_form_items ufi JOIN user_forms uf ON ufi.form_id=uf.id WHERE ufi.id=?').get(req.params.id)
   if (!item) return res.status(404).json({ error: '条目不存在' })
   if (item.user_id !== req.user.id && req.user.role !== 'admin') return res.status(403).json({ error: '只能编辑自己的表单' })
 
+  // Block delete if any submitted inspection record uses this form
+  const submittedCount = db.prepare(
+    'SELECT COUNT(*) as cnt FROM inspection_records WHERE user_form_id=? AND submitted=1'
+  ).get(item.form_id)
+  if (submittedCount.cnt > 0) {
+    return res.status(403).json({ error: `该表单已关联 ${submittedCount.cnt} 条已提交的查验记录，无法删除条目` })
+  }
+
   db.prepare('DELETE FROM user_form_items WHERE id=?').run(req.params.id)
   db.prepare('UPDATE user_forms SET updated_at=datetime(\'now\') WHERE id=?').run(item.form_id)
+  auditLog(req.user.id, req.user.username, 'delete', 'user_form_item', req.params.id, `form_id=${item.form_id}, item_name=${item.item_name}`)
   res.json({ message: '已删除' })
 })
 

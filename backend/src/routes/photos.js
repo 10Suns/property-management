@@ -1,8 +1,11 @@
 import { Router } from 'express'
 import multer from 'multer'
+import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import db from '../db.js'
+import { auditLog } from '../db.js'
+import { imageFilter } from '../upload-utils.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const uploadDir = path.join(__dirname, '..', '..', 'uploads')
@@ -14,7 +17,11 @@ const storage = multer.diskStorage({
     cb(null, `${Date.now()}-${Math.random().toString(36).slice(2,8)}${ext}`)
   }
 })
-const upload = multer({ storage, limits: { fileSize: 10*1024*1024 } })
+const upload = multer({
+  storage,
+  limits: { fileSize: 10*1024*1024 },
+  fileFilter: imageFilter
+})
 
 const router = Router()
 
@@ -43,6 +50,10 @@ router.delete('/:id', (req, res) => {
   if (record.submitted) return res.status(403).json({ error: '记录已提交，无法删除照片' })
   if (req.user.role !== 'admin' && record.created_by !== req.user.id) return res.status(403).json({ error: '只能删除自己的照片' })
   db.prepare('DELETE FROM inspection_photos WHERE id=?').run(req.params.id)
+  fs.unlink(path.join(uploadDir, photo.filename), (err) => {
+    if (err) console.error('Failed to delete photo file:', err.message)
+  })
+  auditLog(req.user.id, req.user.username, 'delete', 'photo', req.params.id, `record_id=${photo.record_id}, filename=${photo.filename}`)
   res.json({ message: '已删除' })
 })
 

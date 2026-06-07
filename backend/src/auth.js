@@ -1,6 +1,11 @@
 import jwt from 'jsonwebtoken'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'property-inspection-secret-change-in-production'
+
+if (!process.env.JWT_SECRET) {
+  console.warn('⚠️  JWT_SECRET not set in environment! Using default secret — NOT SAFE FOR PRODUCTION.')
+  console.warn('   Set JWT_SECRET via: export JWT_SECRET=your-random-secret-string')
+}
 const JWT_EXPIRES = '30d'
 
 export function generateToken(user) {
