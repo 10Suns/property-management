@@ -391,6 +391,14 @@ tr:hover td { background: #fdfcfa; }
   display: flex; align-items: center; justify-content: center;
 }
 
+/* ---- Attachment list ---- */
+.attach-list { display: flex; flex-direction: column; gap: 6px; }
+.attach-item {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius);
+  font-size: 13px;
+}
+
 /* ---- Result radio group ---- */
 .result-group { display: flex; gap: 4px; }
 .result-radio { display: none; }

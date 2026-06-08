@@ -77,6 +77,7 @@
                 <th style="width:90px">完成日期</th>
                 <th class="text-truncate" style="max-width:120px">备注</th>
                 <th style="width:70px">照片</th>
+                <th style="width:70px">附件</th>
                 <th style="width:100px">操作</th>
               </tr>
             </thead>
@@ -93,6 +94,10 @@
                 <td>
                   <span v-if="!r.photos?.length">-</span>
                   <span v-else class="text-sm text-secondary">{{ r.photos.length }} 张</span>
+                </td>
+                <td>
+                  <span v-if="!r.attachments?.length">-</span>
+                  <span v-else class="text-sm text-secondary">{{ r.attachments.length }} 个</span>
                 </td>
                 <td @click.stop>
                   <button v-if="r.submitted" class="btn btn-sm btn-outline" disabled>已提交</button>
@@ -198,6 +203,25 @@
             </div>
           </div>
         </div>
+        <div class="form-group">
+          <label class="form-label">附件 / 电子档案（最多10个，支持 PDF、Word、Excel、图片扫描件，单个不超过50MB）</label>
+          <div v-if="maintForm._existingAttachments && maintForm._existingAttachments.length" class="attach-list mb-8">
+            <div v-for="(a, i) in maintForm._existingAttachments" :key="'ea'+i" class="attach-item">
+              <span>{{ fileIcon(a.original_name) }} {{ a.original_name }}</span>
+              <div class="flex gap-4">
+                <a :href="'/uploads/attachments/' + a.filename" target="_blank" class="btn btn-sm btn-outline">查看</a>
+                <button v-if="!maintForm._submitted" class="btn btn-sm btn-danger-outline" @click="removeExistingAttachment(i)">删除</button>
+              </div>
+            </div>
+          </div>
+          <input v-if="!maintForm._submitted" type="file" multiple :accept="attachAccept" @change="onMaintAttachments" />
+          <div v-if="maintForm._newAttachments && maintForm._newAttachments.length" class="attach-list mt-8">
+            <div v-for="(f, i) in maintForm._newAttachments" :key="'na'+i" class="attach-item">
+              <span>{{ fileIcon(f.name) }} {{ f.name }} <span class="text-sm text-secondary">({{ formatSize(f.size) }})</span></span>
+              <button class="btn btn-sm btn-danger-outline" @click="removeNewAttachment(i)">删除</button>
+            </div>
+          </div>
+        </div>
         <p class="error-msg" v-if="maintError">{{ maintError }}</p>
         <div class="modal-actions">
           <button v-if="editingRecordId && !maintForm._submitted" class="btn btn-danger-outline" @click="deleteRecord">删除</button>
@@ -248,6 +272,7 @@ const maintError = ref('')
 const photoPreviewUrl = ref(null)
 
 const manualAccept = '.pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg'
+const attachAccept = '.pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.tif,.tiff'
 
 onMounted(async () => {
   try {
@@ -302,7 +327,9 @@ function openEditRecord(r) {
     notes: r.notes || '',
     _submitted: r.submitted || false,
     _existingPhotos: [...(r.photos || [])],
-    _newPhotos: []
+    _newPhotos: [],
+    _existingAttachments: [...(r.attachments || [])],
+    _newAttachments: []
   }
   showMaintModal.value = true
 }
@@ -337,6 +364,38 @@ function removeNewPhoto(i) {
   maintForm.value._newPhotos = [...photos]
 }
 
+function onMaintAttachments(e) {
+  const files = Array.from(e.target.files || [])
+  const existing = (maintForm.value._existingAttachments || []).length
+  const current = maintForm.value._newAttachments || []
+  if (existing + current.length + files.length > 10) {
+    maintError.value = '最多上传10个附件'
+    return
+  }
+  maintError.value = ''
+  current.push(...files)
+  maintForm.value._newAttachments = current
+  e.target.value = ''
+}
+
+function removeExistingAttachment(i) {
+  const attachments = maintForm.value._existingAttachments
+  attachments.splice(i, 1)
+  maintForm.value._existingAttachments = [...attachments]
+}
+
+function removeNewAttachment(i) {
+  const attachments = maintForm.value._newAttachments
+  attachments.splice(i, 1)
+  maintForm.value._newAttachments = [...attachments]
+}
+
+function formatSize(bytes) {
+  if (bytes < 1024) return bytes + ' B'
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(0) + ' KB'
+  return (bytes / 1024 / 1024).toFixed(1) + ' MB'
+}
+
 async function saveMaintRecord() {
   if (!maintForm.value.scheduled_date) return
   maintSaving.value = true
@@ -349,8 +408,11 @@ async function saveMaintRecord() {
     if (maintForm.value.completed_date) fd.append('completed_date', maintForm.value.completed_date)
     if (maintForm.value.notes) fd.append('notes', maintForm.value.notes)
     fd.append('keep_photos', JSON.stringify(maintForm.value._existingPhotos || []))
+    fd.append('keep_attachments', JSON.stringify(maintForm.value._existingAttachments || []))
     const newPhotos = maintForm.value._newPhotos || []
     newPhotos.forEach(f => fd.append('photos', f))
+    const newAttachments = maintForm.value._newAttachments || []
+    newAttachments.forEach(f => fd.append('attachments', f))
 
     await api.put('/equipment/' + route.params.eid + '/maintenance/' + editingRecordId.value, fd)
     showMaintModal.value = false
@@ -367,6 +429,7 @@ async function submitMaintRecord() {
   maintSubmitting.value = true
   try {
     await saveMaintRecord()
+    if (maintError.value) return
     await api.post('/equipment/' + route.params.eid + '/maintenance/' + editingRecordId.value + '/submit')
     showMaintModal.value = false
     loadMaintRecords()

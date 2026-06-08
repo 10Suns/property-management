@@ -123,6 +123,10 @@ function runMigrations() {
     db.exec("ALTER TABLE maintenance_records ADD COLUMN submitted_at TEXT")
     console.log('Added maintenance_records.submitted_at')
   }
+  if (!hasColumn('maintenance_records', 'attachments')) {
+    db.exec("ALTER TABLE maintenance_records ADD COLUMN attachments TEXT DEFAULT '[]'")
+    console.log('Added maintenance_records.attachments')
+  }
 
   // Vietnamese translation columns
   if (!hasColumn('template_items', 'name_vi')) {
@@ -303,7 +307,8 @@ export function initDB() {
       created_at TEXT DEFAULT (datetime('now')),
       updated_at TEXT DEFAULT (datetime('now')),
       submitted INTEGER DEFAULT 0,
-      submitted_at TEXT
+      submitted_at TEXT,
+      attachments TEXT DEFAULT '[]'
     );
 
     -- Audit log for tracking critical operations

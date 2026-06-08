@@ -5,10 +5,13 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import db from '../db.js'
 import { auditLog } from '../db.js'
-import { imageFilter } from '../upload-utils.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const router = Router()
+
+// Ensure attachments upload directory exists
+const attachDir = path.join(__dirname, '..', '..', 'uploads', 'attachments')
+fs.mkdirSync(attachDir, { recursive: true })
 
 function isManager(req) {
   return req.user.role === 'admin' || req.user.role === 'manager'
@@ -17,20 +20,6 @@ function isManager(req) {
 function hasEquipmentAccess(userId, projectId) {
   return db.prepare('SELECT * FROM equipment_access WHERE user_id=? AND project_id=?').get(userId, projectId)
 }
-
-// File upload config for maintenance photos
-const photoStorage = multer.diskStorage({
-  destination: path.join(__dirname, '..', '..', 'uploads'),
-  filename: (_req, file, cb) => {
-    const ext = path.extname(file.originalname)
-    cb(null, Date.now() + '-' + Math.random().toString(36).slice(2, 8) + ext)
-  }
-})
-const uploadPhotos = multer({
-  storage: photoStorage,
-  limits: { fileSize: 10 * 1024 * 1024 },
-  fileFilter: imageFilter
-})
 
 // File upload config for manuals
 const manualStorage = multer.diskStorage({
@@ -41,6 +30,37 @@ const manualStorage = multer.diskStorage({
   }
 })
 const uploadManual = multer({ storage: manualStorage, limits: { fileSize: 50 * 1024 * 1024 } })
+
+// Allowed MIME types for maintenance attachments
+const ALLOWED_ATTACH_MIMES = [
+  'image/', 'application/pdf',
+  'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+]
+
+// Combined upload for maintenance routes (photos + attachments, different storage dirs)
+const maintenanceUpload = multer({
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, file.fieldname === 'attachments' ? attachDir : path.join(__dirname, '..', '..', 'uploads'))
+    },
+    filename: (_req, file, cb) => {
+      const ext = path.extname(file.originalname)
+      cb(null, Date.now() + '-' + Math.random().toString(36).slice(2, 8) + ext)
+    }
+  }),
+  limits: { fileSize: 50 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    if (file.fieldname === 'attachments') {
+      const ok = ALLOWED_ATTACH_MIMES.some(m => file.mimetype === m || (m.endsWith('/') && file.mimetype.startsWith(m)))
+      return cb(ok ? null : new Error('不支持的文件格式'), ok)
+    }
+    if (!file.mimetype.startsWith('image/')) {
+      return cb(new Error('只能上传图片文件'))
+    }
+    cb(null, true)
+  }
+})
 
 // List equipment
 router.get('/', (req, res) => {
@@ -139,11 +159,11 @@ router.get('/:id/maintenance', (req, res) => {
     WHERE mr.equipment_id=?
     ORDER BY mr.completed_date DESC
   `).all(req.params.id)
-  res.json(records.map(r => ({ ...r, photos: JSON.parse(r.photos || '[]') })))
+  res.json(records.map(r => ({ ...r, photos: JSON.parse(r.photos || '[]'), attachments: JSON.parse(r.attachments || '[]') })))
 })
 
 // Create maintenance record (plan item)
-router.post('/:id/maintenance', uploadPhotos.array('photos', 6), (req, res) => {
+router.post('/:id/maintenance', maintenanceUpload.fields([{ name: 'photos', maxCount: 6 }, { name: 'attachments', maxCount: 10 }]), (req, res) => {
   const eq = db.prepare('SELECT * FROM equipment WHERE id=?').get(req.params.id)
   if (!eq) return res.status(404).json({ error: '设备不存在' })
   if (!isManager(req)) return res.status(403).json({ error: '仅管理员和物业经理可管理维护计划' })
@@ -151,11 +171,15 @@ router.post('/:id/maintenance', uploadPhotos.array('photos', 6), (req, res) => {
   const { scheduled_date, completed_date, content, status, notes } = req.body
   if (!scheduled_date) return res.status(400).json({ error: '请填写计划日期' })
 
-  const photos = (req.files || []).map(f => f.filename)
+  const photos = (req.files?.photos || []).map(f => f.filename)
+  const attachments = (req.files?.attachments || []).map(f => ({
+    filename: f.filename,
+    original_name: Buffer.from(f.originalname, 'latin1').toString('utf8')
+  }))
   const recordStatus = status || 'pending'
-  const r = db.prepare(`INSERT INTO maintenance_records (equipment_id, scheduled_date, completed_date, content, status, notes, photos, created_by)
-    VALUES (?,?,?,?,?,?,?,?)`)
-    .run(req.params.id, scheduled_date, completed_date || null, content || '', recordStatus, notes || '', JSON.stringify(photos), req.user.id)
+  const r = db.prepare(`INSERT INTO maintenance_records (equipment_id, scheduled_date, completed_date, content, status, notes, photos, attachments, created_by)
+    VALUES (?,?,?,?,?,?,?,?,?)`)
+    .run(req.params.id, scheduled_date, completed_date || null, content || '', recordStatus, notes || '', JSON.stringify(photos), JSON.stringify(attachments), req.user.id)
 
   if (recordStatus === 'completed' && completed_date) {
     db.prepare('UPDATE equipment SET last_maintenance_date=?, next_maintenance_date=?, updated_at=datetime(\'now\') WHERE id=?')
@@ -163,17 +187,17 @@ router.post('/:id/maintenance', uploadPhotos.array('photos', 6), (req, res) => {
   }
 
   const record = db.prepare('SELECT * FROM maintenance_records WHERE id=?').get(r.lastInsertRowid)
-  res.json({ ...record, photos: JSON.parse(record.photos || '[]') })
+  res.json({ ...record, photos: JSON.parse(record.photos || '[]'), attachments: JSON.parse(record.attachments || '[]') })
 })
 
 // Update maintenance record
-router.put('/:id/maintenance/:rid', uploadPhotos.array('photos', 6), (req, res) => {
+router.put('/:id/maintenance/:rid', maintenanceUpload.fields([{ name: 'photos', maxCount: 6 }, { name: 'attachments', maxCount: 10 }]), (req, res) => {
   if (!isManager(req)) return res.status(403).json({ error: '仅管理员和物业经理可编辑保养记录' })
   const mr = db.prepare('SELECT * FROM maintenance_records WHERE id=? AND equipment_id=?').get(req.params.rid, req.params.id)
   if (!mr) return res.status(404).json({ error: '记录不存在' })
   if (mr.submitted) return res.status(403).json({ error: '记录已提交，无法修改' })
 
-  const { scheduled_date, completed_date, content, status, notes, keep_photos } = req.body
+  const { scheduled_date, completed_date, content, status, notes, keep_photos, keep_attachments } = req.body
   const newScheduledDate = scheduled_date !== undefined ? scheduled_date : mr.scheduled_date
   const newCompletedDate = completed_date !== undefined ? (completed_date || null) : mr.completed_date
   const newContent = content !== undefined ? (content || '') : mr.content
@@ -183,11 +207,20 @@ router.put('/:id/maintenance/:rid', uploadPhotos.array('photos', 6), (req, res) 
   // Merge existing photos with newly uploaded ones
   let existingPhotos = []
   try { existingPhotos = JSON.parse(keep_photos || mr.photos) } catch (_) { existingPhotos = [] }
-  const newPhotos = (req.files || []).map(f => f.filename)
+  const newPhotos = (req.files?.photos || []).map(f => f.filename)
   const allPhotos = JSON.stringify([...existingPhotos, ...newPhotos])
 
-  db.prepare(`UPDATE maintenance_records SET scheduled_date=?, completed_date=?, content=?, status=?, notes=?, photos=?, updated_at=datetime('now') WHERE id=?`)
-    .run(newScheduledDate, newCompletedDate, newContent, newStatus, newNotes, allPhotos, req.params.rid)
+  // Merge existing attachments with newly uploaded ones
+  let existingAttachments = []
+  try { existingAttachments = JSON.parse(keep_attachments || mr.attachments) } catch (_) { existingAttachments = [] }
+  const newAttachments = (req.files?.attachments || []).map(f => ({
+    filename: f.filename,
+    original_name: Buffer.from(f.originalname, 'latin1').toString('utf8')
+  }))
+  const allAttachments = JSON.stringify([...existingAttachments, ...newAttachments])
+
+  db.prepare(`UPDATE maintenance_records SET scheduled_date=?, completed_date=?, content=?, status=?, notes=?, photos=?, attachments=?, updated_at=datetime('now') WHERE id=?`)
+    .run(newScheduledDate, newCompletedDate, newContent, newStatus, newNotes, allPhotos, allAttachments, req.params.rid)
 
   if (newStatus === 'completed' && newCompletedDate) {
     const eq = db.prepare('SELECT * FROM equipment WHERE id=?').get(req.params.id)
@@ -196,7 +229,7 @@ router.put('/:id/maintenance/:rid', uploadPhotos.array('photos', 6), (req, res) 
   }
 
   const record = db.prepare('SELECT * FROM maintenance_records WHERE id=?').get(req.params.rid)
-  res.json({ ...record, photos: JSON.parse(record.photos || '[]') })
+  res.json({ ...record, photos: JSON.parse(record.photos || '[]'), attachments: JSON.parse(record.attachments || '[]') })
 })
 
 // Delete maintenance record
@@ -205,6 +238,20 @@ router.delete('/:id/maintenance/:rid', (req, res) => {
   const mr = db.prepare('SELECT * FROM maintenance_records WHERE id=? AND equipment_id=?').get(req.params.rid, req.params.id)
   if (!mr) return res.status(404).json({ error: '记录不存在' })
   if (mr.submitted) return res.status(403).json({ error: '记录已提交，无法删除' })
+  // Clean up photo files from disk
+  try {
+    const photos = JSON.parse(mr.photos || '[]')
+    photos.forEach(f => fs.unlink(path.join(__dirname, '..', '..', 'uploads', f), (err) => {
+      if (err) console.error('Failed to delete photo file:', err.message)
+    }))
+  } catch (_) {}
+  // Clean up attachment files from disk
+  try {
+    const attachments = JSON.parse(mr.attachments || '[]')
+    attachments.forEach(a => fs.unlink(path.join(attachDir, a.filename), (err) => {
+      if (err) console.error('Failed to delete attachment file:', err.message)
+    }))
+  } catch (_) {}
   db.prepare('DELETE FROM maintenance_records WHERE id=?').run(req.params.rid)
   res.json({ message: '已删除' })
 })
@@ -218,7 +265,7 @@ router.post('/:id/maintenance/:rid/submit', (req, res) => {
   db.prepare("UPDATE maintenance_records SET submitted=1, submitted_at=datetime('now'), updated_at=datetime('now') WHERE id=?").run(req.params.rid)
   auditLog(req.user.id, req.user.username, 'submit', 'maintenance_record', req.params.rid, `equipment_id=${req.params.id}`)
   const record = db.prepare('SELECT * FROM maintenance_records WHERE id=?').get(req.params.rid)
-  res.json({ ...record, photos: JSON.parse(record.photos || '[]') })
+  res.json({ ...record, photos: JSON.parse(record.photos || '[]'), attachments: JSON.parse(record.attachments || '[]') })
 })
 
 function calcNextDate(eq, fromDate) {
